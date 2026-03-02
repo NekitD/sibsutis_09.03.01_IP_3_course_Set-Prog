@@ -44,6 +44,7 @@ void* client_thread(int socket_for_client){
 int main()
 {
     struct sockaddr_in server_addr;
+    pthread_t ct;
     int server_socket = 0;
     int socket_for_client = 0;
 
@@ -86,7 +87,6 @@ int main()
             printf("ACCEPT FAILED\n");
             return -1;
         }
-        pthread_t ct;
         if (pthread_create(&ct, NULL, &client_thread, (void*)socket_for_client) < 0){
             printf("THREAD CREATION ERROR");
             return -1;
@@ -94,5 +94,6 @@ int main()
         pthread_join(ct, NULL);
     }
     close(server_socket);
+    pthread_mutex_destroy(&mut);
     return 0;
 }
