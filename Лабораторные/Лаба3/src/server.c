@@ -13,41 +13,35 @@
 
 pthread_mutex_t mut;
 
-//char msg[BUFF_LEN] = "";
-//int msgLength = 0;
-//char ans_b[BUFF_LEN] = "SERVER: I received - ";
-//char answer[BUFF_LEN] = "";
-
+char msg[BUFF_LEN] = "";
+int msgLength = 0;
+char answer[BUFF_LEN] = "";
 const char ans_b[BUFF_LEN] = "SERVER: I received - ";
 
 void* client_thread(int socket_for_client){
-    char msg[BUFF_LEN] = "";
-    int msgLength = 0;
-    char answer[BUFF_LEN] = "";
     for( ; ; ) {
-        //pthread_mutex_lock(&mut);
         bzero(msg, sizeof(BUFF_LEN));
         bzero(answer, sizeof(BUFF_LEN));
         msgLength = recv(socket_for_client, msg, BUFF_LEN, 0);
         if (msgLength <= 0) {
             if (msgLength == 0) {
-                printf("Client on socket %d closed connection\n", socket_for_client);
+                printf("Client on socket %d closed connection\n\n", socket_for_client);
             } else {
-                printf("Error on socket %d\n", socket_for_client);
+                printf("Error on socket %d\n\n", socket_for_client);
             }
             break; 
         }
         strcat(answer, ans_b);
         strcat(answer, msg);
+        pthread_mutex_lock(&mut);
         printf("SERVER: socket for client - %d\n", socket_for_client) ;
         printf("SERVER: message length - %d\n", msgLength);
         printf("SERVER: message - %s\n\n", msg);
-        send(socket_for_client, answer, BUFF_LEN, 0);
-       // pthread_mutex_unlock(&mut);
+        pthread_mutex_unlock(&mut);
+        send(socket_for_client, answer, BUFF_LEN, 0);  
     }
     close(socket_for_client);
 }
-
 
 int main()
 {
