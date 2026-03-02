@@ -13,20 +13,29 @@
 
 pthread_mutex_t mut;
 
-char msg[BUFF_LEN] = "";
-int msgLength = 0;
-char ans_b[BUFF_LEN] = "SERVER: I received - ";
-char answer[BUFF_LEN] = "";
+//char msg[BUFF_LEN] = "";
+//int msgLength = 0;
+//char ans_b[BUFF_LEN] = "SERVER: I received - ";
+//char answer[BUFF_LEN] = "";
+
+const char ans_b[BUFF_LEN] = "SERVER: I received - ";
 
 void* client_thread(int socket_for_client){
+    char msg[BUFF_LEN] = "";
+    int msgLength = 0;
+    char answer[BUFF_LEN] = "";
     for( ; ; ) {
-        pthread_mutex_lock(&mut);
+        //pthread_mutex_lock(&mut);
         bzero(msg, sizeof(BUFF_LEN));
         bzero(answer, sizeof(BUFF_LEN));
-        if ( (msgLength = recv(socket_for_client, msg, BUFF_LEN, 0) ) < 0 )
-        { 
-            printf("Invalid client socket.\n");
-            break;
+        msgLength = recv(socket_for_client, msg, BUFF_LEN, 0);
+        if (msgLength <= 0) {
+            if (msgLength == 0) {
+                printf("Client on socket %d closed connection\n", socket_for_client);
+            } else {
+                printf("Error on socket %d\n", socket_for_client);
+            }
+            break; 
         }
         strcat(answer, ans_b);
         strcat(answer, msg);
@@ -34,10 +43,9 @@ void* client_thread(int socket_for_client){
         printf("SERVER: message length - %d\n", msgLength);
         printf("SERVER: message - %s\n\n", msg);
         send(socket_for_client, answer, BUFF_LEN, 0);
-        pthread_mutex_unlock(&mut);
+       // pthread_mutex_unlock(&mut);
     }
     close(socket_for_client);
-    return;
 }
 
 
@@ -85,13 +93,12 @@ int main()
         socket_for_client = accept(server_socket, 0, 0);
         if (socket_for_client < 0) {
             printf("ACCEPT FAILED\n");
-            return -1;
+            continue;
         }
         if (pthread_create(&ct, NULL, &client_thread, (void*)socket_for_client) < 0){
             printf("THREAD CREATION ERROR");
-            return -1;
+            continue;
         }
-        pthread_join(ct, NULL);
     }
     close(server_socket);
     pthread_mutex_destroy(&mut);
