@@ -7,28 +7,47 @@
 #include <string.h>
 #include <unistd.h> 
 #include <arpa/inet.h>
-#include <signal.h>
-#include <sys/resource.h>
-#include <sys/wait.h>
+#include <pthread.h>
 
 #define BUFF_LEN 81
 
-void reaper( int sig )
-{ 
-    int status;
-    while( wait3( &status, WNOHANG, (struct rusage *) 0 ) >= 0 ) ;
+int server_socket = 0;
+int socket_for_client;
+
+void* client_thread(){
+    char msg[BUFF_LEN] = "";
+    int msgLength = 0;
+    char ans_b[BUFF_LEN] = "SERVER: I received - ";
+    char answer[BUFF_LEN] = "";
+    socket_for_client = accept(server_socket, 0, 0);
+    if (socket_for_client < 0) {
+        printf("ACCEPT FAILED\n");
+        return -1;
+    }
+    int length = sizeof(socket_for_client) ;
+    for( ; ; ) {
+        bzero(msg, sizeof(BUFF_LEN));
+        bzero(answer, sizeof(BUFF_LEN));
+        if ( (msgLength = recv(socket_for_client, msg, BUFF_LEN, 0) ) < 0 )
+        { 
+            printf("Invalid client socket.\n");
+            break;
+        }
+        strcat(answer, ans_b);
+        strcat(answer, msg);
+        printf("SERVER: socket for client - %d\n", socket_for_client) ;
+        printf("SERVER: message length - %d\n", msgLength);
+        printf("SERVER: message - %s\n\n", msg);
+        send(socket_for_client, answer, BUFF_LEN, 0);
+    }
+    close(socket_for_client);
+    return 0;
 }
+
 
 int main()
 {
-    double i = 0;
-    int server_socket = 0;
-    int socket_for_client;
-
     struct sockaddr_in server_addr;
-
-    char msg[BUFF_LEN] = "";
-    int msgLength = 0;
 
     //--------------------------------------------------------
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -61,44 +80,10 @@ int main()
         return -1;
     }
 
-    char ans_b[BUFF_LEN] = "SERVER: I received - ";
-    char answer[BUFF_LEN] = "";
-    pid_t child;
-    signal(SIGCHLD, reaper);
     for( ; ; ) {
-        socket_for_client = accept(server_socket, 0, 0);
-        if (socket_for_client < 0) {
-            printf("ACCEPT FAILED\n");
-            return -1;
-        }
-        child = fork();
-        if (child < 0) {
-            printf("FORK FAILED\n");
-            return -1;
-        }
-
-        if (child == 0){
-            close(server_socket);
-            length = sizeof(socket_for_client) ;
-            for( ; ; ) {
-                bzero(msg, sizeof(BUFF_LEN));
-                bzero(answer, sizeof(BUFF_LEN));
-                if ( (msgLength = recv(socket_for_client, msg, BUFF_LEN, 0) ) < 0 )
-                { 
-                    printf("Invalid client socket.\n");
-                    break;
-                }
-                strcat(answer, ans_b);
-                strcat(answer, msg);
-                printf("SERVER: socket for client - %d\n", socket_for_client) ;
-                printf("SERVER: message length - %d\n", msgLength);
-                printf("SERVER: message - %s\n\n", msg);
-                send(socket_for_client, answer, BUFF_LEN, 0);
-            }
-            close(socket_for_client);
-            return 0;
-        }
-        close(socket_for_client);
+        pthread_t ct;
+        pthread_create(ct, NULL, &client_thread, NULL);
+        pthread_join(ct, NULL);
     }
     close(server_socket);
     return 0;
