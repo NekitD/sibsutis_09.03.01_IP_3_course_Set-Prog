@@ -46,6 +46,7 @@ void* client_thread(int socket_for_client){
         send(socket_for_client, answer, BUFF_LEN, 0);  
     }
     close(socket_for_client);
+    pthread_exit(0);
 }
 
 int main()
