@@ -90,7 +90,6 @@ int main()
     fd_n = getdtablesize();
     FD_ZERO(&active_ds);
     FD_SET(server_socket, &active_ds);
-    int active_len = 0;
 
     char msg[BUFF_LEN] = "";
     int msgLength = 0;
@@ -105,7 +104,6 @@ int main()
         }
 
         if(FD_ISSET(server_socket, &read_ds)){
-            active_len = sizeof(fd_set);
             socket_for_client = accept(server_socket, 0, 0);
             if (socket_for_client < 0){
                 printf("ACCEPT FAILED\n");
