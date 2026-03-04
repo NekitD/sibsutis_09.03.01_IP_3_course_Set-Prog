@@ -123,5 +123,6 @@ int main()
         }
     }
     close(server_socket);
+    FD_ZERO(&active_ds);
     return 0;
 }
