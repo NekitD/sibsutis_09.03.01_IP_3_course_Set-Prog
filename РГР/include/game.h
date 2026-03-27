@@ -79,7 +79,7 @@ class Card
     Card operator<<(Card* c);
     public: 
         Card(string _text_1): text(_text_1) {};
-        ~Card();
+        ~Card(){};
     private:
         string text;
 };
@@ -89,6 +89,7 @@ class Employer
 {
     private:
         vector<Card*>* p_profs;
+        string manual;
 };
 
 class Player
