@@ -80,9 +80,12 @@ int main()
                     c = sscanf(msg, "%c", &c);
                     strncat(nick, msg, 1);
                 } while(c != '\0' && c != '|');
+                ss_socket = accept(sm_socket, 0, 0);
+                if (ss_socket < 0) {
+                    cout << "НЕ УДАЛОСЬ ПРИНЯТЬ ИГРОКА!" << endl;
+                    continue;
+                }
                 GAME->addPlayer(nick);
-                unsigned int len = sizeof(struct sockaddr_in);
-                ss_socket = accept(sm_socket, (struct sockaddr*)&s_addr, &len);
                 thread ct(&player_thread, ss_socket);
                 ct.detach();
             }
