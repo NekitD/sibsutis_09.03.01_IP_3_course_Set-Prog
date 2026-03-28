@@ -106,8 +106,8 @@ class Player
         void addEmoji(Card* ej);
 
         void remSkill(Card* sk);
-        void remEmoji(Card* ej);
-        
+        void remEmoji();
+
     private:
         int id;
         string name;

@@ -9,12 +9,14 @@ int decode_msg(char* msg, int& status, int len){
 }
 
 
-Card Card::operator<<(Card* c){
-    cout << c->text;
+ostream& operator<<(ostream& os, const Card& c){
+    os << c.text;
+    return os;
 }
 
-Player Player::operator<<(Player* p){
-    cout << p->name << ":    " << score;
+ostream& operator<<(ostream& os, const Player& p){
+    os << p.name << ":    " << p.score;
+    return os;
 }
 
 
@@ -22,10 +24,28 @@ void Player::addScore(int _score){
     score += _score;
 }
 
-void Player::remScore(int _score){
-    score -= _score;
-    if(score < 0){
-        score = 0;
+void Player::addSkill(Card* sk){
+    p_skills->push_back(sk);
+}
+
+void Player::addProf(Card* pr){
+    p_profs->push_back(pr);
+}
+
+void Player::addEmoji(Card* ej){
+    p_emoji = ej;
+}
+
+void Player::remEmoji(){
+    p_emoji = nullptr;
+}
+
+void Player::remSkill(Card* sk){
+    for(vector<Card*>::iterator c = p_skills->begin(); c != p_skills->begin(); c++){
+        if (*c = sk){
+            p_skills->erase(c);
+            break;
+        } 
     }
 }
 
