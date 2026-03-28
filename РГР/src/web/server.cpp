@@ -15,12 +15,12 @@ using namespace std;
 Game* GAME = new Game;
 
 
-void* player_thread()
+void* player_thread(int socket)
 {
     for(;;){
 
     }
-    return;
+    exit(0);
 }
 
 
@@ -82,7 +82,8 @@ int main()
                     strncat(nick, msg, 1);
                 } while(c != '\0' && c != '|');
                 GAME->addPlayer(nick);
-                thread ct(&player_thread);
+                ss_socket = socket(AF_INET, SOCK_STREAM, 0);
+                thread ct(&player_thread, ss_socket);
                 ct.detach();
             }
         }
