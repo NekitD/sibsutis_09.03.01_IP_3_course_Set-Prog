@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -g -I../../include
+CFLAGS = -Wall -g -I./include
 CPPFLAGS = -MP -MMD
 
 SRC = src
