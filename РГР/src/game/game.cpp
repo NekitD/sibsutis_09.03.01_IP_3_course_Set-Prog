@@ -14,11 +14,20 @@ ostream& operator<<(ostream& os, const Card& c){
     return os;
 }
 
+Card::Card(string _text_1): text(_text_1){}
+Card::~Card(){};
+
+
 ostream& operator<<(ostream& os, const Player& p){
     os << p.name << ":    " << p.score;
     return os;
 }
 
+
+Player::Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
+            p_skills(new vector<Card*>), p_emoji(nullptr), id(_id){};
+
+Player::~Player(){};
 
 void Player::addScore(int _score){
     score += _score;
@@ -61,6 +70,7 @@ void Game::game_init()
         g_skills = new vector<Card*>;
         g_emoji = new vector<Card*>;
         g_players = new vector<Player*>;
+        g_employ = new Employ_Info;
         //--------------------------------------------------
         g_profs->push_back(new Card("🐟 Рыбак"));
         g_profs->push_back(new Card("🎭 Конферансье"));
