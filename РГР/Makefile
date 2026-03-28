@@ -2,6 +2,7 @@ CC = g++
 CFLAGS = -Wall -g -I./include
 CPPFLAGS = -MP -MMD
 
+BIN = bin
 SRC = src
 OBJ = obj
 INCLUDE = include
@@ -20,8 +21,8 @@ SERVER_OBJ = $(OBJ)/$(WEB_DIR)/server.o
 CLIENT_DEPS = $(OBJ)/$(WEB_DIR)/client.d
 SERVER_DEPS = $(OBJ)/$(WEB_DIR)/server.d
 
-CLIENT_TARGET = client
-SERVER_TARGET = server
+CLIENT_TARGET = $(BIN)/client
+SERVER_TARGET = $(BIN)/server
 GAME_LIB = $(OBJ)/$(GAME_DIR)/libgame.a
 
 DIRS = $(OBJ)/$(GAME_DIR) $(OBJ)/$(WEB_DIR)
@@ -32,30 +33,32 @@ $(shell mkdir -p $(DIRS))
 all: $(GAME_LIB) $(CLIENT_TARGET) $(SERVER_TARGET)
 
 $(GAME_LIB): $(GAME_OBJ_FILE)
-	ar rcs $@ $^
+	@ar rcs $@ $^
 
 $(GAME_OBJ_FILE): $(GAME_SRC)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(CLIENT_OBJ): $(CLIENT_SRC)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(SERVER_OBJ): $(SERVER_SRC)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB)
-	$(CC) $(CFLAGS) $^ -o $@
+	@mkdir -p $(BIN)
+	@$(CC) $(CFLAGS) $^ -o $@
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(GAME_LIB)
-	$(CC) $(CFLAGS) $^ -o $@
+	@mkdir -p $(BIN)
+	@$(CC) $(CFLAGS) $^ -o $@
 
 game:
-	./$(SERVER_TARGET)
+	@./$(SERVER_TARGET)
 
 player:
-	./$(CLIENT_TARGET)
+	@./$(CLIENT_TARGET)
 
 -include $(GAME_DEPS) $(CLIENT_DEPS) $(SERVER_DEPS)
 
 clean:
-	rm -rf $(OBJ) $(CLIENT_TARGET) $(SERVER_TARGET)
+	@rm -rf $(OBJ)/$(GAME_DIR)/* $(OBJ)/$(WEB_DIR)/* $(CLIENT_TARGET) $(SERVER_TARGET)
