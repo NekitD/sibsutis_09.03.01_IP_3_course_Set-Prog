@@ -63,6 +63,7 @@ enum prof_id {
 
 enum game_status {
     PRE = 0, // набор лобби.
+    FULL,
     START, // все игроки выразили готовность начать игру.
     // ИГРОВОЙ ЦИКЛ:
     //--------------------------------------------------------------------
@@ -81,7 +82,8 @@ enum game_status {
 };
 
 enum player_status {
-    PRE_TO_PLAY = 0,
+    WAIT_ACCEPT = 0,
+    PRE_TO_PLAY,
     READY_TO_PLAY,
     EMPLOYER,
     ANSWERING,
@@ -156,6 +158,7 @@ class Game
         int getStatus();
         void setStatus(int ns);
         void addPlayer(char* nick);
+        int getPnum();
 
     private:
         int p_num = 0;
