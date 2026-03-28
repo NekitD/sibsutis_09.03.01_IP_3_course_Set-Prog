@@ -72,11 +72,11 @@ int decode_msg(char* msg, int& status, int len = BUFF_LEN);
 
 
 
-//-------------------------\
+//-------------------------
 
 class Card 
 {  
-    Card operator<<(Card* c);
+    friend ostream& operator<<(ostream& os, const Card& c);
     public: 
         Card(string _text_1): text(_text_1) {};
         ~Card(){};
@@ -94,21 +94,27 @@ class Employer
 
 class Player
 {
-    Player operator<<(Player* c);
+    friend ostream& operator<<(ostream& os, const Player& p);
     public:
         Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
             p_skills(new vector<Card*>), id(_id){};
         ~Player(){};
+
         void addScore(int _score);
-        void remScore(int _score);
         void addSkill(Card* sk);
         void addProf(Card* pr);
+        void addEmoji(Card* ej);
+
+        void remSkill(Card* sk);
+        void remEmoji(Card* ej);
+        
     private:
         int id;
         string name;
         int score = 0;
         vector<Card*>* p_skills;
         vector<Card*>* p_profs;
+        Card* p_emoji;
 };
 
 class Game 
