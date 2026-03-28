@@ -61,9 +61,29 @@ enum prof_id {
     nurse
 };
 
-enum emoji_id{
-    doubting = 0,
+enum game_status {
+    PRE = 0, // набор лобби.
+    START, // все игроки выразили готовность начать игру.
+    // ИГРОВОЙ ЦИКЛ:
+    //--------------------------------------------------------------------
+    JOB_MAKE, // работодатель придумывает историю предприятия. 
+    //Цикл выступления соискателей:
+        //---------------------------------------------
+        P_PRE, // Игрок готовится выступать.
+        P_MAKE, // Игрок выступает.
+        QUESTIONS, // Режим принятия вопросов. Если ещё есть вопросы, то QUESTIOS -> P_ANSWER
+        P_ANSWER, // Игрок отвечает на первый пришедший вопрос P_ANSWER -> QUESTIOS 
+        P_OPEN, // Карты игрока вскрываются.
+        SCORES, // Выставление оценки.
+        //---------------------------------------------
+    JOB_CHOICE // Работодатель выбирает 
+    //--------------------------------------------------------------------
+};
 
+enum player_status {
+    READY_TO_PLAY = 0,
+    EMPLOYER,
+    ANSWERING
 };
 
 
@@ -78,17 +98,17 @@ class Card
 {  
     friend ostream& operator<<(ostream& os, const Card& c);
     public: 
-        Card(string _text_1): text(_text_1) {};
-        ~Card(){};
+        Card(string _text_1);
+        ~Card();
     private:
         string text;
 };
 
 
-class Employer
+class Employ_Info
 {
     private:
-        vector<Card*>* p_profs;
+        vector<Card*>* e_profs;
         string manual;
 };
 
@@ -96,9 +116,8 @@ class Player
 {
     friend ostream& operator<<(ostream& os, const Player& p);
     public:
-        Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
-            p_skills(new vector<Card*>), id(_id){};
-        ~Player(){};
+        Player(string _name, int _id);
+        ~Player();
 
         void addScore(int _score);
         void addSkill(Card* sk);
@@ -138,5 +157,6 @@ class Game
         vector<Card*>* g_skills;
         vector<Card*>* g_emoji;
         vector<Player*>* g_players;
+        Employ_Info* g_employ;
 };
 
