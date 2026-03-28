@@ -55,6 +55,9 @@ int main()
         printf("СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!\n");
         return -1;
     }
+    while(true){
+        
+    }
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     strcat(s_msg, nick.c_str());
@@ -64,6 +67,7 @@ int main()
         cout << "НЕ УДАЛОСЬ ОТПРАВИТЬ ДАННЫЕ ИГРОКА!" << endl;
         return -1;
     }
+
     int status = WAIT_ACCEPT;
     int rec = 0;
     //---------------------------------------------------------------------
