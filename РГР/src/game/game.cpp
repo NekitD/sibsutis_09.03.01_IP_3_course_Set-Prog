@@ -329,7 +329,7 @@ int Game::getStatus(){
     return status;
 }
 
-int Game::setStatus(int ns){
+void Game::setStatus(int ns){
     status = ns;
 }
 

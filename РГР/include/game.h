@@ -154,7 +154,7 @@ class Game
         void print_emoji();
         void print_players();
         int getStatus();
-        int setStatus(int ns);
+        void setStatus(int ns);
         void addPlayer(char* nick);
 
     private:
