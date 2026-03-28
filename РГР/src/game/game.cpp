@@ -42,7 +42,7 @@ void Player::remEmoji(){
 
 void Player::remSkill(Card* sk){
     for(vector<Card*>::iterator c = p_skills->begin(); c != p_skills->begin(); c++){
-        if (*c = sk){
+        if (*c == sk){
             p_skills->erase(c);
             break;
         } 
