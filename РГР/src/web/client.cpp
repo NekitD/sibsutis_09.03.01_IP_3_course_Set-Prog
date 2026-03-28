@@ -53,7 +53,6 @@ int main()
     }
 
     //---------------------------------------------------------------------
-    int length = 0;
     char* msg[BUFF_LEN];
     for(;;){
         if ((recv(c_sock, msg, BUFF_LEN, 0) ) < 0)
