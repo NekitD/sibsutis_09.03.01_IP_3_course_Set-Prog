@@ -1,3 +1,4 @@
+//СТАРТАП-КЛИЕНТ
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -50,30 +51,47 @@ int main()
     bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length) ;
     s_addr.sin_port = htons(g_port);
 
-        if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
+    if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
         printf("СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!\n");
         return -1;
     }
-    char msg[BUFF_LEN] = "";
+    char s_msg[BUFF_LEN] = "";
+    char a_msg[BUFF_LEN] = "";
+    strcat(s_msg, nick.c_str());
+    strcat(s_msg, "|join");
 
-    strcat(msg, nick.c_str());
-    strcat(msg, "|join");
-
-    if(send(c_sock, msg, BUFF_LEN, 0) < 0){
+    if(send(c_sock, s_msg, BUFF_LEN, 0) < 0){
         cout << "НЕ УДАЛОСЬ ОТПРАВИТЬ ДАННЫЕ ИГРОКА!" << endl;
         return -1;
     }
+    int status = WAIT_ACCEPT;
+    int rec = 0;
     //---------------------------------------------------------------------
     for(;;){
-        if ((recv(c_sock, msg, BUFF_LEN, 0) ) < 0)
+        rec = recv(c_sock, a_msg, BUFF_LEN, 0);
+        if (rec == 0)
+        { 
+            cout << "СОЕДИНЕНИЕ ПРЕРВАНО!" << endl;
+            break;
+        }
+        if (rec < 0)
         { 
             cout << " ОШИБКА СЕРВЕРА! (Invalid server socket)" << endl;
             break;
         }
-        
+        if(status == WAIT_ACCEPT)
+        {
+            if (strncmp(a_msg,"accepted",9) != 0)
+            { 
+                continue;
+            }
+            status = PRE_TO_PLAY;
+            cout << "Нажмите Enter, когда будете готовы начать игру..." << endl;
+        }
+        if(status == PRE_TO_PLAY){
 
+        }
     }
-
     close(c_sock);
     return 0;
 }
