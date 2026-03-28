@@ -81,7 +81,8 @@ enum game_status {
 };
 
 enum player_status {
-    READY_TO_PLAY = 0,
+    PRE_TO_PLAY = 0,
+    READY_TO_PLAY,
     EMPLOYER,
     ANSWERING
 };
@@ -134,6 +135,7 @@ class Player
         vector<Card*>* p_skills;
         vector<Card*>* p_profs;
         Card* p_emoji;
+        int status = PRE_TO_PLAY;
 };
 
 class Game 
@@ -158,5 +160,6 @@ class Game
         vector<Card*>* g_emoji;
         vector<Player*>* g_players;
         Employ_Info* g_employ;
+        int status = PRE;
 };
 

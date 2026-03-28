@@ -25,7 +25,7 @@ ostream& operator<<(ostream& os, const Player& p){
 
 
 Player::Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
-            p_skills(new vector<Card*>), p_emoji(nullptr), id(_id){};
+            p_skills(new vector<Card*>), p_emoji(nullptr), id(_id), status(PRE_TO_PLAY){};
 
 Player::~Player(){};
 
@@ -244,6 +244,8 @@ void Game::game_init()
         g_emoji->push_back(new Card("Вы льете воду."));
         g_emoji->push_back(new Card("Вы презираете других соискателей."));
         g_emoji->push_back(new Card("Вы хотите много денег."));
+
+        status = PRE;
 }
 
 Game::~Game()
