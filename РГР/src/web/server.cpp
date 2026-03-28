@@ -20,6 +20,7 @@ void* player_thread(int socket)
     for(;;){
 
     }
+    close(socket);
     exit(0);
 }
 
@@ -53,7 +54,7 @@ int main()
         cout << "ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
         return -1;
     }
-    cout << "АДРЕС ИГРЫ: " << ntohl(s_addr.sin_addr.s_addr) << endl;
+    cout << "АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
     if(listen(sm_socket, 6) < 0){
         cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
