@@ -80,6 +80,7 @@ int main()
     }
     cout << "АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
+
     if(listen(sm_socket, 6) < 0){
         cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
         return -1;
@@ -90,14 +91,12 @@ int main()
     {
         status = GAME->getStatus();
         if (status == PRE){
-            cout << "DEBUG: Waiting for accept..." << endl; 
             ss_socket = accept(sm_socket, 0, 0);
-            //thread ct(player_thread, ss_socket);
-            //ct.detach();
+            thread ct(player_thread, ss_socket);
+            ct.detach();
             if (GAME->getPnum() == 6){
                 GAME->setStatus(FULL);
             }
-            cout << "DEBUG: accept SUCCESS! New socket: " << ss_socket << endl; 
         }
     }
     close(sm_socket);

@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 #include <time.h>
 #include <string.h>
 #include <unistd.h> 
@@ -48,6 +49,7 @@ int main()
     hp = gethostbyname(g_host);
 
     bzero((char*)&s_addr, (sizeof(struct sockaddr_in)));
+    s_addr.sin_family = AF_INET;
     bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length) ;
     s_addr.sin_port = htons(g_port);
 
@@ -55,7 +57,7 @@ int main()
         printf("СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!\n");
         return -1;
     }
-    while(true){
+   while(true){
         
     }
     char s_msg[BUFF_LEN] = "";
