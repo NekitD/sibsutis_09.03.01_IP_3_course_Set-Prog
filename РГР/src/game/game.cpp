@@ -61,6 +61,14 @@ void Player::remEmoji(){
     p_emoji = nullptr;
 }
 
+int Player::get_id(){
+    return id;
+}
+
+string Player::get_nick(){
+    return name;
+}
+
 void Player::remSkill(Card* sk){
     for(vector<Card*>::iterator c = p_skills->begin(); c != p_skills->begin(); c++){
         if (*c == sk){
@@ -354,4 +362,13 @@ void Game::addPlayer(char* nick){
 
 int Game::getPnum(){
     return p_num;
+}
+
+int Game::get_player_id(char* nick){
+    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        if(strcmp((*p)->get_nick().c_str(), nick) == 0){
+            return (*p)->get_id();
+        }
+    }
+    return -1;
 }

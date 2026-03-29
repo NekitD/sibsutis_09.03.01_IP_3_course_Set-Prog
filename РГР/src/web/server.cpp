@@ -18,6 +18,7 @@ Game* GAME = new Game;
 
 void player_thread(int socket)
 {
+    int id = 0;
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     char request[BUFF_LEN];
@@ -40,6 +41,11 @@ void player_thread(int socket)
             get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
             if (strncmp(request, "join", 4) == 0){
                 GAME->addPlayer(nick);
+                id = GAME->get_player_id(nick);
+                if(id < 0){
+                    cout << "ОШИБКА ID." << endl;
+                    break;
+                }
                 strcat(s_msg, "accepted");
                 send(socket, s_msg, BUFF_LEN, 0);
                 p_status = PRE_TO_PLAY;

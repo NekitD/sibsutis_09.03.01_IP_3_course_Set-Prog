@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <cstring>
 
 using namespace std;
 
@@ -131,6 +132,9 @@ class Player
         void remSkill(Card* sk);
         void remEmoji();
 
+        int get_id();
+        string get_nick();
+
     private:
         int id;
         string name;
@@ -159,6 +163,7 @@ class Game
         void setStatus(int ns);
         void addPlayer(char* nick);
         int getPnum();
+        int get_player_id(char* nick);
 
     private:
         int p_num = 0;
