@@ -57,7 +57,7 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 p_status = PRE_TO_PLAY;
             }
-            continue;
+            //continue;
         }
         if(p_status = PRE_TO_PLAY){
             if (g_status == START){
@@ -73,7 +73,7 @@ void player_thread(int socket)
                     GAME->setStatus(START);
                 }
             }
-            continue;
+            //continue;
         }
         if (p_status == WAITING){
             continue;

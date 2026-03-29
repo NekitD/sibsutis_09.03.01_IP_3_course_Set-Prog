@@ -98,7 +98,7 @@ int main()
             }
             status = PRE_TO_PLAY;
             cout << "Вы успешно присоединились к игре!" << endl;
-            continue;
+            //continue;
         }
         if(status == PRE_TO_PLAY){
             char a;
@@ -116,12 +116,12 @@ int main()
                 status = WAITING;
                 cout << "Ожидание других игроков..." << endl;
             }
-            continue;
+            //continue;
         }
         if(status == WAITING){
             int eoc = get_line_b(output, a_msg, 0, BUFF_LEN, '|');
             cout << output << endl;
-            continue;
+            //continue;
         }
     }
     close(c_sock);
