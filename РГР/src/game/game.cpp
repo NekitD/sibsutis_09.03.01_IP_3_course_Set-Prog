@@ -434,7 +434,7 @@ void Game::addPlayer(char* nick){
     g_players->push_back(p);
     p_num = getPnum();
     cout << nick << " присоединился к игре!" << endl;
-    cout << "Игроков (" << getPnum() << "/{" << MIN_P << "-" << MAX_P << "})" << endl;
+    cout << "Игроков (" << getPnum() << " / {" << MIN_P << " - " << MAX_P << "})\n" << endl;
     if(getPnum() >= MAX_P){
         setStatus(FULL);
     }
@@ -465,8 +465,10 @@ string Game::get_player_nick(int id) const{
 void Game::remPlayer(int id){
     for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
         if((*p)->get_id() == id){
-            if (getStatus() == PRE){
+            if (getStatus() == PRE || getStatus() == FULL){
+                cout << get_player_nick(id) << " покинул игру." << endl;
                 g_players->erase(p);
+                cout << "Игроков (" << getPnum() << " / {" << MIN_P << " - " << MAX_P << "})\n" << endl;
             } else {
                 (*p)->setStatus(LEFT);
                 if(getPnum() < MIN_P){

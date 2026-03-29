@@ -28,7 +28,7 @@ void player_thread(int socket)
         bzero(s_msg, BUFF_LEN);
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if (rec_l == 0){
-            cout << GAME->get_player_nick(id) << " покинул игру." << endl;
+            GAME->remPlayer(id);
             break;
         }
         if (rec_l < 0){
@@ -104,7 +104,7 @@ int main()
         cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
         return -1;
     }
-    cout << endl << "Игроков (" << GAME->getPnum() << "/{" << MIN_P << "-" << MAX_P << "})" << endl;
+    cout << endl << "Игроков (" << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "})" << endl;
     GAME->setStatus(PRE);
     int status;
     for(;;)
