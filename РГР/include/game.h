@@ -82,7 +82,8 @@ enum game_status {
         //---------------------------------------------
     JOB_CHOICE, // Работодатель выбирает 
     //--------------------------------------------------------------------
-    OVER
+    OVER,
+    AFTERGAME
 };
 
 enum player_status {
@@ -140,6 +141,7 @@ class Player
 
         void setStatus(int ns);
         int getStatus() const;
+        int getScore() const;
 
     private:
         int id;
@@ -172,6 +174,8 @@ class Game
         int getPnum() const;
         int get_player_id(char* nick) const;
         string get_player_nick(int id) const;
+
+        void Endgame() const;
 
     private:
         int p_num = 0;

@@ -93,6 +93,10 @@ int Player::getStatus() const{
     return status;
 }
 
+int Player::getScore() const{
+    return score;
+}
+
 Game::Game()
 {
     game_init();
@@ -410,5 +414,33 @@ void Game::remPlayer(int id){
                 }
             }
         }
+    }
+}
+
+void Game::Endgame() const{
+    int max = 0;
+    int c_score = 0;
+    vector<Player*> winners;
+    for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
+        cout << (**pl) << endl;
+        c_score = (*pl)->getScore();
+        if(c_score > max){
+            max = c_score;
+        }
+    }
+    for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
+        cout << (**pl) << endl;
+        if((*pl)->getScore() == max){
+            winners.push_back(*pl);
+        }
+    }
+    if(winners.size() > 1){
+        cout << "ПОБЕДИТЕЛИ:" << endl;
+    } else {
+        cout << "ПОБЕДИТЕЛЬ:" << endl;
+    }
+    
+    for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
+        cout << (**pl).get_nick() << endl;
     }
 }

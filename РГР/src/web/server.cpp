@@ -103,6 +103,9 @@ int main()
                 GAME->setStatus(FULL);
             }
         }
+        if(status == OVER){
+            GAME->Endgame();
+        }
     }
     close(sm_socket);
     return 0;
