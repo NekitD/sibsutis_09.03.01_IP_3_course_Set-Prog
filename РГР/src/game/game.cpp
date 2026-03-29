@@ -450,7 +450,7 @@ bool Game::isGameReady(){
     if(g_players->size() < MIN_P){
         return false;
     }
-    return getRnum() == getPnum();
+    return (getRnum() == getPnum());
 }
 
 
