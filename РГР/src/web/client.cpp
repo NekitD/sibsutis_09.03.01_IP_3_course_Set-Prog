@@ -71,6 +71,7 @@ int main()
 
     int status = WAIT_ACCEPT;
     int rec = 0;
+    char output[BUFF_LEN] = "";
     //---------------------------------------------------------------------
     for(;;){
         rec = recv(c_sock, a_msg, BUFF_LEN, 0);
@@ -112,12 +113,14 @@ int main()
             if(send(c_sock, "readytoplay", BUFF_LEN, 0) < 0){
                 cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
-                status = READY_TO_PLAY;
+                status = WAITING;
                 cout << "Ожидание других игроков..." << endl;
             }
             continue;
         }
-        if(status = READY_TO_PLAY){
+        if(status == WAITING){
+            int eoc = get_line_b(output, a_msg, 0, BUFF_LEN, '|');
+            cout << output << endl;
             continue;
         }
     }
