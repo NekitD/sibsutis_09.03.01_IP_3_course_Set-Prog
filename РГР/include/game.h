@@ -7,6 +7,8 @@
 using namespace std;
 
 #define BUFF_LEN 128
+#define MIN_P 3
+#define MAX_P 6
 
 
 enum prof_id {
@@ -78,8 +80,9 @@ enum game_status {
         P_OPEN, // Карты игрока вскрываются.
         SCORES, // Выставление оценки.
         //---------------------------------------------
-    JOB_CHOICE // Работодатель выбирает 
+    JOB_CHOICE, // Работодатель выбирает 
     //--------------------------------------------------------------------
+    OVER
 };
 
 enum player_status {
@@ -135,6 +138,8 @@ class Player
         int get_id();
         string get_nick();
 
+        void setStatus(int ns);
+
     private:
         int id;
         string name;
@@ -162,6 +167,7 @@ class Game
         int getStatus();
         void setStatus(int ns);
         void addPlayer(char* nick);
+        void remPlayer(int id);
         int getPnum();
         int get_player_id(char* nick);
         string get_player_nick(int id);
