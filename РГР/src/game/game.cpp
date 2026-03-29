@@ -2,62 +2,6 @@
 #include "game.h"
 
 
-
-
-int termregime(int regime, int vtime, int vmin, int echo, int sigint)
-{
-    struct termios new_termios;
-
-    if (tcgetattr(STDIN_FILENO, &new_termios) != 0)
-    {
-        return -1;
-    }
-    if (regime)
-    {
-        new_termios.c_lflag &= ~(ICANON | ECHO | (sigint ? 0 : ISIG));
-        new_termios.c_cc[VTIME] = vtime;
-        new_termios.c_cc[VMIN] = vmin;
-    }
-    else
-    {
-        new_termios.c_lflag |= (ICANON | (echo ? ECHO : 0) | (sigint ? ISIG : 0));
-    }
-    return tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
-}
-
-int readkey(enum keys *address)
-{
-    if (termregime(1, 0, 1, 0, 0) != 0)
-        return -1;
-    tcflush(STDIN_FILENO, TCIFLUSH);
-
-    char buf[8] = {0};
-    int bytes_read = read(STDIN_FILENO, buf, sizeof(buf));
-
-    if (bytes_read <= 0)
-    {
-        return -1;
-    }
-
-    if (bytes_read == 1)
-    {
-        switch (buf[0])
-        {
-        case '\r':
-            *address = ENTER;
-            break;
-        default:
-            return -1;
-        }
-    }
-    else
-    {
-        return -1;
-    }
-    return 0;
-}
-
-
 int encode_msg(char* msg, int& status, int len){
     return 0;
 }

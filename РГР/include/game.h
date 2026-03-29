@@ -14,7 +14,8 @@ using namespace std;
 
 
 enum keys {
-    ENTER = 0
+    ENTER = 0,
+    ESC
 };
 
 enum prof_id {
@@ -105,8 +106,6 @@ enum player_status {
 int encode_msg(char* msg, int& status, int len = BUFF_LEN);
 int decode_msg(char* msg, int& status, int len = BUFF_LEN);
 int get_line_b(char*, char*, int, int, char);
-int termregime(int regime, int vtime, int vmin, int echo, int sigint);
-int readkey(enum keys *address);
 
 //-------------------------
 

@@ -104,7 +104,7 @@ int main()
         cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
         return -1;
     }
-    cout << endl << "Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
+    cout << endl << "Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}\n" << endl;
     GAME->setStatus(PRE);
     int status;
     for(;;)

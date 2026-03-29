@@ -14,6 +14,45 @@ using namespace std;
 
 static struct termios original_termios;
 
+
+int set_noncanonical_mode() {
+    struct termios new_termios;
+    
+    if (tcgetattr(STDIN_FILENO, &original_termios) != 0) {
+        return -1;
+    }
+    
+    new_termios = original_termios;
+    new_termios.c_lflag &= ~(ICANON | ECHO);
+    new_termios.c_cc[VMIN] = 1; 
+    new_termios.c_cc[VTIME] = 0; 
+    
+    return tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+}
+
+int restore_terminal_mode() {
+    return tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
+}
+
+int readkey(enum keys *address) {
+    char ch;
+    int bytes_read = read(STDIN_FILENO, &ch, 1);
+    
+    if (bytes_read <= 0) {
+        return -1;
+    }
+    
+    if (ch == '\r' || ch == '\n') { 
+        *address = ENTER;
+    } else {
+        return -1;
+    }
+    
+    return 0;
+}
+
+
+
 int main()
 {
     struct hostent *hp;
@@ -99,19 +138,22 @@ int main()
                 continue;
             }
             status = PRE_TO_PLAY;
-            cout << "Нажмите Enter, когда будете готовы начать игру..." << endl;
-            if (termregime(1, 0, 1, 0, 0) != 0){
+            cout << "Нажмите Enter, когда будете готовы начать игру... (или Esc, если хотите выйти)" << endl;
+            if (set_noncanonical_mode() != 0){
                 cout << "Ошибка терминала!" << endl;
                 return -1;
             }
         }
         if(status == PRE_TO_PLAY){
-            if(readkey(&key_a) == ENTER){
+            int rk = readkey(&key_a);
+            if(rk == ESC){
+                cout << "Выход из игры..." << endl;
+                restore_terminal_mode();
+                return 0;
+            }
+            if (rk == 0 || rk == ENTER){
                 status = READY_TO_PLAY;
-                if (tcgetattr(STDIN_FILENO, &original_termios) != 0)
-                {
-                    return -1;
-                }
+                restore_terminal_mode();
                 if(send(c_sock, "readytoplay", BUFF_LEN, 0) < 0){
                     cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
                 } else {
