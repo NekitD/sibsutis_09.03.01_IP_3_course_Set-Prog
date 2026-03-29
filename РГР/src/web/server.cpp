@@ -36,6 +36,10 @@ void player_thread(int socket)
             break;
         }
         if(p_status == WAIT_ACCEPT){
+            if(GAME->getStatus() == FULL){
+                send(socket, "FULL", BUFF_LEN, 0);
+                break;
+            }
             char nick[BUFF_LEN];
             int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
             get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
@@ -106,11 +110,11 @@ int main()
     for(;;)
     {
         status = GAME->getStatus();
-        if (status == PRE){
+        if (status == PRE || status == FULL){
             ss_socket = accept(sm_socket, 0, 0);
             thread ct(player_thread, ss_socket);
             ct.detach();
-            if (GAME->getPnum() == 6){
+            if (status == PRE && GAME->getPnum() == MAX_P){
                 GAME->setStatus(FULL);
             }
         }

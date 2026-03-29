@@ -43,6 +43,7 @@ int main()
     string nick;
     cout << "Введите ваш ник (без пробелов): ";
     cin >> nick;
+    searchgame:
     cout << "Введите адрес игры (без пробелов): ";
     cin >> g_host;
     cout << endl << "Введите порт игры: ";
@@ -88,6 +89,11 @@ int main()
         }
         if(status == WAIT_ACCEPT)
         {
+            if (strncmp(a_msg,"FULL",4) == 0)
+            { 
+                cout << "В этой игре больше нет свободных мест." << endl;
+                goto searchgame;
+            }
             if (strncmp(a_msg,"accepted",9) != 0)
             { 
                 continue;

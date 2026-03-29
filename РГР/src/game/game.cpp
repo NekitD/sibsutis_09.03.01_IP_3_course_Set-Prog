@@ -435,6 +435,9 @@ void Game::addPlayer(char* nick){
     p_num = getPnum();
     cout << nick << " присоединился к игре!" << endl;
     cout << "Игроков (" << getPnum() << "/{" << MIN_P << "-" << MAX_P << "})" << endl;
+    if(getPnum() >= MAX_P){
+        setStatus(FULL);
+    }
 }
 
 int Game::getPnum() const{
