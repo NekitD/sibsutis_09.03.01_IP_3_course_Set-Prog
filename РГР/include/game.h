@@ -164,6 +164,7 @@ class Game
         void addPlayer(char* nick);
         int getPnum();
         int get_player_id(char* nick);
+        string get_player_nick(int id);
 
     private:
         int p_num = 0;

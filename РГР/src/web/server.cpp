@@ -28,11 +28,11 @@ void player_thread(int socket)
         bzero(s_msg, BUFF_LEN);
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if (rec_l == 0){
-            cout << "Соединение с игроком разорвано." << endl;
+            cout << GAME->get_player_nick(id) << " покинул игру." << endl;
             break;
         }
         if (rec_l < 0){
-            cout << "Разрыв соединения с игроком из-за ошибки сокета." << endl;
+            cout << "Разрыв соединения с игроком" << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             break;
         }
         if(p_status == WAIT_ACCEPT){
@@ -53,7 +53,6 @@ void player_thread(int socket)
         }
     }
     close(socket);
-    //exit(0);
 }
 
 int main()

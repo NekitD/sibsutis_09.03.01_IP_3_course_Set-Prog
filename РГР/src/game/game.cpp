@@ -372,3 +372,12 @@ int Game::get_player_id(char* nick){
     }
     return -1;
 }
+
+string Game::get_player_nick(int id){
+    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        if((*p)->get_id() == id){
+            return (*p)->get_nick();
+        }
+    }
+    return NULL;
+}
