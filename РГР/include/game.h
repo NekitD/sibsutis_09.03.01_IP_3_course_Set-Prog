@@ -12,12 +12,6 @@ using namespace std;
 #define MIN_P 3
 #define MAX_P 6
 
-
-enum keys {
-    ENTER = 0,
-    ESC
-};
-
 enum prof_id {
     fisher = 0,
     intertainer,
@@ -83,7 +77,7 @@ enum game_status {
         P_PRE, // Игрок готовится выступать.
         P_MAKE, // Игрок выступает.
         QUESTIONS, // Режим принятия вопросов. Если ещё есть вопросы, то QUESTIOS -> P_ANSWER
-        P_ANSWER, // Игрок отвечает на первый пришедший вопрос P_ANSWER -> QUESTIOS 
+        P_ANSWER, // Игрок отвечает на первый пришедший вопрос P_ANSWER -> QUESTIONS 
         P_OPEN, // Карты игрока вскрываются.
         SCORES, // Выставление оценки.
         //---------------------------------------------
@@ -97,8 +91,10 @@ enum player_status {
     WAIT_ACCEPT = 0,
     PRE_TO_PLAY,
     READY_TO_PLAY,
+    WAITING,
     EMPLOYER,
     ANSWERING,
+    QUESTIONING,
     LEFT
 };
 
