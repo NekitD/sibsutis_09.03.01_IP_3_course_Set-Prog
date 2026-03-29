@@ -12,6 +12,8 @@
 
 using namespace std;
 
+static struct termios original_termios;
+
 int main()
 {
     struct hostent *hp;
@@ -70,6 +72,7 @@ int main()
 
     int status = WAIT_ACCEPT;
     int rec = 0;
+    enum keys key_a;
     //---------------------------------------------------------------------
     for(;;){
         rec = recv(c_sock, a_msg, BUFF_LEN, 0);
@@ -91,8 +94,26 @@ int main()
             }
             status = PRE_TO_PLAY;
             cout << "Нажмите Enter, когда будете готовы начать игру..." << endl;
+            if (termregime(1, 0, 1, 0, 0) != 0){
+                cout << "Ошибка терминала!" << endl;
+                return -1;
+            }
         }
         if(status == PRE_TO_PLAY){
+            if(readkey(&key_a) == ENTER){
+                status = READY_TO_PLAY;
+                if (tcgetattr(STDIN_FILENO, &original_termios) != 0)
+                {
+                    return -1;
+                }
+                if(send(c_sock, "readytoplay", BUFF_LEN, 0) < 0){
+                    cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
+                } else {
+                    cout << "Ожидание других игроков..." << endl;
+                }
+            }
+        }
+        if(status = READY_TO_PLAY){
 
         }
     }

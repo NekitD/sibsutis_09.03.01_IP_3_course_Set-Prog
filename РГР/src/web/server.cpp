@@ -51,6 +51,13 @@ void player_thread(int socket)
                 p_status = PRE_TO_PLAY;
             }
         }
+        if(p_status = PRE_TO_PLAY){
+            strncpy(request, a_msg, 12);
+            if(strncmp(request, "readytoplay", 12) == 0){
+                cout << GAME->get_player_nick(id) << " готов играть!" << endl;
+                GAME->set_player_status(id, READY_TO_PLAY);
+            }
+        }
     }
     close(socket);
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <termios.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -10,6 +12,10 @@ using namespace std;
 #define MIN_P 3
 #define MAX_P 6
 
+
+enum keys {
+    ENTER = 0
+};
 
 enum prof_id {
     fisher = 0,
@@ -99,7 +105,8 @@ enum player_status {
 int encode_msg(char* msg, int& status, int len = BUFF_LEN);
 int decode_msg(char* msg, int& status, int len = BUFF_LEN);
 int get_line_b(char*, char*, int, int, char);
-
+int termregime(int regime, int vtime, int vmin, int echo, int sigint);
+int readkey(enum keys *address);
 
 //-------------------------
 
@@ -174,6 +181,7 @@ class Game
         int getPnum() const;
         int get_player_id(char* nick) const;
         string get_player_nick(int id) const;
+        void set_player_status(int id, int ns);
 
         void Endgame() const;
 
