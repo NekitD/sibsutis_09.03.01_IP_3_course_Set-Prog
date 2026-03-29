@@ -57,7 +57,7 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 p_status = PRE_TO_PLAY;
             }
-            //continue;
+            continue;
         }
         if(p_status = PRE_TO_PLAY){
             if (g_status == START){
@@ -69,11 +69,12 @@ void player_thread(int socket)
             if(strncmp(request, "readytoplay", 12) == 0){
                 cout << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
+                cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
                     GAME->setStatus(START);
                 }
             }
-            //continue;
+            continue;
         }
         if (p_status == WAITING){
             continue;
