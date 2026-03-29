@@ -24,8 +24,11 @@ void player_thread(int socket)
     char request[BUFF_LEN];
     int p_status = WAIT_ACCEPT;
     int rec_l = 0;
+    int g_status = PRE;
     for(;;){
         bzero(s_msg, BUFF_LEN);
+        bzero(a_msg, BUFF_LEN);
+        g_status = GAME->getStatus();
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if (rec_l == 0){
             GAME->remPlayer(id);
@@ -36,7 +39,7 @@ void player_thread(int socket)
             break;
         }
         if(p_status == WAIT_ACCEPT){
-            if(GAME->getStatus() == FULL){
+            if(g_status == FULL){
                 send(socket, "FULL", BUFF_LEN, 0);
                 break;
             }
@@ -57,6 +60,11 @@ void player_thread(int socket)
             continue;
         }
         if(p_status = PRE_TO_PLAY){
+            if (g_status == START){
+                send(socket, "Игра начинается!|", BUFF_LEN, 0);
+                p_status = WAITING;
+                continue;
+            }
             strncpy(request, a_msg, 12);
             if(strncmp(request, "readytoplay", 12) == 0){
                 cout << GAME->get_player_nick(id) << " готов играть!" << endl;
@@ -65,6 +73,9 @@ void player_thread(int socket)
                     GAME->setStatus(START);
                 }
             }
+            continue;
+        }
+        if (p_status == WAITING){
             continue;
         }
     }
