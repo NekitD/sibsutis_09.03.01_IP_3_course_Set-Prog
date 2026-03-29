@@ -36,6 +36,9 @@ ostream& operator<<(ostream& os, const Player& p){
         cout << (**it) << ", ";
     }
     os << ")" <<":    " << p.score;
+    if (p.getStatus() == LEFT){
+        os << "(Вышел)";
+    }
     return os;
 }
 
@@ -65,11 +68,11 @@ void Player::remEmoji(){
     p_emoji = nullptr;
 }
 
-int Player::get_id(){
+int Player::get_id() const{
     return id;
 }
 
-string Player::get_nick(){
+string Player::get_nick() const{
     return name;
 }
 
@@ -84,6 +87,10 @@ void Player::remSkill(Card* sk){
 
 void Player::setStatus(int ns){
     status = ns;
+}
+
+int Player::getStatus() const{
+    return status;
 }
 
 Game::Game()
@@ -353,7 +360,7 @@ void Game::print_players(){
     } 
 }
 
-int Game::getStatus(){
+int Game::getStatus() const{
     return status;
 }
 
@@ -368,11 +375,11 @@ void Game::addPlayer(char* nick){
     cout << nick << " присоединился к игре!" << endl;
 }
 
-int Game::getPnum(){
+int Game::getPnum() const{
     return g_players->size();
 }
 
-int Game::get_player_id(char* nick){
+int Game::get_player_id(char* nick) const{
     for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
         if(strcmp((*p)->get_nick().c_str(), nick) == 0){
             return (*p)->get_id();
@@ -381,7 +388,7 @@ int Game::get_player_id(char* nick){
     return -1;
 }
 
-string Game::get_player_nick(int id){
+string Game::get_player_nick(int id) const{
     for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
         if((*p)->get_id() == id){
             return (*p)->get_nick();

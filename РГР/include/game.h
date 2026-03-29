@@ -135,10 +135,11 @@ class Player
         void remSkill(Card* sk);
         void remEmoji();
 
-        int get_id();
-        string get_nick();
+        int get_id() const;
+        string get_nick() const;
 
         void setStatus(int ns);
+        int getStatus() const;
 
     private:
         int id;
@@ -164,13 +165,13 @@ class Game
         void print_skills();
         void print_emoji();
         void print_players();
-        int getStatus();
+        int getStatus() const;
         void setStatus(int ns);
         void addPlayer(char* nick);
         void remPlayer(int id);
-        int getPnum();
-        int get_player_id(char* nick);
-        string get_player_nick(int id);
+        int getPnum() const;
+        int get_player_id(char* nick) const;
+        string get_player_nick(int id) const;
 
     private:
         int p_num = 0;
