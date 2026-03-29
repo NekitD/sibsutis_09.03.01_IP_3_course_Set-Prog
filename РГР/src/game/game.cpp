@@ -433,16 +433,22 @@ void Game::set_player_status(int id, int ns){
     }
 }
 
+int Game::getRnum() const{
+    int ready = 0;
+    for(vector<Player*>::iterator it = g_players->begin(); it != g_players->end(); it++){
+        if ((*it)->getStatus() == READY_TO_PLAY){
+            ready++;
+        }
+    }
+    return ready;
+}
+
+
 bool Game::isGameReady(){
     if(g_players->size() < MIN_P){
         return false;
     }
-    for(vector<Player*>::iterator it = g_players->begin(); it != g_players->end(); it++){
-        if ((*it)->getStatus() != READY_TO_PLAY){
-            return false;
-        }
-    }
-    return true;
+    return getRnum() == getPnum();
 }
 
 
