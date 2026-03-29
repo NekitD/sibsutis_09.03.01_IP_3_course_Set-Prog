@@ -182,6 +182,7 @@ class Game
         int get_player_id(char* nick) const;
         string get_player_nick(int id) const;
         void set_player_status(int id, int ns);
+        bool isGameReady();
 
         void Endgame() const;
 

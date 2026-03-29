@@ -56,6 +56,9 @@ void player_thread(int socket)
             if(strncmp(request, "readytoplay", 12) == 0){
                 cout << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
+                if (GAME->isGameReady()){
+                    GAME->setStatus(START);
+                }
             }
         }
     }
@@ -93,10 +96,11 @@ int main()
     cout << "АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
 
-    if(listen(sm_socket, 6) < 0){
+    if(listen(sm_socket, MAX_P) < 0){
         cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
         return -1;
     }
+    cout << endl << "Игроков (" << GAME->getPnum() << "/{" << MIN_P << "-" << MAX_P << "})" << endl;
     GAME->setStatus(PRE);
     int status;
     for(;;)
