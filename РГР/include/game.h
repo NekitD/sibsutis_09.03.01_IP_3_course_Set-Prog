@@ -93,7 +93,7 @@ enum player_status {
 
 int encode_msg(char* msg, int& status, int len = BUFF_LEN);
 int decode_msg(char* msg, int& status, int len = BUFF_LEN);
-
+int get_line_b(char*, char*, int, int, char);
 
 
 //-------------------------

@@ -9,6 +9,17 @@ int decode_msg(char* msg, int& status, int len){
     return 0;
 }
 
+int get_line_b(char* n_line, char* o_line, int start, int len, char b){
+    char c;
+    for(int i = 0, j = start; i < len, j < len; i++, j++){
+        c = o_line[j];
+        if(c == b){
+            return j + 1;
+        }
+        n_line[i] = c;
+    }
+    return len - 1;
+}
 
 ostream& operator<<(ostream& os, const Card& c){
     os << c.text;
@@ -338,7 +349,7 @@ void Game::addPlayer(char* nick){
     Player* p = new Player(nick, p_num + 1);
     g_players->push_back(p);
     p_num++;
-    cout << nick << "присоединился к игре!" << endl;
+    cout << nick << " присоединился к игре!" << endl;
 }
 
 int Game::getPnum(){
