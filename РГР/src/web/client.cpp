@@ -44,9 +44,9 @@ int main()
     searchgame:
     cout << "Введите адрес игры (без пробелов): ";
     cin >> g_host;
-    cout << endl << "Введите порт игры: ";
+    cout << "Введите порт игры: ";
     cin >> g_port;
-
+    cout << endl;
     hp = gethostbyname(g_host);
 
     bzero((char*)&s_addr, (sizeof(struct sockaddr_in)));
@@ -55,7 +55,7 @@ int main()
     s_addr.sin_port = htons(g_port);
 
     if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
-        printf("СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!\n");
+        cout << "СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!" << endl;
         return -1;
     }
 
@@ -71,7 +71,6 @@ int main()
 
     int status = WAIT_ACCEPT;
     int rec = 0;
-    enum keys key_a;
     //---------------------------------------------------------------------
     for(;;){
         rec = recv(c_sock, a_msg, BUFF_LEN, 0);
@@ -97,11 +96,12 @@ int main()
                 continue;
             }
             status = PRE_TO_PLAY;
+            cout << "Вы успешно присоединились к игре!" << endl;
             continue;
         }
         if(status == PRE_TO_PLAY){
             char a;
-            cout << "Y(готов)/q(Выйти): ";
+            cout << "Введите Y(Готов)/q(Выйти): ";
             cin >> a;
             if (a == 'q' || a == 'Q'){
                 break;
