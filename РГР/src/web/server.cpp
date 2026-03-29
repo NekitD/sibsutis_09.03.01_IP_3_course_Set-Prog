@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <thread> 
 #include "game.h"
+#include <cstring>
 
 using namespace std;
 
@@ -19,26 +20,25 @@ void player_thread(int socket)
 {
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
-    char request[10];
+    char request[BUFF_LEN];
     int p_status = WAIT_ACCEPT;
+    int rec_l = 0;
     for(;;){
         bzero(s_msg, BUFF_LEN);
-        if (recv(socket, a_msg, BUFF_LEN, 0) == 0){
+        rec_l = recv(socket, a_msg, BUFF_LEN, 0);
+        if (rec_l == 0){
             cout << "Соединение с игроком разорвано." << endl;
             break;
         }
+        if (rec_l < 0){
+            cout << "Разрыв соединения с игроком из-за ошибки сокета." << endl;
+            break;
+        }
         if(p_status == WAIT_ACCEPT){
-            char c;
-            do{
-                c = sscanf(a_msg, "%c", &c);
-                strncat(request, a_msg, 1);
-            } while(c != '\0' && c != '|');
+            char nick[BUFF_LEN];
+            int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
+            get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
             if (strncmp(request, "join", 4) == 0){
-                char nick[10];
-                do{
-                    c = sscanf(a_msg, "%c", &c);
-                    strncat(nick, a_msg, 1);
-                } while(c != '\0' && c != '|');
                 GAME->addPlayer(nick);
                 strcat(s_msg, "accepted");
                 send(socket, s_msg, BUFF_LEN, 0);
@@ -47,7 +47,7 @@ void player_thread(int socket)
         }
     }
     close(socket);
-    exit(0);
+    //exit(0);
 }
 
 int main()
