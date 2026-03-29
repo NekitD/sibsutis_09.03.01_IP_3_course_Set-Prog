@@ -39,7 +39,7 @@ int main()
         return -1;
     }
     string nick;
-    cout << "Введите ваш ник: ";
+    cout << "Введите ваш ник (без пробелов): ";
     cin >> nick;
     cout << "Введите адрес игры (без пробелов): ";
     cin >> g_host;
@@ -57,9 +57,7 @@ int main()
         printf("СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!\n");
         return -1;
     }
-   while(true){
-        
-    }
+
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     strcat(s_msg, nick.c_str());
