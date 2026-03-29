@@ -74,6 +74,8 @@ int main()
     char output[BUFF_LEN] = "";
     //---------------------------------------------------------------------
     for(;;){
+        bzero(s_msg, BUFF_LEN);
+        bzero(a_msg, BUFF_LEN);
         rec = recv(c_sock, a_msg, BUFF_LEN, 0);
         if (rec == 0)
         { 
@@ -120,7 +122,9 @@ int main()
         }
         if(status == WAITING){
             int eoc = get_line_b(output, a_msg, 0, BUFF_LEN, '|');
-            cout << output << endl;
+            if (output[0]){
+                cout << output << endl;
+            }
             //continue;
         }
     }
