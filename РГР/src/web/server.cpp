@@ -54,6 +54,7 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 p_status = PRE_TO_PLAY;
             }
+            continue;
         }
         if(p_status = PRE_TO_PLAY){
             strncpy(request, a_msg, 12);
@@ -64,6 +65,7 @@ void player_thread(int socket)
                     GAME->setStatus(START);
                 }
             }
+            continue;
         }
     }
     close(socket);
@@ -118,9 +120,11 @@ int main()
             if (status == PRE && GAME->getPnum() == MAX_P){
                 GAME->setStatus(FULL);
             }
+            continue;
         }
         if(status == OVER){
             GAME->Endgame();
+            break;
         }
     }
     close(sm_socket);

@@ -97,6 +97,7 @@ int main()
                 continue;
             }
             status = PRE_TO_PLAY;
+            continue;
         }
         if(status == PRE_TO_PLAY){
             char a;
@@ -114,9 +115,10 @@ int main()
                 status = READY_TO_PLAY;
                 cout << "Ожидание других игроков..." << endl;
             }
+            continue;
         }
         if(status = READY_TO_PLAY){
-
+            continue;
         }
     }
     close(c_sock);
