@@ -34,7 +34,7 @@ Card::~Card(){};
 ostream& operator<<(ostream& os, const Player& p){
     os << p.name <<  "(";
     for(vector<Card*>::iterator it = p.p_profs->begin(); it != p.p_profs->end(); it++){
-        cout << (**it) << ", ";
+        os << (**it) << ", ";
     }
     os << ")" <<":    " << p.score;
     if (p.getStatus() == LEFT){
@@ -339,7 +339,7 @@ vector<Player*>* Game::get_players(){
 void Game::print_profs(){
     if(g_profs){
         for(vector<Card*>::iterator pr = g_profs->begin(); pr != g_profs->end(); pr++){
-            delete *pr;
+            cout << **pr;
         }
     }
 }
@@ -420,6 +420,7 @@ void Game::remPlayer(int id){
                     setStatus(OVER);
                 }
             }
+            break;
         }
     }
 }
