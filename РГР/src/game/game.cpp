@@ -31,7 +31,11 @@ Card::~Card(){};
 
 
 ostream& operator<<(ostream& os, const Player& p){
-    os << p.name << ":    " << p.score;
+    os << p.name <<  "(";
+    for(vector<Card*>::iterator it = p.p_profs->begin(); it != p.p_profs->end(); it++){
+        cout << (**it) << ", ";
+    }
+    os << ")" <<":    " << p.score;
     return os;
 }
 
@@ -76,6 +80,10 @@ void Player::remSkill(Card* sk){
             break;
         } 
     }
+}
+
+void Player::setStatus(int ns){
+    status = ns;
 }
 
 Game::Game()
@@ -356,12 +364,12 @@ void Game::setStatus(int ns){
 void Game::addPlayer(char* nick){
     Player* p = new Player(nick, p_num + 1);
     g_players->push_back(p);
-    p_num++;
+    p_num = getPnum();
     cout << nick << " присоединился к игре!" << endl;
 }
 
 int Game::getPnum(){
-    return p_num;
+    return g_players->size();
 }
 
 int Game::get_player_id(char* nick){
@@ -380,4 +388,20 @@ string Game::get_player_nick(int id){
         }
     }
     return NULL;
+}
+
+void Game::remPlayer(int id){
+    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        if((*p)->get_id() == id){
+            if (getStatus() == PRE){
+                g_players->erase(p);
+            } else {
+                (*p)->setStatus(LEFT);
+                if(getPnum() < MIN_P){
+                    cout << "Количество игроков меньше " << MIN_P << endl;
+                    setStatus(OVER);
+                }
+            }
+        }
+    }
 }
