@@ -176,6 +176,7 @@ class Game
         int getRnum() const;
         int get_player_id(char* nick) const;
         string get_player_nick(int id) const;
+        int get_player_status(int id) const;
         void set_player_status(int id, int ns);
         bool isGameReady() const;
 

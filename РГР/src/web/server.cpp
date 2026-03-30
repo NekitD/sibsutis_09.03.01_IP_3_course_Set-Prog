@@ -28,9 +28,30 @@ void player_thread(int socket)
     int p_status = WAIT_ACCEPT;
     int rec_l = 0;
     int g_status = PRE;
+    if(p_status == WAIT_ACCEPT){
+        if(g_status == FULL){
+            send(socket, "FULL", BUFF_LEN, 0);
+            close(socket);
+        }
+        char nick[BUFF_LEN];
+        int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
+        get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
+        if (strncmp(request, "join", 4) == 0){
+            GAME->addPlayer(nick);
+            id = GAME->get_player_id(nick);
+            if(id < 0){
+                cout << "ОШИБКА ID." << endl;
+                close(socket);
+            }
+            strcat(s_msg, "accepted");
+            send(socket, s_msg, BUFF_LEN, 0);
+            GAME->set_player_status(id, PRE_TO_PLAY);
+        }
+    }
     for(;;){
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
+        p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if (rec_l == 0){
@@ -41,27 +62,7 @@ void player_thread(int socket)
             cout << "Разрыв соединения с игроком" << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             break;
         }
-        if(p_status == WAIT_ACCEPT){
-            if(g_status == FULL){
-                send(socket, "FULL", BUFF_LEN, 0);
-                break;
-            }
-            char nick[BUFF_LEN];
-            int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
-            get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
-            if (strncmp(request, "join", 4) == 0){
-                GAME->addPlayer(nick);
-                id = GAME->get_player_id(nick);
-                if(id < 0){
-                    cout << "ОШИБКА ID." << endl;
-                    break;
-                }
-                strcat(s_msg, "accepted");
-                send(socket, s_msg, BUFF_LEN, 0);
-                p_status = PRE_TO_PLAY;
-            }
-            continue;
-        }
+
         if(p_status == PRE_TO_PLAY){
             strncpy(request, a_msg, 12);
             if(strncmp(request, "readytoplay", 12) == 0){
