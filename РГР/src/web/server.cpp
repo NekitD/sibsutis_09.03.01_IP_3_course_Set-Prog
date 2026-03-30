@@ -43,7 +43,7 @@ void player_thread(int socket)
                 cout << "ОШИБКА ID." << endl;
                 close(socket);
             }
-            strcat(s_msg, "accepted");
+            strcat(s_msg, "||PRE_TO_PLAY");
             send(socket, s_msg, BUFF_LEN, 0);
             GAME->set_player_status(id, PRE_TO_PLAY);
         }
@@ -68,6 +68,8 @@ void player_thread(int socket)
             if(strncmp(request, "readytoplay", 12) == 0){
                 cout << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
+                strcat(s_msg, "||READY_TO_PLAY");
+                send(socket, s_msg, BUFF_LEN, 0);
                 cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
                     GAME->setStatus(START);

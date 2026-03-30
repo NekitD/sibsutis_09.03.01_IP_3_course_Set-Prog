@@ -12,6 +12,39 @@
 
 using namespace std;
 
+int get_status_from_msg(char* msg, int mlen){
+    char output[mlen] = "";
+    int bc = get_line_b(output, msg, 0, mlen, '|');
+    bc = get_line_b(output, msg, bc, mlen, '|');
+    bc = get_line_b(output, msg, bc, mlen, ' ');
+    if (strncmp(output, "WAIT_ACCEPT", 12) == 0){
+        return WAIT_ACCEPT;
+    }
+    if (strncmp(output, "PRE_TO_PLAY", 12) == 0){
+        return PRE_TO_PLAY;
+    }
+    if(strncmp(output, "READY_TO_PLAY", 14) == 0){
+        return READY_TO_PLAY;
+    }
+    if(strncmp(output, "WAITING", 8) == 0){
+        return WAITING;
+    }
+    if(strncmp(output, "EMPLOYER", 9) == 0){
+        return EMPLOYER;
+    }
+    if(strncmp(output, "ANSWERING", 10) == 0){
+        return ANSWERING;
+    }
+    if(strncmp(output, "QUESTIONING", 12) == 0){
+        return QUESTIONING;
+    }
+    if(strncmp(output, "LEFT", 5) == 0){
+        return LEFT;
+    }
+    return WAIT_ACCEPT;
+}
+
+
 int main()
 {
     struct hostent *hp;
@@ -87,6 +120,7 @@ int main()
             cout << " ОШИБКА СЕРВЕРА! (Invalid server socket)" << endl;
             break;
         }
+        status = get_status_from_msg(a_msg, BUFF_LEN);
         if(status == WAIT_ACCEPT)
         {
             if (strncmp(a_msg,"FULL",4) == 0)
@@ -94,16 +128,11 @@ int main()
                 cout << "В этой игре больше нет свободных мест." << endl;
                 goto searchgame;
             }
-            if (strncmp(a_msg,"accepted",9) != 0)
-            { 
-                continue;
-            }
-            status = PRE_TO_PLAY;
-            cout << "Вы успешно присоединились к игре!" << endl;
             //continue;
         }
         if(status == PRE_TO_PLAY){
             char a;
+            cout << "Вы успешно присоединились к игре!" << endl;
             cout << "Введите Y(Готов)/q(Выйти): ";
             cin >> a;
             if (a == 'q' || a == 'Q'){
@@ -115,7 +144,6 @@ int main()
             if(send(c_sock, "readytoplay", BUFF_LEN, 0) < 0){
                 cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
-                status = WAITING;
                 cout << "Ожидание других игроков..." << endl;
                 bzero(a_msg, BUFF_LEN);
             }
