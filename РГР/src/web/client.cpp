@@ -117,6 +117,7 @@ int main()
             } else {
                 status = WAITING;
                 cout << "Ожидание других игроков..." << endl;
+                bzero(a_msg, BUFF_LEN);
             }
             //continue;
         }
