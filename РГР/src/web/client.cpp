@@ -16,6 +16,7 @@ int get_status_from_msg(char* msg, int mlen){
     char output[mlen] = "";
     int bc = get_line_b(output, msg, 0, mlen, '|');
     bc = get_line_b(output, msg, bc, mlen, '|');
+    bzero(output, BUFF_LEN);
     bc = get_line_b(output, msg, bc, mlen, ' ');
     if (strncmp(output, "WAIT_ACCEPT", 12) == 0){
         return WAIT_ACCEPT;

@@ -27,26 +27,28 @@ void player_thread(int socket)
     char request[BUFF_LEN];
     int p_status = WAIT_ACCEPT;
     int rec_l = 0;
-    int g_status = PRE;
-    if(p_status == WAIT_ACCEPT){
-        if(g_status == FULL){
-            send(socket, "FULL", BUFF_LEN, 0);
+    int g_status = GAME->getStatus();
+    if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){;
+        cout << "Неудачная попытка подключения" << endl;
+        close(socket);
+    }
+    if(g_status == FULL){
+        send(socket, "FULL", BUFF_LEN, 0);
+        close(socket);
+    }
+    char nick[BUFF_LEN];
+    int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
+    get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
+    if (strncmp(request, "join", 4) == 0){
+        GAME->addPlayer(nick);
+        id = GAME->get_player_id(nick);
+        if(id < 0){
+            cout << "ОШИБКА ID." << endl;
             close(socket);
         }
-        char nick[BUFF_LEN];
-        int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
-        get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
-        if (strncmp(request, "join", 4) == 0){
-            GAME->addPlayer(nick);
-            id = GAME->get_player_id(nick);
-            if(id < 0){
-                cout << "ОШИБКА ID." << endl;
-                close(socket);
-            }
-            strcat(s_msg, "||PRE_TO_PLAY");
-            send(socket, s_msg, BUFF_LEN, 0);
-            GAME->set_player_status(id, PRE_TO_PLAY);
-        }
+        strcat(s_msg, "||PRE_TO_PLAY");
+        send(socket, s_msg, BUFF_LEN, 0);
+        GAME->set_player_status(id, PRE_TO_PLAY);
     }
     for(;;){
         bzero(s_msg, BUFF_LEN);
