@@ -446,11 +446,8 @@ int Game::getRnum() const{
 }
 
 
-bool Game::isGameReady(){
-    if(g_players->size() < MIN_P){
-        return false;
-    }
-    return (getRnum() == getPnum());
+bool Game::isGameReady() const{
+    return ((getPnum() >= MIN_P ) && (getRnum() == getPnum()));
 }
 
 
