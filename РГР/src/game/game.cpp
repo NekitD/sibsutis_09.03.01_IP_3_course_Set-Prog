@@ -23,7 +23,7 @@ Card::~Card(){};
 
 
 ostream& operator<<(ostream& os, const Player& p){
-    os << p.id << ") " <<p.name <<  " (";
+    os << p.name <<  " (";
     for(vector<Card*>::iterator it = p.p_profs->begin(); it != p.p_profs->end(); it++){
         os << (**it) << ", ";
     }
