@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <cstring>
-#include <termios.h>
 #include <unistd.h>
 
 using namespace std;
