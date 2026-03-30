@@ -27,9 +27,9 @@ ostream& operator<<(ostream& os, const Player& p){
     for(vector<Card*>::iterator it = p.p_profs->begin(); it != p.p_profs->end(); it++){
         os << (**it) << ", ";
     }
-    os << ")" <<":    " << p.score;
+    os << ")" <<":      " << p.score;
     if (p.getStatus() == LEFT){
-        os << " (Вышел)";
+        os << "     (Вышел)";
     }
     return os;
 }
@@ -338,12 +338,15 @@ void Game::print_emoji() const{
     }
 }
 void Game::print_players() const{
+    if (g_players == nullptr || g_players->empty()){
+        cout << "НЕТ ИГРОКОВ" << endl;
+    }
     if(g_players){
-        cout << "===ИГРОКИ===" << endl;
+        cout << "======ИГРОКИ======" << endl;
         for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
-            cout << *p;
+            cout << **p << endl;
         }
-    } 
+    }
 }
 
 int Game::getStatus() const{
