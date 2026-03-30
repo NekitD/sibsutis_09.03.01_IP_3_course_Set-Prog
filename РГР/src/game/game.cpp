@@ -291,31 +291,20 @@ void Game::game_init()
 Game::~Game()
 {
     if(g_profs){
-        ;
-        for(vector<Card*>::iterator pr = g_profs->begin(); pr != g_profs->end(); pr++){
-            delete *pr;
-        }
+        g_profs->clear();
         delete g_profs;
     }
     if(g_skills){
-        ;
-        for(vector<Card*>::iterator sk = g_skills->begin(); sk != g_skills->end(); sk++){
-            delete *sk;
-        }
+        
+        g_skills->clear();
         delete g_skills;
     }
     if(g_emoji){
-        ;
-        for(vector<Card*>::iterator ej = g_emoji->begin(); ej != g_emoji->end(); ej++){
-            delete *ej;
-        }
+        g_emoji->clear();
         delete g_emoji;
     }
     if(g_players){
-        ;
-        for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-            delete *pl;
-        }
+        g_players->clear();
         delete g_players;
     }
 }
