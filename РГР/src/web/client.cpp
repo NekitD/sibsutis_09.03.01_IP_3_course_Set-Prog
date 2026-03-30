@@ -12,6 +12,7 @@
 
 using namespace std;
 
+// Структкра сообщения "output|request|p_status"
 int get_status_from_msg(char* msg, int mlen){
     char output[mlen] = "";
     int bc = get_line_b(output, msg, 0, mlen, '|');
@@ -129,11 +130,17 @@ int main()
                 cout << "В этой игре больше нет свободных мест." << endl;
                 goto searchgame;
             }
+            if (strncmp(a_msg,"ASTARTED",9) == 0)
+            { 
+                cout << "Эта игра уже началась." << endl;
+                goto searchgame;
+            }
             //continue;
         }
         if(status == PRE_TO_PLAY){
             char a;
             cout << "Вы успешно присоединились к игре!" << endl;
+            cout << "Готовы начать игру?" << endl;
             cout << "Введите Y(Готов)/q(Выйти): ";
             cin >> a;
             if (a == 'q' || a == 'Q'){
@@ -150,7 +157,7 @@ int main()
             }
             //continue;
         }
-        if(status == WAITING){
+        if(status == WAITING || status == READY_TO_PLAY){
             int eoc = get_line_b(output, a_msg, 0, BUFF_LEN, '|');
             if (output[0]){
                 cout << output << endl;

@@ -36,6 +36,10 @@ void player_thread(int socket)
         send(socket, "FULL", BUFF_LEN, 0);
         close(socket);
     }
+    if(g_status > FULL){
+        send(socket, "ASTARTED", BUFF_LEN, 0);
+        close(socket);
+    }
     char nick[BUFF_LEN];
     int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
     get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
