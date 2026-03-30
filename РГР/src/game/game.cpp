@@ -1,15 +1,6 @@
 //СТАРТАП-БИБЛИОТЕКА
 #include "game.h"
 
-
-int encode_msg(char* msg, int& status, int len){
-    return 0;
-}
-
-int decode_msg(char* msg, int& status, int len){
-    return 0;
-}
-
 int get_line_b(char* n_line, char* o_line, int start, int len, char b){
     char c;
     for(int i = 0, j = start; i < len, j < len; i++, j++){
@@ -309,46 +300,47 @@ Game::~Game()
     }
 }
 
-vector<Card*>* Game::get_profs(){
+vector<Card*>* Game::get_profs() const{
     return g_profs;
 }
 
-vector<Card*>* Game::get_skills(){
+vector<Card*>* Game::get_skills() const{
     return g_skills;
 }
 
-vector<Card*>* Game::get_emoji(){
+vector<Card*>* Game::get_emoji() const{
     return g_emoji;
 }
 
-vector<Player*>* Game::get_players(){
+vector<Player*>* Game::get_players() const{
     return g_players;
 }
 
-void Game::print_profs(){
+void Game::print_profs() const{
     if(g_profs){
-        for(vector<Card*>::iterator pr = g_profs->begin(); pr != g_profs->end(); pr++){
+        for(vector<Card*>::const_iterator pr = g_profs->begin(); pr != g_profs->end(); pr++){
             cout << **pr;
         }
     }
 }
-void Game::print_skills(){
+void Game::print_skills() const{
     if(g_skills){
-        for(vector<Card*>::iterator sk = g_skills->begin(); sk != g_skills->end(); sk++){
+        for(vector<Card*>::const_iterator sk = g_skills->begin(); sk != g_skills->end(); sk++){
             cout << *sk;
         }
     }
 }
-void Game::print_emoji(){
+void Game::print_emoji() const{
     if(g_emoji){
-        for(vector<Card*>::iterator ej = g_emoji->begin(); ej != g_emoji->end(); ej++){
+        for(vector<Card*>::const_iterator ej = g_emoji->begin(); ej != g_emoji->end(); ej++){
             cout << *ej;
         }
     }
 }
-void Game::print_players(){
+void Game::print_players() const{
     if(g_players){
-        for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        cout << "===ИГРОКИ===" << endl;
+        for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
             cout << *p;
         }
     } 
@@ -435,7 +427,7 @@ void Game::set_player_status(int id, int ns){
 
 int Game::getRnum() const{
     int ready = 0;
-    for(vector<Player*>::iterator it = g_players->begin(); it != g_players->end(); it++){
+    for(vector<Player*>::const_iterator it = g_players->begin(); it != g_players->end(); it++){
         if ((*it)->getStatus() == READY_TO_PLAY){
             ready++;
         }
@@ -449,26 +441,19 @@ bool Game::isGameReady() const{
 }
 
 
-void Game::print_players() const{
-    for(vector<Player*>::iterator it = g_players->begin(); it != g_players->end(); it++){
-        cout << **it << endl;
-    }
-}
-
-
 
 void Game::Endgame() const{
     int max = 0;
     int c_score = 0;
     vector<Player*> winners;
-    for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
+    for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
         cout << (**pl) << endl;
         c_score = (*pl)->getScore();
         if(c_score > max){
             max = c_score;
         }
     }
-    for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
+    for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
         cout << (**pl) << endl;
         if((*pl)->getScore() == max){
             winners.push_back(*pl);
@@ -480,7 +465,7 @@ void Game::Endgame() const{
         cout << "ПОБЕДИТЕЛЬ:" << endl;
     }
     
-    for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
+    for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
         cout << (**pl).get_nick() << endl;
     }
 }

@@ -97,9 +97,6 @@ enum player_status {
     LEFT
 };
 
-
-int encode_msg(char* msg, int& status, int len = BUFF_LEN);
-int decode_msg(char* msg, int& status, int len = BUFF_LEN);
 int get_line_b(char*, char*, int, int, char);
 
 //-------------------------
@@ -160,26 +157,26 @@ class Game
         Game();
         ~Game();
         void game_init();
-        vector<Card*>* get_profs();
-        vector<Card*>* get_skills();
-        vector<Card*>* get_emoji();
-        vector<Player*>* get_players();
-        void print_profs();
-        void print_skills();
-        void print_emoji();
-        void print_players();
+        vector<Card*>* get_profs() const;
+        vector<Card*>* get_skills() const;
+        vector<Card*>* get_emoji() const;
+        vector<Player*>* get_players() const;
+        void print_profs() const;
+        void print_skills() const;
+        void print_emoji() const;
+        void print_players() const;
         int getStatus() const;
-        void setStatus(int ns);
-        void addPlayer(char* nick);
-        void remPlayer(int id);
         int getPnum() const;
         int getRnum() const;
         int get_player_id(char* nick) const;
         string get_player_nick(int id) const;
         int get_player_status(int id) const;
-        void set_player_status(int id, int ns);
         bool isGameReady() const;
-        void print_players() const;
+
+        void set_player_status(int id, int ns);
+        void setStatus(int ns);
+        void addPlayer(char* nick);
+        void remPlayer(int id);
 
         void Endgame() const;
 
