@@ -15,6 +15,9 @@
 using namespace std;
 
 Game* GAME = new Game;
+vector<int>* SUBS = new vector<int>;
+
+void send_to_all(vector<int>*, char*, int);
 
 void player_thread(int socket)
 {
@@ -29,13 +32,6 @@ void player_thread(int socket)
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
         g_status = GAME->getStatus();
-        //----------------------------------
-        if (p_status == PRE_TO_PLAY && g_status == START){
-            send(socket, "Игра начинается!|", BUFF_LEN, 0);
-            p_status = WAITING;
-            continue;
-        }
-        //----------------------------------
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if (rec_l == 0){
             GAME->remPlayer(id);
@@ -75,6 +71,7 @@ void player_thread(int socket)
                 if (GAME->isGameReady()){
                     GAME->setStatus(START);
                     cout << endl << "Игра начинается!\n" << endl;
+                    send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
                 }
             }
             continue;
@@ -130,6 +127,7 @@ int main()
         status = GAME->getStatus();
         if (status == PRE || status == FULL){
             ss_socket = accept(sm_socket, 0, 0);
+            SUBS->push_back(ss_socket);
             thread ct(player_thread, ss_socket);
             ct.detach();
             if (status == PRE && GAME->getPnum() == MAX_P){
@@ -144,4 +142,11 @@ int main()
     }
     close(sm_socket);
     return 0;
+}
+
+
+void send_to_all(vector<int>* s_sockets, char* msg, int mlen){
+    for(vector<int>::iterator it = s_sockets->begin(); it != s_sockets->end(); it++){
+        send(*it, msg, mlen, 0);
+    }
 }
