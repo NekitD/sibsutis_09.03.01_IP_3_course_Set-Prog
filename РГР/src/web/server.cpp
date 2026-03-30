@@ -59,7 +59,7 @@ void player_thread(int socket)
             }
             continue;
         }
-        if(p_status = PRE_TO_PLAY){
+        if(p_status == PRE_TO_PLAY){
             if (g_status == START){
                 send(socket, "Игра начинается!|", BUFF_LEN, 0);
                 p_status = WAITING;
