@@ -13,7 +13,7 @@
 using namespace std;
 
 // Структкра сообщения "output|request|p_status"
-int get_status_from_msg(char* msg, int mlen){
+int get_status_from_msg(char* msg, int mlen, int current){
     char output[mlen] = "";
     int bc = get_line_b(output, msg, 0, mlen, '|');
     bc = get_line_b(output, msg, bc, mlen, '|');
@@ -43,7 +43,7 @@ int get_status_from_msg(char* msg, int mlen){
     if(strncmp(output, "LEFT", 5) == 0){
         return LEFT;
     }
-    return WAIT_ACCEPT;
+    return current;
 }
 
 
@@ -122,7 +122,8 @@ int main()
             cout << " ОШИБКА СЕРВЕРА! (Invalid server socket)" << endl;
             break;
         }
-        status = get_status_from_msg(a_msg, BUFF_LEN);
+        status = get_status_from_msg(a_msg, BUFF_LEN, status);
+        //cout << "СТАТУС (ДЕБАГ) = " << status << endl;
         if(status == WAIT_ACCEPT)
         {
             if (strncmp(a_msg,"FULL",4) == 0)
