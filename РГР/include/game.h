@@ -179,6 +179,7 @@ class Game
         int get_player_status(int id) const;
         void set_player_status(int id, int ns);
         bool isGameReady() const;
+        void print_players() const;
 
         void Endgame() const;
 

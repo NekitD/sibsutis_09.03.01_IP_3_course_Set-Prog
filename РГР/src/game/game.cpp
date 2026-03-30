@@ -32,13 +32,13 @@ Card::~Card(){};
 
 
 ostream& operator<<(ostream& os, const Player& p){
-    os << p.name <<  "(";
+    os << p.id << ") " <<p.name <<  " (";
     for(vector<Card*>::iterator it = p.p_profs->begin(); it != p.p_profs->end(); it++){
         os << (**it) << ", ";
     }
     os << ")" <<":    " << p.score;
     if (p.getStatus() == LEFT){
-        os << "(Вышел)";
+        os << " (Вышел)";
     }
     return os;
 }
@@ -447,6 +447,14 @@ int Game::getRnum() const{
 bool Game::isGameReady() const{
     return ((getPnum() >= MIN_P ) && (getRnum() == getPnum()));
 }
+
+
+void Game::print_players() const{
+    for(vector<Player*>::iterator it = g_players->begin(); it != g_players->end(); it++){
+        cout << **it << endl;
+    }
+}
+
 
 
 void Game::Endgame() const{

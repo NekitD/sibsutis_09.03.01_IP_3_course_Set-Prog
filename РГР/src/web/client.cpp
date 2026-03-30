@@ -123,7 +123,6 @@ int main()
             break;
         }
         status = get_status_from_msg(a_msg, BUFF_LEN, status);
-        //cout << "СТАТУС (ДЕБАГ) = " << status << endl;
         if(status == WAIT_ACCEPT)
         {
             if (strncmp(a_msg,"FULL",4) == 0)

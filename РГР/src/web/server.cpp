@@ -78,9 +78,11 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
-                    GAME->setStatus(START);
                     cout << endl << "Игра начинается!\n" << endl;
                     send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
+                    cout << "Игроки:" << endl;
+                    GAME->print_players();
+                    GAME->setStatus(START);
                 }
             }
             continue;
