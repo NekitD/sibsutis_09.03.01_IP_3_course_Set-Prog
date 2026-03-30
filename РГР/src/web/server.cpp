@@ -65,7 +65,7 @@ void player_thread(int socket)
             break;
         }
         if (rec_l < 0){
-            cout << "Разрыв соединения с игроком" << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
+            cout << "Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             break;
         }
 
@@ -80,8 +80,6 @@ void player_thread(int socket)
                 if (GAME->isGameReady()){
                     cout << endl << "Игра начинается!\n" << endl;
                     send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
-                    cout << "Игроки:" << endl;
-                    GAME->print_players();
                     GAME->setStatus(START);
                 }
             }
@@ -145,6 +143,10 @@ int main()
                 GAME->setStatus(FULL);
             }
             continue;
+        }
+        if(status == START){
+            GAME->print_players();
+            GAME->setStatus(JOB_MAKE);
         }
         if(status == OVER){
             GAME->Endgame();
