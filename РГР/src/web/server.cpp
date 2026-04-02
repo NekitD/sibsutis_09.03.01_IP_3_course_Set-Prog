@@ -138,7 +138,8 @@ int main()
         status = GAME->getStatus();
         if (status == PRE){
             cout << "PNUM = " << GAME->getPnum() << "   MAX_P = " << MAX_P << endl; //ДЕБАГ
-            ss_socket = smart_accept(sm_socket,  GAME->getPnum(), MAX_P); // тут надо будет поменять максимум потом
+            //ss_socket = smart_accept(sm_socket,  GAME->getPnum(), MAX_P); // тут надо будет поменять максимум потом
+            ss_socket = accept(sm_socket, 0, 0);
             cout << ss_socket << endl; // ДЕБАГ
             if (ss_socket < 0){
                 continue;
