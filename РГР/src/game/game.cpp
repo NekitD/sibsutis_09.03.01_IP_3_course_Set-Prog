@@ -106,6 +106,9 @@ void Game::game_init()
         g_emoji = new vector<Card*>;
         g_players = new vector<Player*>;
         g_employ = new Employ_Info;
+
+        random_device rd;
+        mt19937 g(rd());
         //--------------------------------------------------
         g_profs->push_back(new Card("🐟 Рыбак"));
         g_profs->push_back(new Card("🎭 Конферансье"));
@@ -157,6 +160,8 @@ void Game::game_init()
         g_profs->push_back(new Card("⚙️ Инженер"));
         g_profs->push_back(new Card("🍽️ Официант"));
         g_profs->push_back(new Card("💊 Медсестра"));
+
+        shuffle(g_profs->begin(), g_profs->end(), g);
         //--------------------------------------------------
         g_skills->push_back(new Card("У меня острое зрение."));
         g_skills->push_back(new Card("Я быстро печатаю на клавиатуре."));
@@ -228,6 +233,8 @@ void Game::game_init()
         g_skills->push_back(new Card("Я умею отличать съедобные грибы от ядовитых."));
         g_skills->push_back(new Card("Я притягиваю удачу."));
         g_skills->push_back(new Card("Я умею убеждать."));
+
+        shuffle(g_skills->begin(), g_skills->end(), g);
         //--------------------------------------------------
         g_emoji->push_back(new Card("Вы во всём сомневаетесь, даже в собственных способсностях."));
         g_emoji->push_back(new Card("Вам всё лень."));
@@ -279,6 +286,8 @@ void Game::game_init()
         g_emoji->push_back(new Card("Вы льете воду."));
         g_emoji->push_back(new Card("Вы презираете других соискателей."));
         g_emoji->push_back(new Card("Вы хотите много денег."));
+
+        shuffle(g_emoji->begin(), g_emoji->end(), g);
 
         status = PRE;
         employer = 0;

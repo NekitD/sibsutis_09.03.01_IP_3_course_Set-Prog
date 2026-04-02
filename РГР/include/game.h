@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstring>
 #include <unistd.h>
+#include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
