@@ -19,6 +19,8 @@ vector<int>* SUBS = new vector<int>;
 
 void send_to_all(vector<int>*, char*, int);
 
+int smart_accept(int m_sock, int cur, int max);
+
 void player_thread(int socket)
 {
     int id = 0;
@@ -32,16 +34,16 @@ void player_thread(int socket)
         cout << "Неудачная попытка подключения" << endl;
         close(socket);
     }
-    if(g_status == FULL){
-        send(socket, "FULL", BUFF_LEN, 0);
-        close(socket);
-        //terminate();
-    }
-    if(g_status > FULL){
-        send(socket, "ASTARTED", BUFF_LEN, 0);
-        close(socket);
-        //terminate();
-    }
+    // if(g_status == FULL){
+    //     send(socket, "FULL", BUFF_LEN, 0);
+    //     close(socket);
+    //     //terminate();
+    // }
+    // if(g_status > FULL){
+    //     send(socket, "ASTARTED", BUFF_LEN, 0);
+    //     close(socket);
+    //     //terminate();
+    // }
     char nick[BUFF_LEN];
     int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
     get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
@@ -135,13 +137,19 @@ int main()
     {
         status = GAME->getStatus();
         if (status == PRE){
-            ss_socket = accept(sm_socket, 0, 0);
+            cout << "PNUM = " << GAME->getPnum() << "   MAX_P = " << MAX_P << endl; //ДЕБАГ
+            ss_socket = smart_accept(sm_socket,  GAME->getPnum(), MAX_P); // тут надо будет поменять максимум потом
+            cout << ss_socket << endl; // ДЕБАГ
+            if (ss_socket < 0){
+                continue;
+            }
             SUBS->push_back(ss_socket);
             thread ct(player_thread, ss_socket);
             ct.detach();
             if (status == PRE && GAME->getPnum() == MAX_P){
                 GAME->setStatus(FULL);
             }
+            sleep(1);
             continue;
         }
         if(status == START){
@@ -164,4 +172,12 @@ void send_to_all(vector<int>* s_sockets, char* msg, int mlen){
     for(vector<int>::iterator it = s_sockets->begin(); it != s_sockets->end(); it++){
         send(*it, msg, mlen, 0);
     }
+}
+
+int smart_accept(int m_sock, int cur, int max){
+    cout << "CUR = " << cur << "   MAX = " << max << endl; //ДЕБАГ
+    if(cur < max){
+        return accept(m_sock, 0, 0);
+    }
+    return -1;
 }
