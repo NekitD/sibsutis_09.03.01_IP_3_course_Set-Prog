@@ -17,6 +17,7 @@ using namespace std;
 Game* GAME = new Game;
 vector<int>* SUBS = new vector<int>;
 
+void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
 
 void player_thread(int socket)
@@ -24,7 +25,10 @@ void player_thread(int socket)
     int id = 0;
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
-    char request[BUFF_LEN];
+    //--------------------------------
+    char output[BUFF_LEN] = "";
+    char request[BUFF_LEN] = "";
+    //--------------------------------
     int p_status = WAIT_ACCEPT;
     int rec_l = 0;
     int g_status = GAME->getStatus();
@@ -49,6 +53,8 @@ void player_thread(int socket)
     for(;;){
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
+        bzero(output, BUFF_LEN);
+        bzero(request, BUFF_LEN);
         p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
@@ -60,7 +66,7 @@ void player_thread(int socket)
             cout << "Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             break;
         }
-
+        ser_decode_msg(a_msg, BUFF_LEN, output, request);
         if(p_status == PRE_TO_PLAY){
             strncpy(request, a_msg, 12);
             if(strncmp(request, "readytoplay", 12) == 0){
@@ -172,4 +178,10 @@ void send_to_all(vector<int>* s_sockets, char* msg, int mlen){
     for(vector<int>::iterator it = s_sockets->begin(); it != s_sockets->end(); it++){
         send(*it, msg, mlen, 0);
     }
+}
+
+// Структкра сообщения (клиент -> сервер) "output|request"
+void ser_decode_msg(char* msg, int mlen, char* output, char* request){
+    int bc = get_line_b(output, msg, 0, mlen, '|');
+    bc = get_line_b(request, msg, bc, mlen, ' ');
 }

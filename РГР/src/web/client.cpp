@@ -12,39 +12,7 @@
 
 using namespace std;
 
-// Структкра сообщения "output|request|p_status"
-int get_status_from_msg(char* msg, int mlen, int current){
-    char output[mlen] = "";
-    int bc = get_line_b(output, msg, 0, mlen, '|');
-    bc = get_line_b(output, msg, bc, mlen, '|');
-    bzero(output, BUFF_LEN);
-    bc = get_line_b(output, msg, bc, mlen, ' ');
-    if (strncmp(output, "WAIT_ACCEPT", 12) == 0){
-        return WAIT_ACCEPT;
-    }
-    if (strncmp(output, "PRE_TO_PLAY", 12) == 0){
-        return PRE_TO_PLAY;
-    }
-    if(strncmp(output, "READY_TO_PLAY", 14) == 0){
-        return READY_TO_PLAY;
-    }
-    if(strncmp(output, "WAITING", 8) == 0){
-        return WAITING;
-    }
-    if(strncmp(output, "EMPLOYER", 9) == 0){
-        return EMPLOYER;
-    }
-    if(strncmp(output, "ANSWERING", 10) == 0){
-        return ANSWERING;
-    }
-    if(strncmp(output, "QUESTIONING", 12) == 0){
-        return QUESTIONING;
-    }
-    if(strncmp(output, "LEFT", 5) == 0){
-        return LEFT;
-    }
-    return current;
-}
+void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 
 
 int main()
@@ -104,13 +72,16 @@ int main()
         return -1;
     }
 
-    int status = WAIT_ACCEPT;
     int rec = 0;
     char output[BUFF_LEN] = "";
+    char request[BUFF_LEN] = "";
+    int status = WAIT_ACCEPT;
     //---------------------------------------------------------------------
     for(;;){
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
+        bzero(output, BUFF_LEN);
+        bzero(request, BUFF_LEN);
         rec = recv(c_sock, a_msg, BUFF_LEN, 0);
         if (rec == 0)
         { 
@@ -122,19 +93,10 @@ int main()
             cout << " ОШИБКА СЕРВЕРА! (Invalid server socket)" << endl;
             break;
         }
-        status = get_status_from_msg(a_msg, BUFF_LEN, status);
+        cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
         if(status == WAIT_ACCEPT)
         {
-            if (strncmp(a_msg,"FULL",4) == 0)
-            { 
-                cout << "В этой игре больше нет свободных мест." << endl;
-                goto searchgame;
-            }
-            if (strncmp(a_msg,"ASTARTED",9) == 0)
-            { 
-                cout << "Эта игра уже началась." << endl;
-                goto searchgame;
-            }
+            // Надо добавить таймаут и возвращение к поиску игры.
             //continue;
         }
         if(status == PRE_TO_PLAY){
@@ -148,7 +110,7 @@ int main()
             if (a == 'q' || a == 'Q'){
                 break;
             }
-            if(send(c_sock, "readytoplay", BUFF_LEN, 0) < 0){
+            if(send(c_sock, "|readytoplay|", BUFF_LEN, 0) < 0){
                 cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
                 cout << "Ожидание других игроков..." << endl;
@@ -157,7 +119,6 @@ int main()
             //continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
-            int eoc = get_line_b(output, a_msg, 0, BUFF_LEN, '|');
             if (output[0]){
                 cout << output << endl;
             }
@@ -166,4 +127,37 @@ int main()
     }
     close(c_sock);
     return 0;
+}
+
+
+// Структкра сообщения (сервер -> клиент) "output|request|p_status"
+void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status){
+    int bc = get_line_b(output, msg, 0, mlen, '|');
+    bc = get_line_b(request, msg, bc, mlen, '|');
+    char pstat[mlen] = "";
+    bc = get_line_b(pstat, msg, bc, mlen, ' ');
+    if (strncmp(pstat, "WAIT_ACCEPT", 12) == 0){
+        status = WAIT_ACCEPT;
+    }
+    if (strncmp(pstat, "PRE_TO_PLAY", 12) == 0){
+        status = PRE_TO_PLAY;
+    }
+    if(strncmp(pstat, "READY_TO_PLAY", 14) == 0){
+        status = READY_TO_PLAY;
+    }
+    if(strncmp(pstat, "WAITING", 8) == 0){
+        status = WAITING;
+    }
+    if(strncmp(pstat, "EMPLOYER", 9) == 0){
+        status = EMPLOYER;
+    }
+    if(strncmp(pstat, "ANSWERING", 10) == 0){
+        status = ANSWERING;
+    }
+    if(strncmp(pstat, "QUESTIONING", 12) == 0){
+        status = QUESTIONING;
+    }
+    if(strncmp(pstat, "LEFT", 5) == 0){
+        status = LEFT;
+    }
 }
