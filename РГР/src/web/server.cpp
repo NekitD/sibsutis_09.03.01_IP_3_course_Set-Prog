@@ -19,8 +19,6 @@ vector<int>* SUBS = new vector<int>;
 
 void send_to_all(vector<int>*, char*, int);
 
-int smart_accept(int m_sock, int cur, int max);
-
 void player_thread(int socket)
 {
     int id = 0;
@@ -38,7 +36,7 @@ void player_thread(int socket)
     int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
     get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
     if (strncmp(request, "join", 4) == 0){
-        GAME->addPlayer(nick);
+        GAME->addPlayer(nick, socket);
         id = GAME->get_player_id(nick);
         if(id < 0){
             cout << "ОШИБКА ID." << endl;
@@ -79,6 +77,19 @@ void player_thread(int socket)
         }
         if (p_status == WAITING){
             continue;
+        }
+        if(p_status == EMPLOYER){
+            strcat(s_msg, "Вы - работодатель!\n");
+            strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
+            vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
+            for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
+                strcat(s_msg, (*pr)->get_text().c_str());
+                strcat(s_msg, "\n");
+            }
+            strcat(s_msg, "Придумате историю Вашей компании!"); 
+            strcat(s_msg, "|givehist");
+            strcat(s_msg, "|READY_TO_PLAY");
+            send(socket, s_msg, BUFF_LEN, 0);
         }
     }
     close(socket);
@@ -138,6 +149,13 @@ int main()
             cout << endl << "Игра начинается!\n" << endl;
             send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
             GAME->print_players();
+            int emp = GAME->getEmployerId();
+            cout << "==============================================================" << endl;
+            cout << "Раунд " << GAME->getEmployer() + 1 << ":" << endl;
+            cout << "==============================================================" << endl;
+            cout << "Работодатель: " << GAME->get_player_nick(emp) << endl;
+            cout << "Работодатель придумывает историю своей компании..." << endl;
+            GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
         }
         if(status == OVER){

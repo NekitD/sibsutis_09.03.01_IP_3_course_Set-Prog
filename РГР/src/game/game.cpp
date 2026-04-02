@@ -21,6 +21,10 @@ ostream& operator<<(ostream& os, const Card& c){
 Card::Card(string _text_1): text(_text_1){}
 Card::~Card(){};
 
+string Card::get_text() const{
+    return text;
+}
+
 
 ostream& operator<<(ostream& os, const Player& p){
     os << p.name <<  " (";
@@ -277,6 +281,7 @@ void Game::game_init()
         g_emoji->push_back(new Card("Вы хотите много денег."));
 
         status = PRE;
+        employer = 0;
 }
 
 Game::~Game()
@@ -357,8 +362,8 @@ void Game::setStatus(int ns){
     status = ns;
 }
 
-void Game::addPlayer(char* nick){
-    Player* p = new Player(nick, p_num + 1);
+void Game::addPlayer(char* nick, int id){
+    Player* p = new Player(nick, id);
     g_players->push_back(p);
     p_num = getPnum();
     cout << nick << " присоединился к игре!" << endl;
@@ -444,6 +449,29 @@ bool Game::isGameReady() const{
 }
 
 
+Player* Game::getPlayer(int id) const{
+    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        if((*p)->get_id() == id){
+            return *p;
+        }
+    }
+}
+int Game::getEmployerId() const{
+    return g_players->at(employer)->get_id();
+}
+
+int Game::getEmployer() const{
+    return employer;
+}
+
+void Game::setEmployer(int ne){
+    employer = ne;
+}
+
+Employ_Info* Game::EmployInfo(){
+    return g_employ;
+}
+
 
 void Game::Endgame() const{
     int max = 0;
@@ -471,4 +499,8 @@ void Game::Endgame() const{
     for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
         cout << (**pl).get_nick() << endl;
     }
+}
+
+vector<Card*>* Employ_Info::getProfs() const{
+    return e_profs;
 }

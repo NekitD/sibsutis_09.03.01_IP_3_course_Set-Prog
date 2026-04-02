@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define BUFF_LEN 128
+#define BUFF_LEN 320
 #define MIN_P 3
 #define MAX_P 3
 
@@ -107,6 +107,7 @@ class Card
     public: 
         Card(string _text_1);
         ~Card();
+        string get_text() const;
     private:
         string text;
 };
@@ -114,6 +115,8 @@ class Card
 
 class Employ_Info
 {
+    public:
+        vector<Card*>* getProfs() const;
     private:
         vector<Card*>* e_profs;
         string manual;
@@ -175,8 +178,15 @@ class Game
 
         void set_player_status(int id, int ns);
         void setStatus(int ns);
-        void addPlayer(char* nick);
+        void addPlayer(char* nick, int id);
         void remPlayer(int id);
+
+        Player* getPlayer(int id) const;
+        int getEmployerId() const;
+        void setEmployer(int ne);
+        int getEmployer() const;
+
+        Employ_Info* EmployInfo();
 
         void Endgame() const;
 
@@ -188,5 +198,6 @@ class Game
         vector<Player*>* g_players;
         Employ_Info* g_employ;
         int status = PRE;
+        int employer;
 };
 
