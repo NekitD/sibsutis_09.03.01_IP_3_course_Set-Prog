@@ -141,13 +141,12 @@ int main()
             char a;
             cout << "Вы успешно присоединились к игре!" << endl;
             cout << "Готовы начать игру?" << endl;
-            cout << "Введите Y(Готов)/q(Выйти): ";
-            cin >> a;
+            do{
+                cout << "Введите Y(Готов)/q(Выйти): ";
+                cin >> a;
+            } while (a != 'y' && a != 'Y' && a != 'q' && a != 'Q');
             if (a == 'q' || a == 'Q'){
                 break;
-            }
-            if (a != 'y' && a != 'Y'){
-                continue;
             }
             if(send(c_sock, "readytoplay", BUFF_LEN, 0) < 0){
                 cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
