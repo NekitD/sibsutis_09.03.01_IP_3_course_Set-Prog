@@ -137,7 +137,7 @@ int main()
     for(;;)
     {
         status = GAME->getStatus();
-        if (status == PRE || status == FULL){
+        if (status == PRE){
             ss_socket = accept(sm_socket, 0, 0);
             SUBS->push_back(ss_socket);
             thread ct(player_thread, ss_socket);
