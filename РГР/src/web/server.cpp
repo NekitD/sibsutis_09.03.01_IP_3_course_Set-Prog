@@ -68,12 +68,10 @@ void player_thread(int socket)
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
         if(p_status == PRE_TO_PLAY){
-            strncpy(request, a_msg, 12);
             if(strncmp(request, "readytoplay", 12) == 0){
                 cout << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
-                strcat(s_msg, "||READY_TO_PLAY");
-                send(socket, s_msg, BUFF_LEN, 0);
+                send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
                 cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
                     GAME->setStatus(START);
@@ -94,7 +92,7 @@ void player_thread(int socket)
             }
             strcat(s_msg, "Придумате историю Вашей компании!"); 
             strcat(s_msg, "|givehist");
-            strcat(s_msg, "|READY_TO_PLAY");
+            strcat(s_msg, "|EMPLOYER");
             send(socket, s_msg, BUFF_LEN, 0);
         }
     }

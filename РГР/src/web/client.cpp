@@ -110,7 +110,7 @@ int main()
             if (a == 'q' || a == 'Q'){
                 break;
             }
-            if(send(c_sock, "|readytoplay|", BUFF_LEN, 0) < 0){
+            if(send(c_sock, "|readytoplay", BUFF_LEN, 0) < 0){
                 cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
                 cout << "Ожидание других игроков..." << endl;
