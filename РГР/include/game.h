@@ -9,7 +9,7 @@ using namespace std;
 
 #define BUFF_LEN 128
 #define MIN_P 3
-#define MAX_P 6
+#define MAX_P 3
 
 enum prof_id {
     fisher = 0,

@@ -80,9 +80,6 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
-                    cout << endl << "Игра начинается!\n" << endl;
-                    send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
-                    GAME->print_players();
                     GAME->setStatus(START);
                 }
             }
@@ -146,6 +143,12 @@ int main()
                 GAME->setStatus(FULL);
             }
             continue;
+        }
+        if(status == START){
+            cout << endl << "Игра начинается!\n" << endl;
+            send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
+            GAME->print_players();
+            GAME->setStatus(JOB_MAKE);
         }
         if(status == OVER){
             GAME->Endgame();
