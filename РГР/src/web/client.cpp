@@ -124,6 +124,17 @@ int main()
             }
             //continue;
         }
+        if(status == EMPLOYER){
+            if(strncmp(request, "givehist", 9) == 0){
+                string manual;
+                cout << endl;
+                cout << output << endl;
+                cin >> manual;
+                strcat(s_msg, manual.c_str());
+                strcat(s_msg, "|sendhist");
+                send(c_sock, s_msg, BUFF_LEN, 0);
+            }
+        }
     }
     close(c_sock);
     return 0;
