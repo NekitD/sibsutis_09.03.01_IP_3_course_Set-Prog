@@ -205,6 +205,17 @@ void player_thread(int socket)
                 continue;
             }
 
+            if(strncmp(request, "aquest", 7) == 0){
+                cout <<  GAME->get_player_nick(id) << ": " << output << endl;
+            }
+            cout << endl;
+            
+            string qu = *(GAME->get_questions()->begin());
+            cout << qu << endl;
+            strcat(s_msg, qu.c_str());
+            strcat(s_msg, "|quest|ANSWERING");
+            GAME->rem_question();
+            send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
     }
@@ -275,6 +286,10 @@ int main()
         if (status == P_PRE){
             GAME->set_answering_num(1);
             GAME->set_player_status(GAME->get_answering_id(), ANSWERING);
+        }
+        if(status == P_OPEN){
+            GAME->open_p(GAME->get_answering_id());
+            GAME->setStatus(SCORES);
         }
         if(status == OVER){
             GAME->Endgame();

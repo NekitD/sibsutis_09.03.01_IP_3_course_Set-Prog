@@ -174,6 +174,19 @@ int main()
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
+
+            if(strncmp(request, "quest", 6) == 0){
+                cout << "Вопрос." << endl;
+                cout << output << endl;
+                cout << endl;
+                cout << "Введите ваш ответ." << endl;
+                string answ;
+                cli_input(answ);
+                strcat(s_msg, answ.c_str());
+                strcat(s_msg, "|aquest");
+                send(c_sock, s_msg, BUFF_LEN, 0);
+                continue;
+            }
             continue;
         }
 
