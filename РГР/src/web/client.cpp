@@ -178,6 +178,9 @@ int main()
         }
 
         if(status == QUESTIONING){
+            if(strncmp(request, "gquest", 7) == 0){
+                cout << "Ваш вопрос отправлен и дойдёт до адресата в порядке очереди." << endl;
+            }
             char h = ' ';
             do{
                 cout << "Есть ли у Вас вопросы к соискателю? (Y/n): ";

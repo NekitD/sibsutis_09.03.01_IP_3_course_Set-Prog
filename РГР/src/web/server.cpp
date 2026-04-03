@@ -193,14 +193,18 @@ void player_thread(int socket)
                     }
                     continue;
                 }
+
+                strcat(s_msg, GAME->get_player_nick(id).c_str());
                 if(strncmp(request, "quest", 6) == 0){
                     GAME->add_question((string)output);
+                    strcat(s_msg, ": |gquest|QUESTIONING");
+                }else{
+                    strcat(s_msg, ": ||QUESTIONING");
                 }
-                strcat(s_msg, GAME->get_player_nick(id).c_str());
-                strcat(s_msg, ": ||QUESTIONING");
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
+
             continue;
         }
     }
