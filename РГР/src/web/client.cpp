@@ -143,6 +143,7 @@ int main()
 
         if(status == ANSWERING){
             if(strncmp(request, "areanswerm", 11) == 0){
+                cout << output << endl;
                 int v = 0;
                 char r = ' ';
                 do{

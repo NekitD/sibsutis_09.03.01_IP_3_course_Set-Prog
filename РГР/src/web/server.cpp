@@ -135,7 +135,20 @@ void player_thread(int socket)
 
         if(g_status == P_MAKE){
             if (p_status == ANSWERING){
-                if(strncmp(request, "sendanswer", 14) != 0){ 
+                if(strncmp(request, "sendanswer", 14) != 0){
+                    GAME->PassCards(GAME->get_skills(), GAME->getPlayer(id)->getSkills(), EMPLOYER_PROFS_NUM);
+                    GAME->PassCards(GAME->get_emoji(), GAME->getPlayer(id)->getEmoji(), 0);
+                    vector<Card*>* p_profs = GAME->getPlayer(id)->getSkills();
+                    Card* emo = GAME->getPlayer(id)->getEmoji();
+                    strcat(s_msg, " Эмоция: ");
+                    strcat(s_msg, emo->get_text().c_str());
+                    strcat(s_msg, "\n");
+                    strcat(s_msg, " Навыки:");
+                    for(vector<Card*>::const_iterator pr = p_profs->begin(); pr != p_profs->end(); pr++){
+                        strcat(s_msg, " - ");
+                        strcat(s_msg, (*pr)->get_text().c_str());
+                        strcat(s_msg, "\n");
+                    } 
                     strcat(s_msg, "|giveanswerm");
                     strcat(s_msg, "|ANSWERING");
                     cout << "Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;

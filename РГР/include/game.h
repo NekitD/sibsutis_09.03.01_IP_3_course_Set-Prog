@@ -152,6 +152,9 @@ class Player
         int getStatus() const;
         int getScore() const;
 
+        vector<Card*>* getSkills() const;
+        Card* getEmoji() const;
+
     private:
         int id;
         string name;
@@ -197,6 +200,7 @@ class Game
         Employ_Info* EmployInfo();
         void ShuffleCards(vector<Card*>* cards);
         void PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards);
+        void PassCards(vector<Card*>* giver, Card* accepter, int card_id);
 
         void set_answering_num(int na);
         int get_answering_id() const;

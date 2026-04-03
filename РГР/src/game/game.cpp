@@ -93,6 +93,16 @@ int Player::getScore() const{
     return score;
 }
 
+
+vector<Card*>* Player::getSkills() const{
+    return p_skills;
+}
+
+Card* Player::getEmoji() const{
+    return p_emoji;
+}
+
+
 Game::Game()
 {
     game_init();
@@ -479,6 +489,11 @@ void Game::PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards)
         giver->erase(giver->begin());
         accepter->push_back(card);
     }
+}
+
+void Game::PassCards(vector<Card*>* giver, Card* accepter, int card_id){
+    accepter = giver->at(card_id);
+    giver->erase(find(giver->begin(), giver->end(), giver->at(card_id)));
 }
 
 void Game::ShuffleCards(vector<Card*>* cards){
