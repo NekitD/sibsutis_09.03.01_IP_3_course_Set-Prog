@@ -128,7 +128,23 @@ int main()
                 string manual;
                 cout << endl;
                 cout << output << endl;
-                cin >> manual;
+                cout << "(для завершения введите пустую строку или 'END'):\n" << endl;
+        
+                cin.ignore();
+        
+                string line;
+                while (true) {
+                    getline(cin, line);
+                    if (line.empty() || line == "END") {
+                        break;
+                    }
+                    manual += line + "\n";
+                }
+        
+                if (!manual.empty() && manual.back() == '\n') {
+                    manual.pop_back();
+                }
+        
                 strcat(s_msg, manual.c_str());
                 strcat(s_msg, "|sendhist");
                 send(c_sock, s_msg, BUFF_LEN, 0);
