@@ -36,12 +36,10 @@ void player_thread(int socket)
         cout << "Неудачная попытка подключения" << endl;
         close(socket);
     }
-    char nick[BUFF_LEN];
-    int eon = get_line_b(nick, a_msg, 0, BUFF_LEN, '|');
-    get_line_b(request, a_msg, eon, BUFF_LEN, ' ');
+    ser_decode_msg(a_msg, BUFF_LEN, output, request);
     if (strncmp(request, "join", 4) == 0){
-        GAME->addPlayer(nick, socket);
-        id = GAME->get_player_id(nick);
+        GAME->addPlayer(output, socket);
+        id = GAME->get_player_id(output);
         if(id < 0){
             cout << "ОШИБКА ID." << endl;
             close(socket);
@@ -199,6 +197,8 @@ void send_to_all(vector<int>* s_sockets, char* msg, int mlen){
 
 // Структкра сообщения (клиент -> сервер) "output|request"
 void ser_decode_msg(char* msg, int mlen, char* output, char* request){
+    bzero(output, mlen);
+    bzero(request, mlen);
     int bc = get_line_b(output, msg, 0, mlen, '|');
     bc = get_line_b(request, msg, bc, mlen, ' ');
 }

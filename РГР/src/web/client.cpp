@@ -158,6 +158,8 @@ int main()
 
 // Структкра сообщения (сервер -> клиент) "output|request|p_status"
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status){
+    bzero(output, mlen);
+    bzero(request, mlen);
     int bc = get_line_b(output, msg, 0, mlen, '|');
     bc = get_line_b(request, msg, bc, mlen, '|');
     char pstat[mlen] = "";
