@@ -140,6 +140,33 @@ int main()
             }
             continue;
         }
+
+        if(status == ANSWERING){
+            if(strncmp(request, "areanswerm", 11) == 0){
+                int v = 0;
+                char r = ' ';
+                do{
+                    cout << "   Введите номер вакансии, на которую вы претендуете (1 - 3)." << endl;
+                    cin >> v;
+                } while(v != 1 && v != 2 && v != 3);
+                do{
+                    cout << "   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании." << endl;
+                    cin >> r;
+                } while(r != 'Y' && r != 'y');
+                send(c_sock, "readytoanswer", BUFF_LEN, 0);
+                continue;
+            }
+            if(strncmp(request, "giveanswerm", 11) == 0){
+                string resume;
+                cout << " Минута пошла! Удачи!" << endl;
+                cli_input(resume);
+                strcat(s_msg, resume.c_str());
+                strcat(s_msg, "|sendanswer");
+                send(c_sock, s_msg, BUFF_LEN, 0);
+                continue;
+            }
+            continue;
+        }
     }
     close(c_sock);
     return 0;

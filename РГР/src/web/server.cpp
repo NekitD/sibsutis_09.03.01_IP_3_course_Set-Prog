@@ -117,6 +117,40 @@ void player_thread(int socket)
             }
             continue;
         }
+
+        if(g_status == P_PRE){
+            if (p_status == ANSWERING){
+                if(strncmp(request, "readytoanswer", 14) != 0){ 
+                    strcat(s_msg, "|areanswerm");
+                    strcat(s_msg, "|ANSWERING");
+                    cout << "Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
+                    send(socket, s_msg, BUFF_LEN, 0);
+                    continue;
+                }
+                GAME->setStatus(P_MAKE);
+                continue;
+            }
+            continue;
+        }
+
+        if(g_status == P_MAKE){
+            if (p_status == ANSWERING){
+                if(strncmp(request, "sendanswer", 14) != 0){ 
+                    strcat(s_msg, "|giveanswerm");
+                    strcat(s_msg, "|ANSWERING");
+                    cout << "Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
+                    send(socket, s_msg, BUFF_LEN, 0);
+                    continue;
+                }
+                cout << GAME->get_player_nick(id) << ":" << endl;
+                cout << output << endl;
+                cout << endl;
+                cout << "Время для вопросов." << endl;
+                GAME->setStatus(QUESTIONS);
+                continue;
+            }
+            continue;
+        }
     }
     close(socket);
 }
@@ -181,6 +215,10 @@ int main()
             cout << "Работодатель придумывает историю своей компании..." << endl;
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
+        }
+        if (status == P_PRE){
+            GAME->set_answering_num(1);
+            GAME->set_player_status(GAME->get_answering_id(), ANSWERING);
         }
         if(status == OVER){
             GAME->Endgame();
