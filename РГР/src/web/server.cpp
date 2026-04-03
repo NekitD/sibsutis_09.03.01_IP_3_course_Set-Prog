@@ -177,7 +177,6 @@ int main()
             cout << "Работодатель придумывает историю своей компании..." << endl;
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
-            //send_to_all(SUBS, "|update|", BUFF_LEN);
         }
         if(status == OVER){
             GAME->Endgame();

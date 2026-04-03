@@ -131,10 +131,15 @@ int main()
                 cout << "(для завершения введите пустую строку или 'END'):\n" << endl;
         
                 cin.ignore();
-        
+                int max_len = BUFF_LEN - 300;
                 string line;
                 while (true) {
+                    cout << "(" << manual.size() << "/" << max_len << "):";
                     getline(cin, line);
+                    if(manual.size() + line.size() > max_len){
+                        cout << "Не хватает места!" << endl;
+                        continue;
+                    }
                     if (line.empty() || line == "END") {
                         break;
                     }
