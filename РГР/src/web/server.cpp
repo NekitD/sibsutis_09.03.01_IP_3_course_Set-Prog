@@ -58,6 +58,8 @@ void player_thread(int socket)
         p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
+        //cout << "Debug: "<< GAME->get_player_nick(id) << " status: " << p_status << endl;
+        //cout << "Debug: Game status: " << g_status << endl;
         if (rec_l == 0){
             GAME->remPlayer(id);
             break;
@@ -67,6 +69,7 @@ void player_thread(int socket)
             break;
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
+
         if(p_status == PRE_TO_PLAY){
             if(strncmp(request, "readytoplay", 12) == 0){
                 cout << GAME->get_player_nick(id) << " готов играть!" << endl;
@@ -79,11 +82,15 @@ void player_thread(int socket)
             }
             continue;
         }
-        if (p_status == WAITING){
-            continue;
+
+        if(p_status == WAITING || p_status == READY_TO_PLAY){
+            send(socket, " ", 1, 0);
         }
+
         if(p_status == EMPLOYER){
+            cout << "EMP COND:" << endl;
             if(g_status == JOB_MAKE){
+                cout << "DEBUG REQ SEND:" << endl;
                 if(strncmp(request, "sendhist", 9) != 0){
                     strcat(s_msg, "Вы - работодатель!\n");
                     strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
@@ -104,7 +111,9 @@ void player_thread(int socket)
                 cout << GAME->EmployInfo()->getManual() << endl;
                 GAME->setStatus(P_PRE);
             }
+            continue;
         }
+        //sleep(1);
     }
     close(socket);
 }
@@ -171,6 +180,7 @@ int main()
             cout << "Работодатель придумывает историю своей компании..." << endl;
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
+            //send_to_all(SUBS, "|update|", BUFF_LEN);
         }
         if(status == OVER){
             GAME->Endgame();

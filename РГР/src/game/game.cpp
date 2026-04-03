@@ -354,6 +354,7 @@ void Game::print_players() const{
         for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
             cout << **p << endl;
         }
+        cout << "==================" << endl;
     }
 }
 
