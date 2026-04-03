@@ -208,6 +208,9 @@ class Game
         void set_answering_num(int na);
         int get_answering_id() const;
 
+        vector<string>* get_questions() const;
+        void add_question(string q);
+        bool no_questions() const;
         void Endgame() const;
 
     private:
@@ -220,5 +223,6 @@ class Game
         int status = PRE;
         int employer;
         int answering_num;
+        vector<string>* g_questions;
 };
 

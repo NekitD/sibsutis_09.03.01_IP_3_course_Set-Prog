@@ -176,6 +176,24 @@ int main()
             }
             continue;
         }
+
+        if(status == QUESTIONING){
+            char h = ' ';
+            do{
+                cout << "Есть ли у Вас вопросы к соискателю? (Y/n): ";
+            } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
+            if(h == 'N' || h == 'n'){
+                send(c_sock, "|noquest", BUFF_LEN, 0);
+                continue;
+            }
+            string question;
+            cout << "Напишите Ваш вопрос." << endl;
+            cli_input(question);
+            strcat(s_msg, output);
+            strcat(s_msg, question.c_str());
+            strcat(s_msg, "|quest");
+            send(c_sock, s_msg, BUFF_LEN, 0);
+        }
     }
     close(c_sock);
     return 0;

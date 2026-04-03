@@ -182,6 +182,27 @@ void player_thread(int socket)
             sleep(1);
             continue;
         }
+
+        if(g_status == QUESTIONS){
+            if(id != GAME->get_answering_id()){
+                if(strncmp(request, "noquest", 8) == 0){
+                    cout << GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
+                    GAME->set_player_status(id, WAITING);
+                    if(GAME->no_questions()){
+                        GAME->setStatus(P_OPEN);
+                    }
+                    continue;
+                }
+                if(strncmp(request, "quest", 6) == 0){
+                    GAME->add_question((string)output);
+                }
+                strcat(s_msg, GAME->get_player_nick(id).c_str());
+                strcat(s_msg, ": ||QUESTIONING");
+                send(socket, s_msg, BUFF_LEN, 0);
+                continue;
+            }
+            continue;
+        }
     }
     close(socket);
 }

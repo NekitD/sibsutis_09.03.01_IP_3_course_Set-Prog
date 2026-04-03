@@ -124,6 +124,7 @@ void Game::game_init()
         g_emoji = new vector<Card*>;
         g_players = new vector<Player*>;
         g_employ = new Employ_Info;
+        g_questions = new vector<string>;
         //--------------------------------------------------
         g_profs->push_back(new Card("🐟 Рыбак"));
         g_profs->push_back(new Card("🎭 Конферансье"));
@@ -528,6 +529,27 @@ int Game::get_answering_id() const{
     }
     return g_players->at(getEmployer() + answering_num)->get_id();
 }
+
+vector<string>* Game::get_questions() const{
+    return g_questions;
+}
+
+void Game::add_question(string q){
+    g_questions->push_back(q);
+}
+
+bool Game::no_questions() const{
+    if(status != QUESTIONS){
+        return true;
+    }
+    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        if((*p)->getStatus() == QUESTIONING){
+            return false;
+        }
+    }
+    return true;
+}
+
 
 void Game::Endgame() const{
     int max = 0;
