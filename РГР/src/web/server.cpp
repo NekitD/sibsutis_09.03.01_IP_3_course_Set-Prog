@@ -86,6 +86,7 @@ void player_thread(int socket)
             if(strncmp(request, "sendhist", 9) != 0){
                 strcat(s_msg, "Вы - работодатель!\n");
                 strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
+                GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
                 vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
                 for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
                     strcat(s_msg, (*pr)->get_text().c_str());
@@ -97,6 +98,7 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
+            GAME->EmployInfo()->setManual(output);
             GAME->setStatus(P_PRE);
         }
     }

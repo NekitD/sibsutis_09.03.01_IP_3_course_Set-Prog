@@ -12,6 +12,7 @@ using namespace std;
 #define BUFF_LEN 320
 #define MIN_P 3
 #define MAX_P 3
+#define EMPLOYER_PROFS_NUM 3
 
 enum prof_id {
     fisher = 0,
@@ -119,6 +120,8 @@ class Employ_Info
 {
     public:
         vector<Card*>* getProfs() const;
+        string getManual() const;
+        void setManual(string n_man);
     private:
         vector<Card*>* e_profs;
         string manual;
@@ -189,6 +192,8 @@ class Game
         int getEmployer() const;
 
         Employ_Info* EmployInfo();
+        void ShuffleCards(vector<Card*>* cards);
+        void PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards);
 
         void Endgame() const;
 
