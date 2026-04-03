@@ -118,11 +118,12 @@ int main()
                 cout << "Ожидание других игроков..." << endl;
                 bzero(a_msg, BUFF_LEN);
             }
-            //continue;
+            continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
             send(c_sock, " ", 1, 0);
-            //continue;
+            sleep(1);
+            continue;
         }
         if(status == EMPLOYER){
             if(strncmp(request, "givehist", 9) == 0){
@@ -135,7 +136,9 @@ int main()
                 strcat(s_msg, manual.c_str());
                 strcat(s_msg, "|sendhist");
                 send(c_sock, s_msg, BUFF_LEN, 0);
+                continue;
             }
+            continue;
         }
     }
     close(c_sock);

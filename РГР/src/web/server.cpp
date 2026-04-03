@@ -83,6 +83,7 @@ void player_thread(int socket)
 
         if(p_status == WAITING || p_status == READY_TO_PLAY){
             send(socket, " ", 1, 0);
+            continue;
         }
 
         if(p_status == EMPLOYER){
@@ -108,9 +109,10 @@ void player_thread(int socket)
                 cout << GAME->EmployInfo()->getManual() << endl;
                 GAME->EmployInfo()->print_profs();
                 cout << endl;
-                send(socket, "||WAITING", 1, 0);
+                send(socket, "||WAITING", BUFF_LEN, 0);
                 GAME->set_player_status(id, WAITING);
                 GAME->setStatus(P_PRE);
+                sleep(1);
                 continue;
             }
             continue;

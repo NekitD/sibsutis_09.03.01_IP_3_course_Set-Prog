@@ -545,11 +545,11 @@ void Employ_Info::setManual(string n_man){
 void Employ_Info::print_profs() const{
     if(e_profs){
         cout << "-------------------" << endl;
-        cout << "Вакансии:" << endl;
+        cout << " Вакансии:" << endl;
         cout << "-------------------" << endl;
         int i = 1;
         for(vector<Card*>::const_iterator pr = e_profs->begin(); pr != e_profs->end(); pr++){
-            cout << i << ") " << **pr << endl;
+            cout << " " << i << ") " << **pr << endl;
             i++;
         }
         cout << "-------------------" << endl;
