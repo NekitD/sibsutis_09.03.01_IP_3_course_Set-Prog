@@ -76,6 +76,8 @@ void player_thread(int socket)
                 cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
                     GAME->setStatus(START);
+                    cout << endl << "Игра начинается!\n" << endl;
+                    send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
                 }
             }
             continue;
@@ -107,6 +109,7 @@ void player_thread(int socket)
                 cout << "История:" << endl;
                 cout << GAME->EmployInfo()->getManual() << endl;
                 GAME->setStatus(P_PRE);
+                continue;
             }
             continue;
         }
@@ -165,8 +168,6 @@ int main()
             continue;
         }
         if(status == START){
-            cout << endl << "Игра начинается!\n" << endl;
-            send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
             GAME->print_players();
             int emp = GAME->getEmployerId();
             cout << "==============================================================" << endl;
