@@ -472,11 +472,6 @@ void Game::setEmployer(int ne){
     employer = ne;
 }
 
-Employ_Info* Game::EmployInfo(){
-    return g_employ;
-}
-
-
 void Game::PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards){
     Card* card;
     for(int i = 0; i < n_cards; i++){
@@ -520,6 +515,17 @@ void Game::Endgame() const{
     }
 }
 
+
+Employ_Info::Employ_Info(){
+    e_profs = new vector<Card*>;
+}
+
+Employ_Info::~Employ_Info(){
+    e_profs->clear();
+    delete e_profs;
+}
+
+
 vector<Card*>* Employ_Info::getProfs() const{
     return e_profs;
 }
@@ -530,6 +536,10 @@ string Employ_Info::getManual() const{
 
 void Employ_Info::setManual(string n_man){
     manual = n_man;
+}
+
+Employ_Info* Game::EmployInfo(){
+    return g_employ;
 }
 
 

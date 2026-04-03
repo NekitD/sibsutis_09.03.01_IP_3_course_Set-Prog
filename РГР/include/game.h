@@ -119,6 +119,8 @@ class Card
 class Employ_Info
 {
     public:
+        Employ_Info();
+        ~Employ_Info();
         vector<Card*>* getProfs() const;
         string getManual() const;
         void setManual(string n_man);
