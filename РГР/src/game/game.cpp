@@ -42,7 +42,15 @@ ostream& operator<<(ostream& os, const Player& p){
 Player::Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
             p_skills(new vector<Card*>), p_emoji(nullptr), id(_id), status(WAIT_ACCEPT){};
 
-Player::~Player(){};
+Player::~Player(){
+    p_skills->clear();
+    delete p_skills;
+
+    p_profs->clear();
+    delete p_profs;
+
+    delete p_emoji;
+};
 
 void Player::addScore(int _score){
     score += _score;
@@ -491,9 +499,14 @@ void Game::PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards)
     }
 }
 
-void Game::PassCards(vector<Card*>* giver, Card* accepter, int card_id){
-    accepter = giver->at(card_id);
-    giver->erase(find(giver->begin(), giver->end(), giver->at(card_id)));
+void Game::GiveEmojiToPlayer(Player* player){
+    if (g_emoji->empty()) {
+        cout << "Ошибка: нет эмоций в колоде!" << endl;
+        return;
+    }
+    Card* emo = g_emoji->front();
+    g_emoji->erase(g_emoji->begin());
+    player->addEmoji(emo);
 }
 
 void Game::ShuffleCards(vector<Card*>* cards){
@@ -547,6 +560,7 @@ void Game::Endgame() const{
 
 Employ_Info::Employ_Info(){
     e_profs = new vector<Card*>;
+    claim_matrix = new vector<int>[EMPLOYER_PROFS_NUM];
 }
 
 Employ_Info::~Employ_Info(){
@@ -579,6 +593,10 @@ void Employ_Info::print_profs() const{
         }
         cout << "-------------------" << endl;
     }
+}
+
+void Employ_Info::add_claim(int vac, int id){
+    claim_matrix[vac].push_back(id);
 }
 
 

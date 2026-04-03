@@ -143,15 +143,19 @@ int main()
 
         if(status == ANSWERING){
             if(strncmp(request, "areanswerm", 11) == 0){
+                cout << endl;
                 cout << output << endl;
                 int v = 0;
                 char r = ' ';
                 do{
-                    cout << "   Введите номер вакансии, на которую вы претендуете (1 - 3)." << endl;
+                    cout << "   Введите номер вакансии, на которую вы претендуете (1 - 3): ";
                     cin >> v;
                 } while(v != 1 && v != 2 && v != 3);
+                sprintf(s_msg, "%d", v);
+                strcat(s_msg, "|claim");
+                send(c_sock, s_msg, BUFF_LEN, 0);
                 do{
-                    cout << "   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании." << endl;
+                    cout << "   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании: ";
                     cin >> r;
                 } while(r != 'Y' && r != 'y');
                 send(c_sock, "readytoanswer", BUFF_LEN, 0);

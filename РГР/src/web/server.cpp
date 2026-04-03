@@ -120,14 +120,44 @@ void player_thread(int socket)
 
         if(g_status == P_PRE){
             if (p_status == ANSWERING){
+                if(strncmp(request, "claim", 6) == 0){
+                    int vn = -1;
+                    if(strncmp(output, "1", 1) == 0){
+                        vn = 0;
+                    }else if(strncmp(output, "2", 1) == 0){
+                        vn = 1;
+                    }else if(strncmp(output, "3", 1) == 0){
+                        vn = 2;
+                    }
+                    cout << "Соискатель "<< GAME->get_player_nick(id) << " претендует на вакансию " 
+                        << GAME->EmployInfo()->getProfs()->at(vn)->get_text() << endl;
+                    GAME->EmployInfo()->add_claim(vn, id);
+                    sleep(1);
+                    continue;
+                }
                 if(strncmp(request, "readytoanswer", 14) != 0){ 
+                    GAME->PassCards(GAME->get_skills(), GAME->getPlayer(id)->getSkills(), SKILL_NUM);
+                    GAME->GiveEmojiToPlayer(GAME->getPlayer(id));
+                    vector<Card*>* p_skills = GAME->getPlayer(id)->getSkills();
+                    Card* emo = GAME->getPlayer(id)->getEmoji();
+                    strcat(s_msg, " Эмоция: ");
+                    strcat(s_msg, emo->get_text().c_str());
+                    strcat(s_msg, "\n");
+                    strcat(s_msg, " Навыки:\n");
+                    for(vector<Card*>::const_iterator sk = p_skills->begin(); sk != p_skills->end(); sk++){
+                        strcat(s_msg, " - ");
+                        strcat(s_msg, (*sk)->get_text().c_str());
+                        strcat(s_msg, "\n");
+                    } 
                     strcat(s_msg, "|areanswerm");
                     strcat(s_msg, "|ANSWERING");
                     cout << "Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
                     send(socket, s_msg, BUFF_LEN, 0);
+                    sleep(1);
                     continue;
                 }
                 GAME->setStatus(P_MAKE);
+                sleep(1);
                 continue;
             }
             continue;
@@ -136,23 +166,11 @@ void player_thread(int socket)
         if(g_status == P_MAKE){
             if (p_status == ANSWERING){
                 if(strncmp(request, "sendanswer", 14) != 0){
-                    GAME->PassCards(GAME->get_skills(), GAME->getPlayer(id)->getSkills(), EMPLOYER_PROFS_NUM);
-                    GAME->PassCards(GAME->get_emoji(), GAME->getPlayer(id)->getEmoji(), 0);
-                    vector<Card*>* p_profs = GAME->getPlayer(id)->getSkills();
-                    Card* emo = GAME->getPlayer(id)->getEmoji();
-                    strcat(s_msg, " Эмоция: ");
-                    strcat(s_msg, emo->get_text().c_str());
-                    strcat(s_msg, "\n");
-                    strcat(s_msg, " Навыки:");
-                    for(vector<Card*>::const_iterator pr = p_profs->begin(); pr != p_profs->end(); pr++){
-                        strcat(s_msg, " - ");
-                        strcat(s_msg, (*pr)->get_text().c_str());
-                        strcat(s_msg, "\n");
-                    } 
                     strcat(s_msg, "|giveanswerm");
                     strcat(s_msg, "|ANSWERING");
                     cout << "Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
                     send(socket, s_msg, BUFF_LEN, 0);
+                    sleep(1);
                     continue;
                 }
                 cout << GAME->get_player_nick(id) << ":" << endl;
@@ -160,8 +178,11 @@ void player_thread(int socket)
                 cout << endl;
                 cout << "Время для вопросов." << endl;
                 GAME->setStatus(QUESTIONS);
+                send(socket, "||WAITING", BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }
+            sleep(1);
             continue;
         }
     }

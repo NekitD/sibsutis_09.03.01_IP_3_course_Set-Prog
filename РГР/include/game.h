@@ -13,6 +13,7 @@ using namespace std;
 #define MIN_P 3
 #define MAX_P 3
 #define EMPLOYER_PROFS_NUM 3
+#define SKILL_NUM 4
 
 enum prof_id {
     fisher = 0,
@@ -125,9 +126,11 @@ class Employ_Info
         void print_profs() const;
         string getManual() const;
         void setManual(string n_man);
+        void add_claim(int vac, int id);
     private:
         vector<Card*>* e_profs;
         string manual;
+        vector<int>* claim_matrix;
 };
 
 class Player
@@ -200,7 +203,7 @@ class Game
         Employ_Info* EmployInfo();
         void ShuffleCards(vector<Card*>* cards);
         void PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards);
-        void PassCards(vector<Card*>* giver, Card* accepter, int card_id);
+        void GiveEmojiToPlayer(Player* player);
 
         void set_answering_num(int na);
         int get_answering_id() const;
