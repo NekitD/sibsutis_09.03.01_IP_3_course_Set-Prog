@@ -101,6 +101,14 @@ int Player::getScore() const{
     return score;
 }
 
+void Player::print_skills() const{
+    if(p_skills){
+        for(vector<Card*>::const_iterator sk = p_skills->begin(); sk != p_skills->end(); sk++){
+            cout << " - " <<*sk << endl;
+        }
+    }
+}
+
 
 vector<Card*>* Player::getSkills() const{
     return p_skills;
@@ -538,6 +546,10 @@ void Game::add_question(string q){
     g_questions->push_back(q);
 }
 
+void Game::rem_question(){
+    get_questions()->erase(g_questions->begin());
+}
+
 bool Game::no_questions() const{
     if(status != QUESTIONS){
         return true;
@@ -547,7 +559,18 @@ bool Game::no_questions() const{
             return false;
         }
     }
+    if(!(get_questions()->empty())){
+        return false;
+    }
     return true;
+}
+
+void Game::open_p(int id) const{
+    Player* p = getPlayer(id);
+    cout << "Карты " << get_player_nick(id) << ": " << endl;
+    cout << "Эмоция: " << p->getEmoji()->get_text() << endl;
+    cout << "Навыки:" << endl;
+    p->print_skills();
 }
 
 

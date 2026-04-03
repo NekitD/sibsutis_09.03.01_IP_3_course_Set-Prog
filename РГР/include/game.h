@@ -158,6 +158,8 @@ class Player
         vector<Card*>* getSkills() const;
         Card* getEmoji() const;
 
+        void print_skills() const;
+
     private:
         int id;
         string name;
@@ -210,7 +212,11 @@ class Game
 
         vector<string>* get_questions() const;
         void add_question(string q);
+        void rem_question();
         bool no_questions() const;
+
+        void open_p(int id) const;
+
         void Endgame() const;
 
     private:
