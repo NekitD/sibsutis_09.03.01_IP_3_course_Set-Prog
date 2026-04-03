@@ -89,7 +89,7 @@ void player_thread(int socket)
         if(p_status == EMPLOYER){
             if(g_status == JOB_MAKE){
                 if(strncmp(request, "sendhist", 9) != 0){
-                    strcat(s_msg, "Вы - работодатель!\n");
+                    strcat(s_msg, " Вы - работодатель!\n");
                     strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
                     GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
                     vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
