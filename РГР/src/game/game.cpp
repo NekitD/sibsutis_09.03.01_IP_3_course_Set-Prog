@@ -485,7 +485,7 @@ void Game::PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards)
     }
 }
 
-void ShuffleCards(vector<Card*>* cards){
+void Game::ShuffleCards(vector<Card*>* cards){
     random_device rd;
     mt19937 g(rd());
     shuffle(cards->begin(), cards->end(), g);
