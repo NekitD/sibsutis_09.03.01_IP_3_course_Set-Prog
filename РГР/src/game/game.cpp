@@ -491,6 +491,16 @@ Employ_Info* Game::EmployInfo(){
     return g_employ;
 }
 
+void Game::set_answering_num(int na){
+    answering_num = na;
+}
+int Game::get_answering_id() const{
+    if(getEmployer() + answering_num >= g_players->size()){
+        return g_players->at(getEmployer() + answering_num - g_players->size())->get_id();
+    }
+    return g_players->at(getEmployer() + answering_num)->get_id();
+}
+
 void Game::Endgame() const{
     int max = 0;
     int c_score = 0;

@@ -198,6 +198,9 @@ class Game
         void ShuffleCards(vector<Card*>* cards);
         void PassCards(vector<Card*>* giver, vector<Card*>* accepter, int n_cards);
 
+        void set_answering_num(int na);
+        int get_answering_id() const;
+
         void Endgame() const;
 
     private:
@@ -209,5 +212,6 @@ class Game
         Employ_Info* g_employ;
         int status = PRE;
         int employer;
+        int answering_num;
 };
 
