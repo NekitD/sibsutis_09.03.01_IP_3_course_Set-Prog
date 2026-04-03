@@ -158,7 +158,7 @@ int main()
                     cout << "   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании: ";
                     cin >> r;
                 } while(r != 'Y' && r != 'y');
-                send(c_sock, "readytoanswer", BUFF_LEN, 0);
+                send(c_sock, "|readytoanswer", BUFF_LEN, 0);
                 continue;
             }
             if(strncmp(request, "giveanswerm", 11) == 0){
