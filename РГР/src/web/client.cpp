@@ -13,6 +13,7 @@
 using namespace std;
 
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
+void cli_input(string& text);
 
 
 int main()
@@ -128,27 +129,8 @@ int main()
                 string manual;
                 cout << endl;
                 cout << output << endl;
-                cout << "(для завершения введите пустую строку или 'END'):\n" << endl;
         
-                cin.ignore();
-                int max_len = BUFF_LEN - 300;
-                string line;
-                while (true) {
-                    cout << "(" << manual.size() << "/" << max_len << "):";
-                    getline(cin, line);
-                    if(manual.size() + line.size() > max_len){
-                        cout << "Не хватает места!" << endl;
-                        continue;
-                    }
-                    if (line.empty() || line == "END") {
-                        break;
-                    }
-                    manual += line + "\n";
-                }
-        
-                if (!manual.empty() && manual.back() == '\n') {
-                    manual.pop_back();
-                }
+                cli_input(manual);
         
                 strcat(s_msg, manual.c_str());
                 strcat(s_msg, "|sendhist");
@@ -192,5 +174,28 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
     }
     if(strncmp(pstat, "LEFT", 5) == 0){
         status = LEFT;
+    }
+}
+
+void cli_input(string& text){
+    cout << "(для завершения введите пустую строку или 'END'):\n" << endl;
+    cin.ignore();
+    int max_len = BUFF_LEN - 300;
+    string line;
+    while (true) {
+        cout << "(" << text.size() << "/" << max_len << "):";
+        getline(cin, line);
+        if(text.size() + line.size() > max_len){
+            cout << "Не хватает места!" << endl;
+            continue;
+        }
+        if (line.empty() || line == "END") {
+            break;
+        }
+        text += line + "\n";
+    }
+        
+    if (!text.empty() && text.back() == '\n') {
+        text.pop_back();
     }
 }
