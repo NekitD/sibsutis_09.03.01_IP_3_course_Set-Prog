@@ -58,8 +58,6 @@ void player_thread(int socket)
         p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
-        //cout << "Debug: "<< GAME->get_player_nick(id) << " status: " << p_status << endl;
-        //cout << "Debug: Game status: " << g_status << endl;
         if (rec_l == 0){
             GAME->remPlayer(id);
             break;
@@ -88,15 +86,14 @@ void player_thread(int socket)
         }
 
         if(p_status == EMPLOYER){
-            cout << "EMP COND:" << endl;
             if(g_status == JOB_MAKE){
-                cout << "DEBUG REQ SEND:" << endl;
                 if(strncmp(request, "sendhist", 9) != 0){
                     strcat(s_msg, "Вы - работодатель!\n");
                     strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
                     GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
                     vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
                     for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
+                        strcat(s_msg, " ");
                         strcat(s_msg, (*pr)->get_text().c_str());
                         strcat(s_msg, "\n");
                     }
@@ -106,14 +103,13 @@ void player_thread(int socket)
                     send(socket, s_msg, BUFF_LEN, 0);
                     continue;
                 }
-                GAME->EmployInfo()->setManual(output);
+                GAME->EmployInfo()->setManual((string)output);
                 cout << "История:" << endl;
                 cout << GAME->EmployInfo()->getManual() << endl;
                 GAME->setStatus(P_PRE);
             }
             continue;
         }
-        //sleep(1);
     }
     close(socket);
 }

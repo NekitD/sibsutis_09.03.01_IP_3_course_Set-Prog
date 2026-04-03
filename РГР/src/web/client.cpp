@@ -94,7 +94,6 @@ int main()
             break;
         }
         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
-        //cout << "DEBUG status: " << status << endl;
 
         if(status == WAIT_ACCEPT)
         {
@@ -121,15 +120,10 @@ int main()
             //continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
-            //if (output[0]){
-            //    cout << output << endl;
-            //}
             send(c_sock, " ", 1, 0);
             //continue;
         }
         if(status == EMPLOYER){
-            cout << "REQUEST:" << endl;
-            cout << request << endl;
             if(strncmp(request, "givehist", 9) == 0){
                 string manual;
                 cout << endl;
