@@ -83,23 +83,27 @@ void player_thread(int socket)
             continue;
         }
         if(p_status == EMPLOYER){
-            if(strncmp(request, "sendhist", 9) != 0){
-                strcat(s_msg, "Вы - работодатель!\n");
-                strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
-                GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
-                vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
-                for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
-                    strcat(s_msg, (*pr)->get_text().c_str());
-                    strcat(s_msg, "\n");
+            if(g_status == JOB_MAKE){
+                if(strncmp(request, "sendhist", 9) != 0){
+                    strcat(s_msg, "Вы - работодатель!\n");
+                    strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
+                    GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
+                    vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
+                    for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
+                        strcat(s_msg, (*pr)->get_text().c_str());
+                        strcat(s_msg, "\n");
+                    }
+                    strcat(s_msg, "Придумате историю Вашей компании!"); 
+                    strcat(s_msg, "|givehist");
+                    strcat(s_msg, "|EMPLOYER");
+                    send(socket, s_msg, BUFF_LEN, 0);
+                    continue;
                 }
-                strcat(s_msg, "Придумате историю Вашей компании!"); 
-                strcat(s_msg, "|givehist");
-                strcat(s_msg, "|EMPLOYER");
-                send(socket, s_msg, BUFF_LEN, 0);
-                continue;
+                GAME->EmployInfo()->setManual(output);
+                cout << "История:" << endl;
+                cout << GAME->EmployInfo()->getManual() << endl;
+                GAME->setStatus(P_PRE);
             }
-            GAME->EmployInfo()->setManual(output);
-            GAME->setStatus(P_PRE);
         }
     }
     close(socket);
