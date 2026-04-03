@@ -106,6 +106,8 @@ void player_thread(int socket)
                 GAME->EmployInfo()->setManual((string)output);
                 cout << "История:" << endl;
                 cout << GAME->EmployInfo()->getManual() << endl;
+                GAME->EmployInfo()->print_profs();
+                cout << endl;
                 send(socket, "||WAITING", 1, 0);
                 GAME->set_player_status(id, WAITING);
                 GAME->setStatus(P_PRE);

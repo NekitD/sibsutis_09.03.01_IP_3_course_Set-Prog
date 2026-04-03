@@ -327,21 +327,21 @@ vector<Player*>* Game::get_players() const{
 void Game::print_profs() const{
     if(g_profs){
         for(vector<Card*>::const_iterator pr = g_profs->begin(); pr != g_profs->end(); pr++){
-            cout << **pr;
+            cout << **pr << endl;
         }
     }
 }
 void Game::print_skills() const{
     if(g_skills){
         for(vector<Card*>::const_iterator sk = g_skills->begin(); sk != g_skills->end(); sk++){
-            cout << *sk;
+            cout << *sk << endl;
         }
     }
 }
 void Game::print_emoji() const{
     if(g_emoji){
         for(vector<Card*>::const_iterator ej = g_emoji->begin(); ej != g_emoji->end(); ej++){
-            cout << *ej;
+            cout << *ej << endl;
         }
     }
 }
@@ -487,6 +487,10 @@ void Game::ShuffleCards(vector<Card*>* cards){
     shuffle(cards->begin(), cards->end(), g);
 }
 
+Employ_Info* Game::EmployInfo(){
+    return g_employ;
+}
+
 void Game::Endgame() const{
     int max = 0;
     int c_score = 0;
@@ -538,8 +542,18 @@ void Employ_Info::setManual(string n_man){
     manual = n_man;
 }
 
-Employ_Info* Game::EmployInfo(){
-    return g_employ;
+void Employ_Info::print_profs() const{
+    if(e_profs){
+        cout << "-------------------" << endl;
+        cout << "Вакансии:" << endl;
+        cout << "-------------------" << endl;
+        int i = 1;
+        for(vector<Card*>::const_iterator pr = e_profs->begin(); pr != e_profs->end(); pr++){
+            cout << i << ") " << **pr << endl;
+            i++;
+        }
+        cout << "-------------------" << endl;
+    }
 }
 
 
