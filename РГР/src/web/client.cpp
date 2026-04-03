@@ -146,7 +146,6 @@ int main()
                 cout << endl;
                 cout << output << endl;
                 int v = 0;
-                char r = ' ';
                 do{
                     cout << "   Введите номер вакансии, на которую вы претендуете (1 - 3): ";
                     cin >> v;
@@ -154,6 +153,10 @@ int main()
                 sprintf(s_msg, "%d", v);
                 strcat(s_msg, "|claim");
                 send(c_sock, s_msg, BUFF_LEN, 0);
+            }
+
+            if(strncmp(request, "claim", 6) == 0){
+                char r = ' ';
                 do{
                     cout << "   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании: ";
                     cin >> r;
@@ -161,6 +164,7 @@ int main()
                 send(c_sock, "|readytoanswer", BUFF_LEN, 0);
                 continue;
             }
+
             if(strncmp(request, "giveanswerm", 11) == 0){
                 string resume;
                 cout << " Минута пошла! Удачи!" << endl;

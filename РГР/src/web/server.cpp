@@ -132,7 +132,7 @@ void player_thread(int socket)
                     cout << "Соискатель "<< GAME->get_player_nick(id) << " претендует на вакансию " 
                         << GAME->EmployInfo()->getProfs()->at(vn)->get_text() << endl;
                     GAME->EmployInfo()->add_claim(vn, id);
-                    sleep(1);
+                    send(socket, "|claim|ANSWERING", BUFF_LEN, 0);
                     continue;
                 }
                 if(strncmp(request, "readytoanswer", 14) != 0){ 
@@ -153,11 +153,13 @@ void player_thread(int socket)
                     strcat(s_msg, "|ANSWERING");
                     cout << "Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
                     send(socket, s_msg, BUFF_LEN, 0);
-                    sleep(1);
                     continue;
                 }
                 GAME->setStatus(P_MAKE);
-                sleep(1);
+                strcat(s_msg, "|giveanswerm");
+                strcat(s_msg, "|ANSWERING");
+                cout << "Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
+                send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
             continue;
@@ -166,11 +168,6 @@ void player_thread(int socket)
         if(g_status == P_MAKE){
             if (p_status == ANSWERING){
                 if(strncmp(request, "sendanswer", 14) != 0){
-                    strcat(s_msg, "|giveanswerm");
-                    strcat(s_msg, "|ANSWERING");
-                    cout << "Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
-                    send(socket, s_msg, BUFF_LEN, 0);
-                    sleep(1);
                     continue;
                 }
                 cout << GAME->get_player_nick(id) << ":" << endl;
