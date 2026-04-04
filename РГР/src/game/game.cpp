@@ -643,6 +643,7 @@ void Game::assign_professions() {
             if (chosen_player) {
                 Card* profession = vacancies->at(i);
                 chosen_player->addProf(profession);
+                chosen_player->addScore(3);
                 cout << "Вакансия \"" << profession->get_text() 
                      << "\" достаётся " << chosen_player->get_nick() << "!" << endl;
             }
