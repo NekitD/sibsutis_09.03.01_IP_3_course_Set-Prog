@@ -131,6 +131,11 @@ class Employ_Info
 
         vector<int>* get_claims_for_vacancy(int vac_index);
         void clear_claims();
+
+        map<int, int> assignments; 
+        void add_assignment(int vac, int player);
+        void clear_assignments();
+        int get_assignment(int vac);
     private:
         vector<Card*>* e_profs;
         string manual;

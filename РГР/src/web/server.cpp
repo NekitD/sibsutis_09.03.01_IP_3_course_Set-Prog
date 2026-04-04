@@ -282,8 +282,9 @@ void player_thread(int socket)
                     // формат распаковки выбора: "1:2,2:1,3:3"
                     char* token = strtok(output, ",");
                     while (token != NULL) {
-                        int vac_num, player_num;
-                        sscanf(token, "%d:%d", &vac_num, &player_num);
+                        int vac_num, player_id;
+                        sscanf(token, "%d:%d", &vac_num, &player_id);
+                        GAME->EmployInfo()->add_assignment(vac_num - 1, player_id); 
                         token = strtok(NULL, ",");
                     }
                     GAME->assign_professions(); 

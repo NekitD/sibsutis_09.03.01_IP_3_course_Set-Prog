@@ -633,11 +633,9 @@ void Game::assign_professions() {
     vector<Card*>* vacancies = g_employ->getProfs();
     
     for (size_t i = 0; i < vacancies->size(); i++) {
-        vector<int>* claimants = g_employ->get_claims_for_vacancy(i);
+        int chosen_player_id = g_employ->get_assignment(i);
         
-        if (claimants && !claimants->empty()) {
-            int random_index = rand() % claimants->size();
-            int chosen_player_id = (*claimants)[random_index];
+        if (chosen_player_id != -1) {
             Player* chosen_player = getPlayer(chosen_player_id);
             
             if (chosen_player) {
@@ -647,17 +645,28 @@ void Game::assign_professions() {
                 cout << "Вакансия \"" << profession->get_text() 
                      << "\" достаётся " << chosen_player->get_nick() << "!" << endl;
             }
+        } else {
+            vector<int>* claimants = g_employ->get_claims_for_vacancy(i);
+            if (claimants && !claimants->empty()) {
+                int random_index = rand() % claimants->size();
+                int chosen_player_id = (*claimants)[random_index];
+                Player* chosen_player = getPlayer(chosen_player_id);
+                
+                if (chosen_player) {
+                    Card* profession = vacancies->at(i);
+                    chosen_player->addProf(profession);
+                    chosen_player->addScore(3);
+                    cout << "Вакансия \"" << profession->get_text() 
+                         << "\" достаётся " << chosen_player->get_nick() 
+                         << " (случайный выбор)!" << endl;
+                }
+            }
         }
     }
     
     g_employ->clear_claims();
-    
-    // for (auto prof : *vacancies) {
-    //     g_profs->push_back(prof);
-    // }
-
+    g_employ->clear_assignments();
     vacancies->clear();
-    //ShuffleCards(g_profs);
 }
 
 string Game::get_players_list() const {
@@ -783,6 +792,18 @@ void Employ_Info::clear_claims() {
     for (int i = 0; i < EMPLOYER_PROFS_NUM; i++) {
         claim_matrix[i].clear();
     }
+}
+
+void Employ_Info::add_assignment(int vac, int player){ 
+    assignments[vac] = player; 
+}
+
+void Employ_Info::clear_assignments(){ 
+    assignments.clear(); 
+}
+
+int Employ_Info::get_assignment(int vac){ 
+    return assignments.count(vac) ? assignments[vac] : -1; 
 }
 
 
