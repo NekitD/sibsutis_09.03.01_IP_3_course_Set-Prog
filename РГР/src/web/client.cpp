@@ -173,7 +173,7 @@ int main()
             if(strncmp(request, "claim", 6) == 0){
                 char r = ' ';
                 do{
-                    cout << "   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании: ";
+                    cout << "\n   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании: ";
                     cin >> r;
                 } while(r != 'Y' && r != 'y');
                 send(c_sock, "|readytoanswer", BUFF_LEN, 0);
@@ -207,11 +207,11 @@ int main()
 
         if(status == QUESTIONING){
             if(strncmp(request, "gquest", 7) == 0){
-                cout << "Ваш вопрос отправлен и дойдёт до адресата в порядке очереди." << endl;
+                cout << "\nВаш вопрос отправлен и дойдёт до адресата в порядке очереди." << endl;
             }
             char h = ' ';
             do{
-                cout << "Есть ли у Вас вопросы к соискателю? (Y/n): ";
+                cout << "\nЕсть ли у Вас вопросы к соискателю? (Y/n): ";
             } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
             if(h == 'N' || h == 'n'){
                 send(c_sock, "|noquest", BUFF_LEN, 0);
@@ -229,7 +229,7 @@ int main()
         if(status == SCORING){
             int score = 0;
             do{
-                cout << "Поставьте выступившему оценку от 1 до 5: ";
+                cout << "\nПоставьте выступившему оценку от 1 до 5: ";
                 cin >> score;
             } while(score < 1 || score > 5);
             sprintf(s_msg, "%d", score);

@@ -175,6 +175,12 @@ void player_thread(int socket)
                 cout << endl;
                 cout << "Время для вопросов." << endl;
                 GAME->setStatus(QUESTIONS);
+                vector<Player*>* tmq = GAME->get_players();
+                for(vector<Player*>::iterator pl = tmq->begin(); pl != tmq->end(); pl++){
+                    if((*pl)->get_id() != GAME->get_answering_id()){
+                        (*pl)->setStatus(QUESTIONING);
+                    }
+                }
                 send(socket, "||WAITING", BUFF_LEN, 0);
                 sleep(1);
                 continue;
@@ -184,7 +190,9 @@ void player_thread(int socket)
         }
 
         if(g_status == QUESTIONS){
-            if(id != GAME->get_answering_id()){
+            cout << "QUESTIONS BEGAN" << endl;
+            if(GAME->get_player_status(id) == QUESTIONING){
+                cout << "ASK_DEBUG: SENDING " << id <<" ASK ABOUT QUESTION" << endl;
                 if(strncmp(request, "noquest", 8) == 0){
                     cout << GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
                     GAME->set_player_status(id, WAITING);
@@ -201,6 +209,7 @@ void player_thread(int socket)
                 }else{
                     strcat(s_msg, ": ||QUESTIONING");
                 }
+                cout << "ANSWER_DEBUG: SENDING " << id <<" ASK QUESTION" << endl;
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
@@ -209,6 +218,7 @@ void player_thread(int socket)
                 cout <<  GAME->get_player_nick(id) << ": " << output << endl;
             }
             cout << endl;
+            cout << "DEBUG: Try to get question" << endl;
             if(!(GAME->get_questions()->empty())){
                 string qu = *(GAME->get_questions()->begin());
                 cout << qu << endl;
