@@ -138,9 +138,17 @@ int main()
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
-            if(strncmp(request, "givejchoice", 8) == 0){
-                // код для упаковки самого выбора в s_msg
-                //...
+            if(strncmp(request, "givejchoice", 11) == 0){
+                cout << endl;
+                cout << output << endl;
+        
+                string choice;
+                cout << "Введите ваш выбор: ";
+                cin.ignore();
+                getline(cin, choice);
+        
+                bzero(s_msg, BUFF_LEN);
+                strcat(s_msg, choice.c_str());
                 strcat(s_msg, "|jchoice");
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 continue;
