@@ -247,7 +247,6 @@ void player_thread(int socket)
                     cout << "   " << GAME->get_player_nick(id) << " поставил оценку." << endl;
                     GAME->add_scoreb(score);
                     GAME->set_player_status(id, WAITING);
-                    send(socket, "||WAITING", BUFF_LEN, 0);
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
                         cout << endl;
@@ -256,15 +255,19 @@ void player_thread(int socket)
                         GAME->setStatus(JOB_CHOICE);
                         GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
                     }
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     continue;
                 }
                 send(socket, "||SCORING", BUFF_LEN, 0);
                 continue;
             }
+            send(socket, "||WAITING", BUFF_LEN, 0);
         }
 
         if(g_status == JOB_CHOICE){
+            cout << "DEBUG: JOB_CHOICE BEGAN" << endl;
             if(p_status == EMPLOYER){
+                cout << "DEBUG: EMPLOYER FOUND" << endl;
                 if(strncmp(request, "jchoice", 8) == 0){
                     // формат распаковки выбора: "1:2,2:1,3:3"
                     char* token = strtok(output, ",");
@@ -313,6 +316,7 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
+            send(socket, "||WAITING", BUFF_LEN, 0);
         }
     }
     close(socket);
