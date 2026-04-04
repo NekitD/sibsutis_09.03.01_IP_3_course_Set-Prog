@@ -634,32 +634,44 @@ void Game::assign_professions() {
     
     for (size_t i = 0; i < vacancies->size(); i++) {
         int chosen_player_id = g_employ->get_assignment(i);
+        vector<int>* claimants = g_employ->get_claims_for_vacancy(i);
+        Card* profession = vacancies->at(i);
+        
+        if (!claimants || claimants->empty()) {
+            cout << "Вакансия \"" << profession->get_text() 
+                 << "\" никому не досталась (нет претендентов)" << endl;
+            continue;  
+        }
         
         if (chosen_player_id != -1) {
-            Player* chosen_player = getPlayer(chosen_player_id);
-            
-            if (chosen_player) {
-                Card* profession = vacancies->at(i);
-                chosen_player->addProf(profession);
-                chosen_player->addScore(3);
-                cout << "Вакансия \"" << profession->get_text() 
-                     << "\" достаётся " << chosen_player->get_nick() << "!" << endl;
-            }
-        } else {
-            vector<int>* claimants = g_employ->get_claims_for_vacancy(i);
-            if (claimants && !claimants->empty()) {
-                int random_index = rand() % claimants->size();
-                int chosen_player_id = (*claimants)[random_index];
+            auto it = find(claimants->begin(), claimants->end(), chosen_player_id);
+            if (it != claimants->end()) {  
                 Player* chosen_player = getPlayer(chosen_player_id);
-                
                 if (chosen_player) {
-                    Card* profession = vacancies->at(i);
                     chosen_player->addProf(profession);
                     chosen_player->addScore(3);
                     cout << "Вакансия \"" << profession->get_text() 
                          << "\" достаётся " << chosen_player->get_nick() 
-                         << " (случайный выбор)!" << endl;
+                         << " (выбор работодателя)!" << endl;
+                    continue;
                 }
+            } else {
+                cout << "Работодатель выбрал " << getPlayer(chosen_player_id)->get_nick() 
+                     << ", но он не претендовал на эту вакансию!" << endl;
+            }
+        }
+        
+        if (claimants && !claimants->empty()) {
+            int random_index = rand() % claimants->size();
+            int random_player_id = (*claimants)[random_index];
+            Player* chosen_player = getPlayer(random_player_id);
+            
+            if (chosen_player) {
+                chosen_player->addProf(profession);
+                chosen_player->addScore(3);
+                cout << "Вакансия \"" << profession->get_text() 
+                     << "\" достаётся " << chosen_player->get_nick() 
+                     << " (случайный выбор среди претендентов)!" << endl;
             }
         }
     }
