@@ -217,6 +217,11 @@ void player_thread(int socket)
                 cout << "   " << GAME->get_player_nick(id) << ": " << output << endl;
                 GAME->rem_question();
                 cout << endl;
+                if(GAME->no_questions()){
+                    GAME->set_player_status(GAME->get_answering_id(), WAITING);
+                    GAME->setStatus(P_OPEN);
+                    continue;
+                }
             }
             
             if(!(GAME->get_questions()->empty())){
