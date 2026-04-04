@@ -389,6 +389,7 @@ int main()
             cout << endl;
             GAME->open_p(GAME->get_answering_id());
             GAME->set_scoreb(0);
+            cout << "   Время для выставления оценок!" << endl;
             GAME->setStatus(SCORES);
             vector<Player*>* tms = GAME->get_players();
             for(vector<Player*>::iterator pl = tms->begin(); pl != tms->end(); pl++){
