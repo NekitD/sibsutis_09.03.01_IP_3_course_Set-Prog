@@ -196,6 +196,7 @@ void player_thread(int socket)
                     GAME->set_player_status(id, WAITING);
                     send(socket, "||WAITING", BUFF_LEN, 0);
                     if(GAME->no_questions()){
+                        GAME->set_player_status(GAME->get_answering_id(), WAITING);
                         GAME->setStatus(P_OPEN);
                     }
                     continue;
@@ -256,16 +257,19 @@ void player_thread(int socket)
                         GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
                     }
                     send(socket, "||WAITING", BUFF_LEN, 0);
+                    sleep(1);
                     continue;
                 }
                 send(socket, "||SCORING", BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }
-            send(socket, "||WAITING", BUFF_LEN, 0);
+            //send(socket, "||WAITING", BUFF_LEN, 0);
         }
 
         if(g_status == JOB_CHOICE){
             cout << "DEBUG: JOB_CHOICE BEGAN" << endl;
+            cout <<  "DEBUG ID: " << id  << " SOCK: " << socket << " NICK: "<< GAME->get_player_nick(id) << " STATUS: " << p_status << " EMPSTAT = " << EMPLOYER << endl;
             if(p_status == EMPLOYER){
                 cout << "DEBUG: EMPLOYER FOUND" << endl;
                 if(strncmp(request, "jchoice", 8) == 0){
@@ -284,6 +288,7 @@ void player_thread(int socket)
                     send(socket, "||WAITING", BUFF_LEN, 0);
                     GAME->setEmployer(GAME->getEmployer() + 1);
                     GAME->setStatus(START);
+                    sleep(1);
                     continue;
                 }
         
@@ -314,8 +319,10 @@ void player_thread(int socket)
                 strcat(s_msg, " Пример: 1:2,2:1,3:3");
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }
+            sleep(1);
             send(socket, "||WAITING", BUFF_LEN, 0);
         }
     }
