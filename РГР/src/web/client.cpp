@@ -96,6 +96,10 @@ int main()
         }
         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
 
+        if(strncmp(request, "common", 7) == 0){
+            cout << "   " << output << endl;
+        }
+
         if(status == WAIT_ACCEPT)
         {
             // Надо будет потом добавить таймаут и возвращение к поиску игры.

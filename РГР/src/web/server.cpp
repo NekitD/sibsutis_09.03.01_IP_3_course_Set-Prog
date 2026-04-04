@@ -68,13 +68,13 @@ void player_thread(int socket)
 
         if(p_status == PRE_TO_PLAY){
             if(strncmp(request, "readytoplay", 12) == 0){
-                cout << GAME->get_player_nick(id) << " готов играть!" << endl;
+                cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
-                cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
+                cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
                 if (GAME->isGameReady()){
-                    cout << endl << "Игра начинается!\n" << endl;
-                    send_to_all(SUBS, "Игра начинается!|", BUFF_LEN);
+                    cout << endl << "   Игра начинается!\n" << endl;
+                    send_to_all(SUBS, "Игра начинается!|common|", BUFF_LEN);
                     GAME->setStatus(START);
                 }
             }
@@ -89,16 +89,16 @@ void player_thread(int socket)
         if(p_status == EMPLOYER){
             if(g_status == JOB_MAKE){
                 if(strncmp(request, "sendhist", 9) != 0){
-                    strcat(s_msg, " Вы - работодатель!\n");
+                    strcat(s_msg, "        Вы - работодатель!\n");
                     strcat(s_msg, " В Вашей компании открыты следующие вакансии:\n");
                     GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
                     vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
                     for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
-                        strcat(s_msg, " ");
+                        strcat(s_msg, "     ");
                         strcat(s_msg, (*pr)->get_text().c_str());
                         strcat(s_msg, "\n");
                     }
-                    strcat(s_msg, " Придумате историю Вашей компании!"); 
+                    strcat(s_msg, "     Придумате историю Вашей компании!"); 
                     strcat(s_msg, "|givehist");
                     strcat(s_msg, "|EMPLOYER");
                     send(socket, s_msg, BUFF_LEN, 0);
@@ -373,7 +373,7 @@ int main()
             GAME->print_players();
             int emp = GAME->getEmployerId();
             cout << "==============================================================" << endl;
-            cout << "   Раунд " << GAME->getEmployer() + 1 << ":" << endl;
+            cout << "       Раунд " << GAME->getEmployer() + 1 << ":" << endl;
             cout << "==============================================================" << endl;
             cout << "   Работодатель: " << GAME->get_player_nick(emp) << endl;
             cout << "   Работодатель придумывает историю своей компании..." << endl;

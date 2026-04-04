@@ -377,11 +377,11 @@ void Game::print_players() const{
         cout << "   НЕТ ИГРОКОВ" << endl;
     }
     if(g_players){
-        cout << "======ИГРОКИ======" << endl;
+        cout << "=========ИГРОКИ=========" << endl;
         for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
             cout << "   " << **p << endl;
         }
-        cout << "==================" << endl;
+        cout << "========================" << endl;
     }
 }
 
