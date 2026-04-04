@@ -212,6 +212,7 @@ int main()
             char h = ' ';
             do{
                 cout << "\nЕсть ли у Вас вопросы к соискателю? (Y/n): ";
+                cin >> h;
             } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
             if(h == 'N' || h == 'n'){
                 send(c_sock, "|noquest", BUFF_LEN, 0);
