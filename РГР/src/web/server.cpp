@@ -8,7 +8,8 @@
 #include <string.h>
 #include <unistd.h> 
 #include <arpa/inet.h>
-#include <thread> 
+//#include <thread> 
+#include <pthread.h>
 #include "game.h"
 #include <cstring>
 
@@ -20,8 +21,9 @@ vector<int>* SUBS = new vector<int>;
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
 
-void player_thread(int socket)
+void* player_thread(void* arg)
 {
+    int socket = (int)(long)arg;
     int id = 0;
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
@@ -35,6 +37,7 @@ void player_thread(int socket)
     if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){;
         cout << "   Неудачная попытка подключения" << endl;
         close(socket);
+        pthread_exit(0);
     }
     ser_decode_msg(a_msg, BUFF_LEN, output, request);
     if (strncmp(request, "join", 4) == 0){
@@ -43,6 +46,7 @@ void player_thread(int socket)
         if(id < 0){
             cout << "   ОШИБКА ID." << endl;
             close(socket);
+            pthread_exit(0);
         }
         strcat(s_msg, "||PRE_TO_PLAY");
         send(socket, s_msg, BUFF_LEN, 0);
@@ -331,6 +335,7 @@ void player_thread(int socket)
         }
     }
     close(socket);
+    pthread_exit(0);
 }
 
 int main()
@@ -379,8 +384,9 @@ int main()
         if (status == PRE){
             ss_socket = accept(sm_socket, 0, 0);
             SUBS->push_back(ss_socket);
-            thread ct(player_thread, ss_socket);
-            ct.detach();
+            pthread_t thread_id;
+            pthread_create(&thread_id, NULL, player_thread, (void*)(long)ss_socket);
+            pthread_detach(thread_id);
             sleep(1);
             continue;
         }
