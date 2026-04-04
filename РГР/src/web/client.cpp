@@ -135,7 +135,7 @@ int main()
                 cout << endl;
                 output[0] = ' ';
                 cout << output << endl;
-        
+                cin.ignore();
                 cli_input(manual);
         
                 strcat(s_msg, manual.c_str());
@@ -188,6 +188,7 @@ int main()
             if(strncmp(request, "giveanswerm", 11) == 0){
                 string resume;
                 cout << "   Минута пошла! Удачи!" << endl;
+                cin.ignore();
                 cli_input(resume);
                 strcat(s_msg, resume.c_str());
                 strcat(s_msg, "|sendanswer");
@@ -225,6 +226,7 @@ int main()
             }
             string question;
             cout << "   Напишите Ваш вопрос." << endl;
+            cin.ignore();
             cli_input(question);
             strcat(s_msg, output);
             strcat(s_msg, question.c_str());
@@ -289,7 +291,7 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
 void cli_input(string& text){
     text += " ";
     cout << "   (для завершения введите пустую строку или 'END'):\n" << endl;
-    cin.ignore();
+    //cin.ignore();
     int max_len = BUFF_LEN - 300;
     string line;
     while (true) {
