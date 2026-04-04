@@ -387,6 +387,7 @@ int main()
                 continue;
             }
             GAME->print_players();
+            GAME->drop_cards();
             int emp = GAME->getEmployerId();
             cout << "==============================================================" << endl;
             cout << "       Раунд " << GAME->getEmployer() + 1 << ":" << endl;

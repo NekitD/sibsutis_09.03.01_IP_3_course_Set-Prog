@@ -673,19 +673,28 @@ string Game::get_players_list() const {
 }
 
 void Game::drop_cards(){
+
     vector<Card*>* to_hand_s = new vector<Card*>;
     vector<Card*>* to_hand_e = new vector<Card*>;
     for(vector<Player*>::iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-        PassCards((*pl)->getSkills(), to_hand_s, SKILL_NUM);
-        to_hand_e->push_back((*pl)->getEmoji());
-        (*pl)->remEmoji();
+        if(!(*pl)->getSkills()->empty()){
+            PassCards((*pl)->getSkills(), to_hand_s, SKILL_NUM);
+        }
+        if((*pl)->getEmoji() != nullptr){
+            to_hand_e->push_back((*pl)->getEmoji());
+            (*pl)->remEmoji();
+        }
     }
-    ShuffleCards(to_hand_s);
-    ShuffleCards(to_hand_e);
-    PassCards(to_hand_s, g_skills, to_hand_s->size());
-    PassCards(to_hand_e, g_emoji, to_hand_e->size());
-    delete to_hand_e;
-    delete to_hand_s;
+    if(!to_hand_s->empty()){
+        ShuffleCards(to_hand_s);
+        PassCards(to_hand_s, g_skills, to_hand_s->size());
+        delete to_hand_s;
+    }
+    if(!to_hand_e->empty()){
+        ShuffleCards(to_hand_e);
+        PassCards(to_hand_e, g_emoji, to_hand_e->size());
+        delete to_hand_e;
+    } 
 }
 
 
