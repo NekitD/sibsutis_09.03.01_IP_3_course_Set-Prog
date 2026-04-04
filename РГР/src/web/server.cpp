@@ -213,13 +213,10 @@ void player_thread(int socket)
 
             if(strncmp(request, "aquest", 7) == 0){
                 cout <<  GAME->get_player_nick(id) << ": " << output << endl;
-                cout << "DEBUG: Rm answered question" << endl;
                 GAME->rem_question();
             }
             cout << endl;
-            cout << "DEBUG: Try to get question" << endl;
             if(!(GAME->get_questions()->empty())){
-                cout << "DEBUG: Quest found" << endl;
                 string qu = *(GAME->get_questions()->begin());
                 cout << qu << endl;
                 strcat(s_msg, qu.c_str());
@@ -227,7 +224,6 @@ void player_thread(int socket)
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
-            cout << "DEBUG: No quest" << endl;
             send(socket, "||WAITING", BUFF_LEN, 0);
         }
 
