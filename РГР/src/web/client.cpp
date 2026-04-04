@@ -288,7 +288,7 @@ void cli_input(string& text){
     int max_len = BUFF_LEN - 300;
     string line;
     while (true) {
-        cout << "(" << text.size() << "/" << max_len << "): ";
+        cout << "(" << text.size() - 1 << "/" << max_len << "): ";
         getline(cin, line);
         if(text.size() + line.size() > max_len){
             cout << "Не хватает места!" << endl;

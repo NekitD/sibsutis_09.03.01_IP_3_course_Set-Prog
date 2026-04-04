@@ -214,8 +214,9 @@ void player_thread(int socket)
             if(strncmp(request, "aquest", 7) == 0){
                 cout <<  GAME->get_player_nick(id) << ": " << output << endl;
                 GAME->rem_question();
+                cout << endl;
             }
-            cout << endl;
+            
             if(!(GAME->get_questions()->empty())){
                 string qu = *(GAME->get_questions()->begin());
                 cout << qu << endl;
