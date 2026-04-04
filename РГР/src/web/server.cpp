@@ -86,8 +86,8 @@ void player_thread(int socket)
             continue;
         }
 
-        if(p_status == EMPLOYER){
-            if(g_status == JOB_MAKE){
+        if(g_status == JOB_MAKE){
+            if(p_status == EMPLOYER){
                 if(strncmp(request, "sendhist", 9) != 0){
                     strcat(s_msg, "        Вы - работодатель!\n");
                     strcat(s_msg, " В Вашей компании открыты следующие вакансии:\n");
@@ -269,7 +269,6 @@ void player_thread(int socket)
                 sleep(1);
                 continue;
             }
-            //send(socket, "||WAITING", BUFF_LEN, 0);
         }
 
         if(g_status == JOB_CHOICE){
@@ -327,8 +326,6 @@ void player_thread(int socket)
                 sleep(1);
                 continue;
             }
-            sleep(1);
-            send(socket, "||WAITING", BUFF_LEN, 0);
         }
     }
     close(socket);
