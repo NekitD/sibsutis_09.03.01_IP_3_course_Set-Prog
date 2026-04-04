@@ -488,7 +488,7 @@ Player* Game::getPlayer(int id) const{
     }
 }
 int Game::getEmployerId() const{
-    return g_players->at(employer)->get_id();
+    return g_players->at(getEmployer())->get_id();
 }
 
 int Game::getEmployer() const{

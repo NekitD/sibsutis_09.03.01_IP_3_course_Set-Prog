@@ -357,12 +357,12 @@ int main()
             continue;
         }
         if(status == START){
-            GAME->print_players();
-            int emp = GAME->getEmployerId();
-            if(emp >= GAME->get_players()->size()){
+            if(GAME->getEmployer() >= GAME->get_players()->size()){
                 GAME->setStatus(OVER);
                 continue;
             }
+            GAME->print_players();
+            int emp = GAME->getEmployerId();
             cout << "==============================================================" << endl;
             cout << "Раунд " << GAME->getEmployer() + 1 << ":" << endl;
             cout << "==============================================================" << endl;
