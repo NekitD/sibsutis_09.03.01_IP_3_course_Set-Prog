@@ -567,9 +567,9 @@ bool Game::no_questions() const{
 
 void Game::open_p(int id) const{
     Player* p = getPlayer(id);
-    cout << "Карты " << get_player_nick(id) << ": " << endl;
-    cout << "Эмоция: " << p->getEmoji()->get_text() << endl;
-    cout << "Навыки:" << endl;
+    cout << "   Карты " << get_player_nick(id) << ": " << endl;
+    cout << "   Эмоция: " << p->getEmoji()->get_text() << endl;
+    cout << "   Навыки:" << endl;
     p->print_skills();
 }
 

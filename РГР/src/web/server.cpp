@@ -33,7 +33,7 @@ void player_thread(int socket)
     int rec_l = 0;
     int g_status = GAME->getStatus();
     if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){;
-        cout << "Неудачная попытка подключения" << endl;
+        cout << "   Неудачная попытка подключения" << endl;
         close(socket);
     }
     ser_decode_msg(a_msg, BUFF_LEN, output, request);
@@ -41,7 +41,7 @@ void player_thread(int socket)
         GAME->addPlayer(output, socket);
         id = GAME->get_player_id(output);
         if(id < 0){
-            cout << "ОШИБКА ID." << endl;
+            cout << "   ОШИБКА ID." << endl;
             close(socket);
         }
         strcat(s_msg, "||PRE_TO_PLAY");
@@ -61,7 +61,7 @@ void player_thread(int socket)
             break;
         }
         if (rec_l < 0){
-            cout << "Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
+            cout << "   Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             break;
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
@@ -90,7 +90,7 @@ void player_thread(int socket)
             if(g_status == JOB_MAKE){
                 if(strncmp(request, "sendhist", 9) != 0){
                     strcat(s_msg, " Вы - работодатель!\n");
-                    strcat(s_msg, "В Вашей компании открыты следующие вакансии:\n");
+                    strcat(s_msg, " В Вашей компании открыты следующие вакансии:\n");
                     GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
                     vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
                     for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
@@ -98,7 +98,7 @@ void player_thread(int socket)
                         strcat(s_msg, (*pr)->get_text().c_str());
                         strcat(s_msg, "\n");
                     }
-                    strcat(s_msg, "Придумате историю Вашей компании!"); 
+                    strcat(s_msg, " Придумате историю Вашей компании!"); 
                     strcat(s_msg, "|givehist");
                     strcat(s_msg, "|EMPLOYER");
                     send(socket, s_msg, BUFF_LEN, 0);
@@ -129,7 +129,7 @@ void player_thread(int socket)
                     }else if(strncmp(output, "3", 1) == 0){
                         vn = 2;
                     }
-                    cout << "Соискатель "<< GAME->get_player_nick(id) << " претендует на вакансию " 
+                    cout << "   Соискатель "<< GAME->get_player_nick(id) << " претендует на вакансию " 
                         << GAME->EmployInfo()->getProfs()->at(vn)->get_text() << endl;
                     GAME->EmployInfo()->add_claim(vn, id);
                     send(socket, "|claim|ANSWERING", BUFF_LEN, 0);
@@ -151,14 +151,14 @@ void player_thread(int socket)
                     } 
                     strcat(s_msg, "|areanswerm");
                     strcat(s_msg, "|ANSWERING");
-                    cout << "Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
+                    cout << "   Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
                     send(socket, s_msg, BUFF_LEN, 0);
                     continue;
                 }
                 GAME->setStatus(P_MAKE);
                 strcat(s_msg, "|giveanswerm");
                 strcat(s_msg, "|ANSWERING");
-                cout << "Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
+                cout << "   Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
@@ -170,10 +170,10 @@ void player_thread(int socket)
                 if(strncmp(request, "sendanswer", 14) != 0){
                     continue;
                 }
-                cout << GAME->get_player_nick(id) << ":" << endl;
-                cout << output << endl;
+                cout << "   " << GAME->get_player_nick(id) << ":" << endl;
+                cout << "   " << output << endl;
                 cout << endl;
-                cout << "Время для вопросов." << endl;
+                cout << "   Время для вопросов." << endl;
                 GAME->setStatus(QUESTIONS);
                 vector<Player*>* tmq = GAME->get_players();
                 for(vector<Player*>::iterator pl = tmq->begin(); pl != tmq->end(); pl++){
@@ -192,7 +192,7 @@ void player_thread(int socket)
         if(g_status == QUESTIONS){
             if(GAME->get_player_status(id) == QUESTIONING){
                 if(strncmp(request, "noquest", 8) == 0){
-                    cout << GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
+                    cout << "   " <<GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
                     GAME->set_player_status(id, WAITING);
                     if(GAME->no_questions()){
                         GAME->setStatus(P_OPEN);
@@ -212,7 +212,7 @@ void player_thread(int socket)
             }
 
             if(strncmp(request, "aquest", 7) == 0){
-                cout <<  GAME->get_player_nick(id) << ": " << output << endl;
+                cout << "   " << GAME->get_player_nick(id) << ": " << output << endl;
                 GAME->rem_question();
                 cout << endl;
             }
@@ -243,7 +243,7 @@ void player_thread(int socket)
                     }else if(strncmp(output, "5", 1) == 0){
                         score = 5;
                     }
-                    cout << GAME->get_player_nick(id) << " поставил оценку." << endl;
+                    cout << "   " << GAME->get_player_nick(id) << " поставил оценку." << endl;
                     GAME->add_scoreb(score);
                     GAME->set_player_status(id, WAITING);
                     if(GAME->score_over()){
@@ -285,11 +285,11 @@ void player_thread(int socket)
         
                 for (size_t i = 0; i < vacancies->size(); i++) {
                     char buffer[256];
-                    sprintf(buffer, "Вакансия %d: %s\n", i+1, vacancies->at(i)->get_text().c_str());
+                    sprintf(buffer, "   Вакансия %d: %s\n", i+1, vacancies->at(i)->get_text().c_str());
                     strcat(s_msg, buffer);
             
                     vector<int>* claimants = GAME->EmployInfo()->get_claims_for_vacancy(i);
-                    strcat(s_msg, "Претенденты: ");
+                    strcat(s_msg, " Претенденты: ");
                     if (claimants && !claimants->empty()) {
                         for (size_t j = 0; j < claimants->size(); j++) {
                             char id_str[10];
@@ -303,8 +303,8 @@ void player_thread(int socket)
                     strcat(s_msg, "\n\n");
                 }
         
-                strcat(s_msg, "Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
-                strcat(s_msg, "Пример: 1:2,2:1,3:3");
+                strcat(s_msg, " Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
+                strcat(s_msg, " Пример: 1:2,2:1,3:3");
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
@@ -325,7 +325,7 @@ int main()
     int ss_socket = 0; 
 
     if (sm_socket < 0) {
-        cout << "ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ИГРУ!" << endl;
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ИГРУ!" << endl;
         return -1;
     }
 
@@ -335,23 +335,23 @@ int main()
     s_addr.sin_port = 0;
 
     if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
-        cout << "ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ИГРУ!" << endl;
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ИГРУ!" << endl;
         return -1;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
     if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
-        cout << "ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
         return -1;
     }
-    cout << "АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
-    cout << "ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
+    cout << "   АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
+    cout << "   ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
 
     if(listen(sm_socket, MAX_P) < 0){
-        cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
         return -1;
     }
-    cout << endl << "Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
-    cout << "Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
+    cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
+    cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
     GAME->setStatus(PRE);
     int status;
     for(;;)
@@ -373,10 +373,10 @@ int main()
             GAME->print_players();
             int emp = GAME->getEmployerId();
             cout << "==============================================================" << endl;
-            cout << "Раунд " << GAME->getEmployer() + 1 << ":" << endl;
+            cout << "   Раунд " << GAME->getEmployer() + 1 << ":" << endl;
             cout << "==============================================================" << endl;
-            cout << "Работодатель: " << GAME->get_player_nick(emp) << endl;
-            cout << "Работодатель придумывает историю своей компании..." << endl;
+            cout << "   Работодатель: " << GAME->get_player_nick(emp) << endl;
+            cout << "   Работодатель придумывает историю своей компании..." << endl;
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
         }

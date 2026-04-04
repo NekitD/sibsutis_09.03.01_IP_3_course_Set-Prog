@@ -43,12 +43,12 @@ int main()
         return -1;
     }
     string nick;
-    cout << "Введите ваш ник (без пробелов): ";
+    cout << "   Введите ваш ник (без пробелов): ";
     cin >> nick;
     searchgame:
-    cout << "Введите адрес игры (без пробелов): ";
+    cout << "   Введите адрес игры (без пробелов): ";
     cin >> g_host;
-    cout << "Введите порт игры: ";
+    cout << "   Введите порт игры: ";
     cin >> g_port;
     cout << endl;
     hp = gethostbyname(g_host);
@@ -59,7 +59,7 @@ int main()
     s_addr.sin_port = htons(g_port);
 
     if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
-        cout << "СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!" << endl;
+        cout << "   СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!" << endl;
         return -1;
     }
 
@@ -69,7 +69,7 @@ int main()
     strcat(s_msg, "|join");
 
     if(send(c_sock, s_msg, BUFF_LEN, 0) < 0){
-        cout << "НЕ УДАЛОСЬ ОТПРАВИТЬ ДАННЫЕ ИГРОКА!" << endl;
+        cout << "   НЕ УДАЛОСЬ ОТПРАВИТЬ ДАННЫЕ ИГРОКА!" << endl;
         return -1;
     }
 
@@ -103,19 +103,19 @@ int main()
         }
         if(status == PRE_TO_PLAY){
             char a;
-            cout << "Вы успешно присоединились к игре!" << endl;
-            cout << "Готовы начать игру?" << endl;
+            cout << "   Вы успешно присоединились к игре!" << endl;
+            cout << "   Готовы начать игру?" << endl;
             do{
-                cout << "Введите Y(Готов)/q(Выйти): ";
+                cout << "   Введите Y(Готов)/q(Выйти): ";
                 cin >> a;
             } while (a != 'y' && a != 'Y' && a != 'q' && a != 'Q');
             if (a == 'q' || a == 'Q'){
                 break;
             }
             if(send(c_sock, "|readytoplay", BUFF_LEN, 0) < 0){
-                cout << "Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
+                cout << "   Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
-                cout << "Ожидание других игроков..." << endl;
+                cout << "   Ожидание других игроков..." << endl;
                 bzero(a_msg, BUFF_LEN);
             }
             continue;
@@ -143,7 +143,7 @@ int main()
                 cout << output << endl;
         
                 string choice;
-                cout << "Введите ваш выбор: ";
+                cout << "   Введите ваш выбор: ";
                 cin.ignore();
                 getline(cin, choice);
         
@@ -207,11 +207,11 @@ int main()
 
         if(status == QUESTIONING){
             if(strncmp(request, "gquest", 7) == 0){
-                cout << "\nВаш вопрос отправлен и дойдёт до адресата в порядке очереди." << endl;
+                cout << "\n Ваш вопрос отправлен и дойдёт до адресата в порядке очереди." << endl;
             }
             char h = ' ';
             do{
-                cout << "\nЕсть ли у Вас вопросы к соискателю? (Y/n): ";
+                cout << "\n Есть ли у Вас вопросы к соискателю? (Y/n): ";
                 cin >> h;
             } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
             if(h == 'N' || h == 'n'){
@@ -219,7 +219,7 @@ int main()
                 continue;
             }
             string question;
-            cout << "Напишите Ваш вопрос." << endl;
+            cout << "   Напишите Ваш вопрос." << endl;
             cli_input(question);
             strcat(s_msg, output);
             strcat(s_msg, question.c_str());
@@ -230,7 +230,7 @@ int main()
         if(status == SCORING){
             int score = 0;
             do{
-                cout << "\nПоставьте выступившему оценку от 1 до 5: ";
+                cout << "\n Поставьте выступившему оценку от 1 до 5: ";
                 cin >> score;
             } while(score < 1 || score > 5);
             sprintf(s_msg, "%d", score);
