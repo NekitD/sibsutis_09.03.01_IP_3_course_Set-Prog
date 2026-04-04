@@ -418,6 +418,8 @@ int main()
         }
         if(status == OVER){
             GAME->Endgame();
+            send_to_all(SUBS, "Игра окончена!|common|", BUFF_LEN);
+            sleep(1);
             break;
         }
     }

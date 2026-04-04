@@ -676,14 +676,18 @@ string Game::get_players_list() const {
 void Game::Endgame() const{
     int max = 0;
     int c_score = 0;
+    cout << "======================================" << endl;
+    cout << "       Игра окончена!" << endl;
+    cout << "======================================" << endl;
     vector<Player*> winners;
     for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-        cout << (**pl) << endl;
+        print_players();
         c_score = (*pl)->getScore();
         if(c_score > max){
             max = c_score;
         }
     }
+    cout << endl;
     for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
         cout << (**pl) << endl;
         if((*pl)->getScore() == max){
@@ -691,13 +695,13 @@ void Game::Endgame() const{
         }
     }
     if(winners.size() > 1){
-        cout << "ПОБЕДИТЕЛИ:" << endl;
+        cout << "       ПОБЕДИТЕЛИ:" << endl;
     } else {
-        cout << "ПОБЕДИТЕЛЬ:" << endl;
+        cout << "       ПОБЕДИТЕЛЬ:" << endl;
     }
     
     for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-        cout << (**pl).get_nick() << endl;
+        cout << "      " <<(**pl).get_nick() << endl;
     }
 }
 
