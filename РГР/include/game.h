@@ -128,6 +128,9 @@ class Employ_Info
         string getManual() const;
         void setManual(string n_man);
         void add_claim(int vac, int id);
+
+        vector<int>* get_claims_for_vacancy(int vac_index);
+        void clear_claims();
     private:
         vector<Card*>* e_profs;
         string manual;
@@ -222,6 +225,9 @@ class Game
         void set_scoreb(int ns);
         void add_scoreb(int as);
         bool score_over() const;
+
+        void assign_professions();
+        void next_round();
 
         void Endgame() const;
 

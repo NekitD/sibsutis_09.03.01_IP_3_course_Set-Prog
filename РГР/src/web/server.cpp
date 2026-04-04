@@ -254,15 +254,48 @@ void player_thread(int socket)
         if(g_status == JOB_CHOICE){
             if(p_status == EMPLOYER){
                 if(strncmp(request, "jchoice", 8) == 0){
-                    // код для распаковки и обработки выбора
-                    //...
+                    // формат распаковки выбора: "1:2,2:1,3:3"
+                    char* token = strtok(output, ",");
+                    while (token != NULL) {
+                        int vac_num, player_num;
+                        sscanf(token, "%d:%d", &vac_num, &player_num);
+                        // vac_num - номер вакансии (1-3)
+                        // player_num - номер выбранного игрока (1 - количество игроков)
+                        // Здесь можно обработать выбор, если нужно переопределить случайный выбор
+                        token = strtok(NULL, ",");
+                    }
+                    GAME->assign_professions(); 
                     GAME->set_player_status(id, WAITING);
                     GAME->setEmployer(GAME->getEmployer() + 1);
                     GAME->setStatus(START);
                     continue;
                 }
-                // упаковать данные для выбора в s_msg
-                //...
+        
+                bzero(s_msg, BUFF_LEN);
+                vector<Card*>* vacancies = GAME->EmployInfo()->getProfs();
+        
+                for (size_t i = 0; i < vacancies->size(); i++) {
+                    char buffer[256];
+                    sprintf(buffer, "Вакансия %d: %s\n", i+1, vacancies->at(i)->get_text().c_str());
+                    strcat(s_msg, buffer);
+            
+                    vector<int>* claimants = GAME->EmployInfo()->get_claims_for_vacancy(i);
+                    strcat(s_msg, "Претенденты: ");
+                    if (claimants && !claimants->empty()) {
+                        for (size_t j = 0; j < claimants->size(); j++) {
+                            char id_str[10];
+                            sprintf(id_str, "%d", claimants->at(j));
+                            strcat(s_msg, GAME->get_player_nick(claimants->at(j)).c_str());
+                            if (j < claimants->size() - 1) strcat(s_msg, ", ");
+                        }
+                    } else {
+                        strcat(s_msg, "нет");
+                    }
+                    strcat(s_msg, "\n\n");
+                }
+        
+                strcat(s_msg, "Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
+                strcat(s_msg, "Пример: 1:2,2:1,3:3");
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
@@ -274,6 +307,7 @@ void player_thread(int socket)
 
 int main()
 {
+    srand(time(NULL));
     pid_t server_id = getpid();
     cout << "ID игры: " << server_id << endl;
     struct sockaddr_in s_addr;
