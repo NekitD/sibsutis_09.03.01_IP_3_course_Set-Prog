@@ -210,6 +210,18 @@ int main()
             strcat(s_msg, "|quest");
             send(c_sock, s_msg, BUFF_LEN, 0);
         }
+
+        if(status == SCORING){
+            int score = 0;
+            do{
+                cout << "Поставьте выступившему оценку от 1 до 5: ";
+                cin >> score;
+            } while(score < 1 || score > 5);
+            sprintf(s_msg, "%d", score);
+            strcat(s_msg, "|score");
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            continue;
+        }
     }
     close(c_sock);
     return 0;

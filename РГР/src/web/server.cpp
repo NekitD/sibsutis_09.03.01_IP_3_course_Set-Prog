@@ -246,7 +246,7 @@ void player_thread(int socket)
                     }
                     continue;
                 }
-                send(socket, "|score|SCORING", BUFF_LEN, 0);
+                send(socket, "||SCORING", BUFF_LEN, 0);
                 continue;
             }
         }
