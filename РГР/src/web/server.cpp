@@ -262,20 +262,17 @@ void player_thread(int socket)
                         GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
                     }
                     send(socket, "||WAITING", BUFF_LEN, 0);
-                    sleep(1);
+                    //sleep(1);
                     continue;
                 }
                 send(socket, "||SCORING", BUFF_LEN, 0);
-                sleep(1);
+                //sleep(1);
                 continue;
             }
         }
 
         if(g_status == JOB_CHOICE){
-            cout << "DEBUG: JOB_CHOICE BEGAN" << endl;
-            cout <<  "DEBUG ID: " << id  << " SOCK: " << socket << " NICK: "<< GAME->get_player_nick(id) << " STATUS: " << p_status << " EMPSTAT = " << EMPLOYER << endl;
             if(p_status == EMPLOYER){
-                cout << "DEBUG: EMPLOYER FOUND" << endl;
                 if(strncmp(request, "jchoice", 8) == 0){
                     // формат распаковки выбора: "1:2,2:1,3:3"
                     char* token = strtok(output, ",");
