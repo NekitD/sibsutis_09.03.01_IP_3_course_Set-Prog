@@ -98,6 +98,7 @@ enum player_status {
     EMPLOYER,
     ANSWERING,
     QUESTIONING,
+    SCORING,
     LEFT
 };
 
@@ -217,6 +218,11 @@ class Game
 
         void open_p(int id) const;
 
+        int get_scoreb() const;
+        void set_scoreb(int ns);
+        void add_scoreb(int as);
+        bool score_over() const;
+
         void Endgame() const;
 
     private:
@@ -230,5 +236,6 @@ class Game
         int employer;
         int answering_num;
         vector<string>* g_questions;
+        int score_buf;
 };
 

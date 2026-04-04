@@ -218,6 +218,54 @@ void player_thread(int socket)
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
+
+        if(g_status == SCORES){
+            if(id != GAME->get_answering_id()){
+                int score = 0;
+                if(strncmp(request, "score", 6) == 0){
+                    if(strncmp(output, "1", 1) == 0){
+                        score = 1;
+                    }else if(strncmp(output, "2", 1) == 0){
+                        score = 2;
+                    }else if(strncmp(output, "3", 1) == 0){
+                        score = 3;
+                    }else if(strncmp(output, "4", 1) == 0){
+                        score = 4;
+                    }else if(strncmp(output, "5", 1) == 0){
+                        score = 5;
+                    }
+                    cout << GAME->get_player_nick(id) << " поставил оценку." << endl;
+                    GAME->add_scoreb(score);
+                    GAME->set_player_status(id, WAITING);
+                    if(GAME->score_over()){
+                        GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
+                        cout << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
+                            << GAME->get_scoreb() << " очков!" << endl;
+                        GAME->setStatus(JOB_CHOICE);
+                        GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
+                    }
+                    continue;
+                }
+                send(socket, "|score|SCORING", BUFF_LEN, 0);
+                continue;
+            }
+        }
+
+        if(g_status == JOB_CHOICE){
+            if(p_status == EMPLOYER){
+                if(strncmp(request, "jchoice", 8) == 0){
+                    // код для получения выбора
+                    //...
+                    GAME->set_player_status(id, WAITING);
+                    GAME->setEmployer(GAME->getEmployer() + 1);
+                    GAME->setStatus(START);
+                    continue;
+                }
+                // упаковать данные для выбора в s_msg
+                //...
+                send(socket, s_msg, BUFF_LEN, 0);
+            }
+        }
     }
     close(socket);
 }
@@ -275,6 +323,10 @@ int main()
         if(status == START){
             GAME->print_players();
             int emp = GAME->getEmployerId();
+            if(emp >= GAME->get_players()->size()){
+                GAME->setStatus(OVER);
+                continue;
+            }
             cout << "==============================================================" << endl;
             cout << "Раунд " << GAME->getEmployer() + 1 << ":" << endl;
             cout << "==============================================================" << endl;
@@ -286,10 +338,13 @@ int main()
         if (status == P_PRE){
             GAME->set_answering_num(1);
             GAME->set_player_status(GAME->get_answering_id(), ANSWERING);
+            continue;
         }
         if(status == P_OPEN){
             GAME->open_p(GAME->get_answering_id());
+            GAME->set_scoreb(0);
             GAME->setStatus(SCORES);
+            continue;
         }
         if(status == OVER){
             GAME->Endgame();

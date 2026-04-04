@@ -573,6 +573,29 @@ void Game::open_p(int id) const{
     p->print_skills();
 }
 
+int Game::get_scoreb() const{
+    return score_buf;
+}
+
+void Game::set_scoreb(int ns){
+    score_buf = ns;
+}
+
+void Game::add_scoreb(int as){
+    score_buf += as;
+}
+
+bool Game::score_over() const{
+    if(status != SCORES){
+        return true;
+    }
+    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
+        if((*p)->getStatus() == SCORING){
+            return false;
+        }
+    }
+    return true;
+}
 
 void Game::Endgame() const{
     int max = 0;

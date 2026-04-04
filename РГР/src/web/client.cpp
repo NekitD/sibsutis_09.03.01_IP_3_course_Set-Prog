@@ -245,6 +245,9 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
     if(strncmp(pstat, "QUESTIONING", 12) == 0){
         status = QUESTIONING;
     }
+    if(strncmp(pstat, "SCORING", 8) == 0){
+        status = SCORING;
+    }
     if(strncmp(pstat, "LEFT", 5) == 0){
         status = LEFT;
     }
