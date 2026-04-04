@@ -195,7 +195,7 @@ class Game
         string get_player_nick(int id) const;
         int get_player_status(int id) const;
         bool isGameReady() const;
-        string Game::get_players_list() const;
+        string get_players_list() const;
 
         void set_player_status(int id, int ns);
         void setStatus(int ns);
