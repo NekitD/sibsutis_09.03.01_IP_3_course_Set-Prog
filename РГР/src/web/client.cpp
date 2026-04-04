@@ -133,6 +133,7 @@ int main()
             if(strncmp(request, "givehist", 9) == 0){
                 string manual;
                 cout << endl;
+                output[0] = ' ';
                 cout << output << endl;
         
                 cli_input(manual);

@@ -71,7 +71,7 @@ void player_thread(int socket)
                 cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
-                cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
+                cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
                 if (GAME->isGameReady()){
                     cout << endl << "   Игра начинается!\n" << endl;
                     send_to_all(SUBS, "Игра начинается!|common|", BUFF_LEN);
@@ -367,7 +367,7 @@ int main()
         return -1;
     }
     cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
-    cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getPnum() << "\n" << endl;
+    cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
     GAME->setStatus(PRE);
     int status;
     for(;;)
