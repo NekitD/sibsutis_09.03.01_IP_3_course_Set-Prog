@@ -386,6 +386,7 @@ int main()
             continue;
         }
         if(status == P_OPEN){
+            cout << endl;
             GAME->open_p(GAME->get_answering_id());
             GAME->set_scoreb(0);
             GAME->setStatus(SCORES);

@@ -186,7 +186,7 @@ int main()
 
             if(strncmp(request, "giveanswerm", 11) == 0){
                 string resume;
-                cout << " Минута пошла! Удачи!" << endl;
+                cout << "   Минута пошла! Удачи!" << endl;
                 cli_input(resume);
                 strcat(s_msg, resume.c_str());
                 strcat(s_msg, "|sendanswer");
@@ -197,7 +197,7 @@ int main()
             if(strncmp(request, "quest", 6) == 0){
                 string answ;
                 cout << "   Вопрос." << endl;
-                cout << output << endl;
+                cout << "   " << output << endl;
                 cout << endl;
                 cout << "   Введите ваш ответ." << endl;
                 cli_input(answ);
