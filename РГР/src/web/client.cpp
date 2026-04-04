@@ -282,12 +282,13 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
 }
 
 void cli_input(string& text){
+    text += " ";
     cout << "(для завершения введите пустую строку или 'END'):\n" << endl;
     cin.ignore();
     int max_len = BUFF_LEN - 300;
     string line;
     while (true) {
-        cout << "(" << text.size() << "/" << max_len << "):";
+        cout << "(" << text.size() << "/" << max_len << "): ";
         getline(cin, line);
         if(text.size() + line.size() > max_len){
             cout << "Не хватает места!" << endl;
