@@ -62,11 +62,23 @@ void* player_thread(void* arg)
         g_status = GAME->getStatus();
         if (rec_l == 0){
             GAME->remPlayer(id);
+            for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
+                if(*itd == id){
+                    SUBS->erase(itd);
+                    break;
+                }
+            }
             break;
         }
         if (rec_l < 0){
             cout << "   Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             GAME->remPlayer(id);
+            for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
+                if(*itd == id){
+                    SUBS->erase(itd);
+                    break;
+                }
+            }
             break;
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
