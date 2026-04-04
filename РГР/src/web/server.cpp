@@ -247,8 +247,10 @@ void player_thread(int socket)
                     cout << "   " << GAME->get_player_nick(id) << " поставил оценку." << endl;
                     GAME->add_scoreb(score);
                     GAME->set_player_status(id, WAITING);
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
+                        cout << endl;
                         cout << "   " << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
                             << GAME->get_scoreb() << " очков!" << endl;
                         GAME->setStatus(JOB_CHOICE);
@@ -276,6 +278,7 @@ void player_thread(int socket)
                     }
                     GAME->assign_professions(); 
                     GAME->set_player_status(id, WAITING);
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     GAME->setEmployer(GAME->getEmployer() + 1);
                     GAME->setStatus(START);
                     continue;
@@ -303,7 +306,7 @@ void player_thread(int socket)
                     }
                     strcat(s_msg, "\n\n");
                 }
-        
+                cout << "   Работодатель " << GAME->get_player_nick(GAME->getEmployerId()) << " выбирает сотрудников..." << endl;
                 strcat(s_msg, " Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
                 strcat(s_msg, " Пример: 1:2,2:1,3:3");
                 strcat(s_msg, "|givejchoice|EMPLOYER");
