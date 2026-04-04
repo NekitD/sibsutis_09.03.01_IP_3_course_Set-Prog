@@ -254,7 +254,7 @@ void player_thread(int socket)
         if(g_status == JOB_CHOICE){
             if(p_status == EMPLOYER){
                 if(strncmp(request, "jchoice", 8) == 0){
-                    // код для получения выбора
+                    // код для распаковки и обработки выбора
                     //...
                     GAME->set_player_status(id, WAITING);
                     GAME->setEmployer(GAME->getEmployer() + 1);
@@ -263,7 +263,9 @@ void player_thread(int socket)
                 }
                 // упаковать данные для выбора в s_msg
                 //...
+                strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
+                continue;
             }
         }
     }
