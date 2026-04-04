@@ -228,7 +228,7 @@ void player_thread(int socket)
         }
 
         if(g_status == SCORES){
-            if(id != GAME->get_answering_id()){
+            if(GAME->get_player_status(id) == SCORING){
                 int score = 0;
                 if(strncmp(request, "score", 6) == 0){
                     if(strncmp(output, "1", 1) == 0){
@@ -388,6 +388,12 @@ int main()
             GAME->open_p(GAME->get_answering_id());
             GAME->set_scoreb(0);
             GAME->setStatus(SCORES);
+            vector<Player*>* tms = GAME->get_players();
+            for(vector<Player*>::iterator pl = tms->begin(); pl != tms->end(); pl++){
+                if((*pl)->get_id() != GAME->get_answering_id()){
+                    (*pl)->setStatus(SCORING);
+                }
+            }
             continue;
         }
         if(status == OVER){
