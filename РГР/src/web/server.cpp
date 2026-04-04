@@ -194,6 +194,7 @@ void player_thread(int socket)
                 if(strncmp(request, "noquest", 8) == 0){
                     cout << "   " <<GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
                     GAME->set_player_status(id, WAITING);
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     if(GAME->no_questions()){
                         GAME->setStatus(P_OPEN);
                     }
@@ -389,6 +390,7 @@ int main()
             cout << endl;
             GAME->open_p(GAME->get_answering_id());
             GAME->set_scoreb(0);
+            cout << endl;
             cout << "   Время для выставления оценок!" << endl;
             GAME->setStatus(SCORES);
             vector<Player*>* tms = GAME->get_players();
