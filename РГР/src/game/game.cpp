@@ -104,7 +104,7 @@ int Player::getScore() const{
 void Player::print_skills() const{
     if(p_skills){
         for(vector<Card*>::const_iterator sk = p_skills->begin(); sk != p_skills->end(); sk++){
-            cout << " - " <<*sk << endl;
+            cout << " - " <<**sk << endl;
         }
     }
 }
