@@ -211,13 +211,10 @@ void player_thread(int socket)
                 continue;
             }
 
-            if(!(GAME->get_questions()->empty())){
-                cout << "DEBUG: Rm answered question" << endl;
-                GAME->rem_question();
-            }
-
             if(strncmp(request, "aquest", 7) == 0){
                 cout <<  GAME->get_player_nick(id) << ": " << output << endl;
+                cout << "DEBUG: Rm answered question" << endl;
+                GAME->rem_question();
             }
             cout << endl;
             cout << "DEBUG: Try to get question" << endl;
