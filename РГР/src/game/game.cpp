@@ -464,17 +464,19 @@ int Game::get_player_status(int id) const{
 void Game::remPlayer(int id){
     for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
         if((*p)->get_id() == id){
+            cout << "   " << get_player_nick(id) << " покинул игру." << endl;
             if (getStatus() == PRE || getStatus() == FULL){
-                cout << "   " << get_player_nick(id) << " покинул игру." << endl;
+                //cout << "   " << get_player_nick(id) << " покинул игру." << endl;
                 g_players->erase(p);
                 cout << "   Игроков: " << getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
                 cout << "   Готовы: " << getRnum() << " / " << MAX_P << "\n" << endl;
             } else {
                 (*p)->setStatus(LEFT);
-                if(getPnum() < MIN_P){
-                    cout << "   Количество игроков меньше " << MIN_P << endl;
-                    setStatus(OVER);
-                }
+                // if(getPnum() < MIN_P){
+                //     cout << "   Количество игроков меньше " << MIN_P << endl;
+                //     setStatus(OVER);
+                // }
+                setStatus(OVER);
             }
             break;
         }
@@ -736,7 +738,7 @@ void Game::Endgame() const{
     cout << endl;
     for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
         cout << (**pl) << endl;
-        if((*pl)->getScore() == max){
+        if((*pl)->getScore() == max && (*pl)->getStatus() != LEFT){
             winners.push_back(*pl);
         }
     }

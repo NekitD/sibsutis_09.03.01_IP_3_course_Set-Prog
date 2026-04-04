@@ -66,6 +66,7 @@ void* player_thread(void* arg)
         }
         if (rec_l < 0){
             cout << "   Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
+            GAME->remPlayer(id);
             break;
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
