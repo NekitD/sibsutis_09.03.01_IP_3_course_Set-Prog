@@ -213,6 +213,7 @@ class Game
         void GiveEmojiToPlayer(Player* player);
 
         void set_answering_num(int na);
+        int get_answering_num() const;
         int get_answering_id() const;
 
         vector<string>* get_questions() const;

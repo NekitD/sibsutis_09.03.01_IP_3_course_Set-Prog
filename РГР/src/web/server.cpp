@@ -258,8 +258,13 @@ void player_thread(int socket)
                         cout << endl;
                         cout << "   " << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
                             << GAME->get_scoreb() << " очков!" << endl;
-                        GAME->setStatus(JOB_CHOICE);
-                        GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
+                        GAME->set_answering_num(GAME->get_answering_num() + 1);
+                        if(GAME->get_answering_id() == GAME->getEmployerId()){
+                            GAME->setStatus(JOB_CHOICE);
+                            GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
+                        }else{
+                            GAME->setStatus(P_PRE);
+                        }
                     }
                     send(socket, "||WAITING", BUFF_LEN, 0);
                     //sleep(1);
@@ -279,9 +284,6 @@ void player_thread(int socket)
                     while (token != NULL) {
                         int vac_num, player_num;
                         sscanf(token, "%d:%d", &vac_num, &player_num);
-                        // vac_num - номер вакансии (1-3)
-                        // player_num - номер выбранного игрока (1 - количество игроков)
-                        // Здесь можно обработать выбор, если нужно переопределить случайный выбор
                         token = strtok(NULL, ",");
                     }
                     GAME->assign_professions(); 
@@ -393,9 +395,9 @@ int main()
             cout << "   Работодатель придумывает историю своей компании..." << endl;
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
+            GAME->set_answering_num(1);
         }
         if (status == P_PRE){
-            GAME->set_answering_num(1);
             GAME->set_player_status(GAME->get_answering_id(), ANSWERING);
             continue;
         }

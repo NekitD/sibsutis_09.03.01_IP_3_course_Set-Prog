@@ -556,6 +556,12 @@ Employ_Info* Game::EmployInfo(){
 void Game::set_answering_num(int na){
     answering_num = na;
 }
+
+
+int Game::get_answering_num() const{
+    return answering_num;
+}
+
 int Game::get_answering_id() const{
     if(getEmployer() + answering_num >= g_players->size()){
         return g_players->at(getEmployer() + answering_num - g_players->size())->get_id();
