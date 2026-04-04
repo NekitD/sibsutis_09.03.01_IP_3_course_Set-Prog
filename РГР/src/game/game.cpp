@@ -628,6 +628,18 @@ void Game::assign_professions() {
     //ShuffleCards(g_profs);
 }
 
+string Game::get_players_list() const {
+    string result;
+    for (auto p : *g_players) {
+        if (p->getStatus() != LEFT && p->get_id() != getEmployerId()) {
+            char buffer[256];
+            sprintf(buffer, "%d) %s\n", p->get_id(), p->get_nick().c_str());
+            result += buffer;
+        }
+    }
+    return result;
+}
+
 
 void Game::Endgame() const{
     int max = 0;
