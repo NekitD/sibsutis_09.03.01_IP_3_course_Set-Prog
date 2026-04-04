@@ -190,9 +190,7 @@ void player_thread(int socket)
         }
 
         if(g_status == QUESTIONS){
-            cout << "QUESTIONS BEGAN" << endl;
             if(GAME->get_player_status(id) == QUESTIONING){
-                cout << "ASK_DEBUG: SENDING " << id <<" ASK ABOUT QUESTION" << endl;
                 if(strncmp(request, "noquest", 8) == 0){
                     cout << GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
                     GAME->set_player_status(id, WAITING);
@@ -209,9 +207,13 @@ void player_thread(int socket)
                 }else{
                     strcat(s_msg, ": ||QUESTIONING");
                 }
-                cout << "ANSWER_DEBUG: SENDING " << id <<" ASK QUESTION" << endl;
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
+            }
+
+            if(!(GAME->get_questions()->empty())){
+                cout << "DEBUG: Rm answered question" << endl;
+                GAME->rem_question();
             }
 
             if(strncmp(request, "aquest", 7) == 0){
@@ -220,14 +222,16 @@ void player_thread(int socket)
             cout << endl;
             cout << "DEBUG: Try to get question" << endl;
             if(!(GAME->get_questions()->empty())){
+                cout << "DEBUG: Quest found" << endl;
                 string qu = *(GAME->get_questions()->begin());
                 cout << qu << endl;
                 strcat(s_msg, qu.c_str());
                 strcat(s_msg, "|quest|ANSWERING");
-                GAME->rem_question();
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
+            cout << "DEBUG: No quest" << endl;
+            send(socket, "||WAITING", BUFF_LEN, 0);
         }
 
         if(g_status == SCORES){
