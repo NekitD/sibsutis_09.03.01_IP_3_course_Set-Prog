@@ -309,6 +309,8 @@ void player_thread(int socket)
                         for (size_t j = 0; j < claimants->size(); j++) {
                             char id_str[10];
                             sprintf(id_str, "%d", claimants->at(j));
+                            strcat(s_msg, id_str);
+                            strcat(s_msg, ") ");
                             strcat(s_msg, GAME->get_player_nick(claimants->at(j)).c_str());
                             if (j < claimants->size() - 1) strcat(s_msg, ", ");
                         }
