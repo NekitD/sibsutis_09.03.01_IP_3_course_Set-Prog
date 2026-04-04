@@ -105,8 +105,8 @@ void player_thread(int socket)
                     continue;
                 }
                 GAME->EmployInfo()->setManual((string)output);
-                cout << "История:" << endl;
-                cout << GAME->EmployInfo()->getManual() << endl;
+                cout << "   История:" << endl;
+                cout << "   " << GAME->EmployInfo()->getManual() << endl;
                 GAME->EmployInfo()->print_profs();
                 cout << endl;
                 send(socket, "||WAITING", BUFF_LEN, 0);
@@ -219,7 +219,7 @@ void player_thread(int socket)
             
             if(!(GAME->get_questions()->empty())){
                 string qu = *(GAME->get_questions()->begin());
-                cout << qu << endl;
+                cout << "   " << qu << endl;
                 strcat(s_msg, qu.c_str());
                 strcat(s_msg, "|quest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
@@ -248,7 +248,7 @@ void player_thread(int socket)
                     GAME->set_player_status(id, WAITING);
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
-                        cout << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
+                        cout << "   " << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
                             << GAME->get_scoreb() << " очков!" << endl;
                         GAME->setStatus(JOB_CHOICE);
                         GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
@@ -318,7 +318,7 @@ int main()
 {
     srand(time(NULL));
     pid_t server_id = getpid();
-    cout << "ID игры: " << server_id << endl;
+    cout << "   ID игры: " << server_id << endl;
     struct sockaddr_in s_addr;
 
     int sm_socket = socket(AF_INET, SOCK_STREAM, 0);

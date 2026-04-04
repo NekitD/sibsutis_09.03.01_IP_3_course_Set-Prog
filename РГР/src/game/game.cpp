@@ -104,7 +104,7 @@ int Player::getScore() const{
 void Player::print_skills() const{
     if(p_skills){
         for(vector<Card*>::const_iterator sk = p_skills->begin(); sk != p_skills->end(); sk++){
-            cout << " - " <<**sk << endl;
+            cout << "    - " <<**sk << endl;
         }
     }
 }
@@ -374,12 +374,12 @@ void Game::print_emoji() const{
 }
 void Game::print_players() const{
     if (g_players == nullptr || g_players->empty()){
-        cout << "НЕТ ИГРОКОВ" << endl;
+        cout << "   НЕТ ИГРОКОВ" << endl;
     }
     if(g_players){
         cout << "======ИГРОКИ======" << endl;
         for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
-            cout << **p << endl;
+            cout << "   " << **p << endl;
         }
         cout << "==================" << endl;
     }
@@ -397,9 +397,9 @@ void Game::addPlayer(char* nick, int id){
     Player* p = new Player(nick, id);
     g_players->push_back(p);
     p_num = getPnum();
-    cout << nick << " присоединился к игре!" << endl;
-    cout << "Игроков: " << getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
-    cout << "Готовы: " << getRnum() << " / " << getPnum() << "\n" << endl;
+    cout << "   " << nick << " присоединился к игре!" << endl;
+    cout << "   Игроков: " << getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
+    cout << "   Готовы: " << getRnum() << " / " << getPnum() << "\n" << endl;
     if(getPnum() >= MAX_P){
         setStatus(FULL);
     }
@@ -440,14 +440,14 @@ void Game::remPlayer(int id){
     for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
         if((*p)->get_id() == id){
             if (getStatus() == PRE || getStatus() == FULL){
-                cout << get_player_nick(id) << " покинул игру." << endl;
+                cout << "   " << get_player_nick(id) << " покинул игру." << endl;
                 g_players->erase(p);
-                cout << "Игроков: " << getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
-                cout << "Готовы: " << getRnum() << " / " << getPnum() << "\n" << endl;
+                cout << "   Игроков: " << getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
+                cout << "   Готовы: " << getRnum() << " / " << getPnum() << "\n" << endl;
             } else {
                 (*p)->setStatus(LEFT);
                 if(getPnum() < MIN_P){
-                    cout << "Количество игроков меньше " << MIN_P << endl;
+                    cout << "   Количество игроков меньше " << MIN_P << endl;
                     setStatus(OVER);
                 }
             }
