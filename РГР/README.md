@@ -20,20 +20,20 @@
 
 Библиотека Назначение
 
-iostream Ввод/вывод данных
-cstdio / stdio.h Стандартный C I/O
-string Работа со строками
-vector Динамические массивы
-cstring / string.h Строковые операции C
-unistd.h POSIX API (сокеты, sleep)
-algorithm Алгоритмы STL
-sys/types.h Системные типы
-sys/socket.h Работа с сокетами
-netinet/in.h IPv4 адресация
-netdb.h DNS операции
-time.h Работа со временем
-arpa/inet.h IP функции
-thread Многопоточность C++
+    iostream Ввод/вывод данных
+    cstdio / stdio.h Стандартный C I/O
+    string Работа со строками
+    vector Динамические массивы
+    cstring / string.h Строковые операции C
+    unistd.h POSIX API (сокеты, sleep)
+    algorithm Алгоритмы STL
+    sys/types.h Системные типы
+    sys/socket.h Работа с сокетами
+    netinet/in.h IPv4 адресация
+    netdb.h DNS операции
+    time.h Работа со временем
+    arpa/inet.h IP функции
+    thread Многопоточность C++
 
 БЫСТРЫЙ ЗАПУСК
 ===
