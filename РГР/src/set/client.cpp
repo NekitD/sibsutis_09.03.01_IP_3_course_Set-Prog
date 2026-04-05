@@ -21,6 +21,9 @@
 и игрок пытается подсоединиться к лобби, адрес и порт которого ему прислал сервер
 и там с игроком уже общается лобби через сокет, который оно выделяет для него*/
 
+#define CHATTING 3000 
+
+
 #define MAX_DELAY 10
     
 
@@ -78,7 +81,8 @@ int main()
     //============================================================
     // 1. ПОИСК СЕРВЕРА
     //============================================================
-    for(;;){
+    for(;;)
+    {
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
         bzero(output, BUFF_LEN);
@@ -195,6 +199,11 @@ int main()
                 continue;
             }
 
+            if(strncmp(request, "online", 7) == 0){
+                cout << "Пользователь уже онлайн!" << endl;
+                continue;
+            }
+
             if(status == SUCCESS || status == NO_ANSWER){
                 break;
             }
@@ -213,7 +222,8 @@ int main()
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
     //============================================================
-    for(;;){
+    for(;;)
+    {
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
         bzero(output, BUFF_LEN);
@@ -369,15 +379,22 @@ int main()
         }
 
         if(strncmp(command.c_str(), "chat", 5) == 0){
-            string target_nick;
+            string target_id;
             cout << "   Введите id игрока для чата: ";
-            cin >> target_nick;
+            cin >> target_id;
     
             bzero(s_msg, BUFF_LEN);
-            strcat(s_msg, target_nick.c_str());
+            strcat(s_msg, target_id.c_str());
             strcat(s_msg, "|chatrequest");
             send(tos_sock, s_msg, BUFF_LEN, 0);
-            continue;
+            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            dl_msg(&ans, MAX_DELAY);
+            cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
+            if(ans > 0){
+                cout << output << endl;
+                status = CHATTING;
+                break;
+            }
         }
 
 
@@ -399,20 +416,32 @@ int main()
             }
         }
 
-        if(ans <= 0) cout << "\nСЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+        if(ans <= 0)
+        {
+            cout << "\nСЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+        }
 
+        cout << "Неизвестная команда '" << command << "'" << endl;
     }
 
     //============================================================
     // 3. Чат с другим игроком
     //============================================================
 
+    if(status == CHATTING)
+    {
+        for(;;)
+        {
+
+        }
+    }
     
     
     //============================================================
     // 4. Игра
     //============================================================
-    for(;;){
+    for(;;)
+    {
         bzero(s_msg, BUFF_LEN);
         bzero(a_msg, BUFF_LEN);
         bzero(output, BUFF_LEN);
@@ -436,7 +465,6 @@ int main()
 
         if(status == WAIT_ACCEPT)
         {
-            // Надо будет потом добавить таймаут и возвращение к поиску игры.
             //continue;
         }
         if(status == PRE_TO_PLAY){
