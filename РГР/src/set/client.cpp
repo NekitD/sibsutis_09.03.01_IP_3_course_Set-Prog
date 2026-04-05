@@ -39,7 +39,6 @@ int main()
 
     int c_sock = socket(AF_INET, SOCK_STREAM, 0);
     int chat_sock = socket(AF_INET, SOCK_STREAM, 0);
-    int c_sock = socket(AF_INET, SOCK_STREAM, 0);
 
     struct sockaddr_in c_addr;
     struct sockaddr_in s_addr;
