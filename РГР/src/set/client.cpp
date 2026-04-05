@@ -16,6 +16,12 @@
 #define NO_ANSWER 500
 #define EXIT 1000
 
+#define REDIRECT 2000 
+/*Сокет сервера прекращает соединение с игроком 
+и игрок пытается подсоединиться к лобби, адрес и порт которого ему прислал сервер
+и там с игроком уже общается лобби через сокет, который оно выделяет для него*/ 
+    
+
 using namespace std;
 
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
