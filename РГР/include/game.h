@@ -1,3 +1,5 @@
+// СТАРТАП-ИГРА (БИБЛИОТЕКА)
+
 #include <iostream>
 #include <cstdio>
 #include <string>

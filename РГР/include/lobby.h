@@ -1,3 +1,4 @@
+// СТАРТАП-ЛОББИ (БИБЛИОТЕКА)
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,6 +13,12 @@
 #include <cstring>
 
 using namespace std;
+
+typedef struct player_args {
+    int socket;
+    Game* game;
+    vector<int>* subs;
+} player_args;
 
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);

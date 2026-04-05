@@ -1,4 +1,4 @@
-//СТАРТАП-БИБЛИОТЕКА
+// СТАРТАП-ИГРА (ИСХОДНЫЙ КОД)
 #include "game.h"
 
 int get_line_b(char* n_line, char* o_line, int start, int len, char b){
