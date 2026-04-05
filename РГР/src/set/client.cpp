@@ -1,4 +1,4 @@
-//СТАРТАП-КЛИЕНТ
+// КЛИЕНТ (ИСХОДНЫЙ КОД)
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -39,7 +39,7 @@ int main()
 
     int c_sock = socket(AF_INET, SOCK_STREAM, 0);
     int chat_sock = socket(AF_INET, SOCK_STREAM, 0);
-    int tos_sock = socket(AF_INET, SOCK_STREAM, 0);
+    int c_sock = socket(AF_INET, SOCK_STREAM, 0);
 
     struct sockaddr_in c_addr;
     struct sockaddr_in s_addr;
@@ -47,7 +47,7 @@ int main()
     char g_host[BUFF_LEN] = "";
     int g_port = 0;
 
-    if(c_sock < 0 || chat_sock < 0 || tos_sock < 0){
+    if(c_sock < 0 || chat_sock < 0 || c_sock < 0){
         cout << "НЕ УДАЛОСЬ СОЗДАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
@@ -59,7 +59,7 @@ int main()
     
     if(bind(c_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0 
     || bind(chat_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in) < 0 
-    || bind(tos_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in) < 0))) {
+    )) {
         cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
@@ -113,7 +113,7 @@ int main()
         bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length) ;
         s_addr.sin_port = htons(g_port);
 
-        if (connect(tos_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
+        if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
             cout << "   СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!" << endl;
             cout << endl;
             continue;
@@ -146,8 +146,8 @@ int main()
                     strcat(s_msg, ":");
                     strcat(s_msg, password.c_str());
                     strcat(s_msg, "|register");
-                    send(tos_sock, s_msg, BUFF_LEN, 0);
-                    ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+                    send(c_sock, s_msg, BUFF_LEN, 0);
+                    ans = recv(c_sock, a_msg, BUFF_LEN, 0);
                     status = LOGGING;
                     dl_msg(&ans, MAX_DELAY);
                     if(ans > 0){
@@ -181,8 +181,8 @@ int main()
             strcat(s_msg, ":");
             strcat(s_msg, password.c_str());
             strcat(s_msg, "|login");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             status = NO_ANSWER;
             dl_msg(&ans, MAX_DELAY);
 
@@ -257,8 +257,8 @@ int main()
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "ps -a", 6) == 0){
             strcat(s_msg, "|getallplayers");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
@@ -268,8 +268,8 @@ int main()
 
         if(strncmp(command.c_str(), "ps", 2) == 0){
             strcat(s_msg, "|getplayers");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
@@ -282,8 +282,8 @@ int main()
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "rate", 5) == 0){
             strcat(s_msg, "|rate");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
@@ -296,8 +296,8 @@ int main()
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "ls", 5) == 0){
             strcat(s_msg, "|getlobby");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
@@ -326,8 +326,8 @@ int main()
             strcat(s_msg, "|makelob:");
             sprintf(s_msg, "%s:", name);
             sprintf(s_msg, "%d", num);
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
@@ -347,7 +347,7 @@ int main()
     
             strcat(s_msg, "|getlobbyaddr:");
             sprintf(s_msg, "%d", lobby_port);
-            send(tos_sock, s_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
     
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
@@ -356,7 +356,7 @@ int main()
                 lobby_addr.sin_family = AF_INET;
                 inet_aton(output, &lobby_addr.sin_addr);
                 lobby_addr.sin_port = lobby_port;
-                if(connect(tos_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
+                if(connect(c_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
                     cout << "Не удалось подключится к лобби." << endl;
                     continue;
                 }
@@ -369,8 +369,8 @@ int main()
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "chats", 6) == 0){
             strcat(s_msg, "|getchats");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
@@ -386,8 +386,8 @@ int main()
             bzero(s_msg, BUFF_LEN);
             strcat(s_msg, target_id.c_str());
             strcat(s_msg, "|chatrequest");
-            send(tos_sock, s_msg, BUFF_LEN, 0);
-            ans = recv(tos_sock, a_msg, BUFF_LEN, 0);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){

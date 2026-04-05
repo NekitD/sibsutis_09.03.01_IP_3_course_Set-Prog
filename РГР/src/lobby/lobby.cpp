@@ -1,10 +1,13 @@
-// СТАРТАП-ЛОББИ
+// СТАРТАП-ЛОББИ (ИСХОДНЫЙ КОД)
 
 #include "lobby.h"
 
 void* player_thread(void* arg)
 {
-    int socket = (int)(long)arg;
+    player_args* pargs = (player_args*)arg;
+    int socket = pargs->socket;
+    Game* GAME = pargs->game;
+    vector<int>* SUBS = pargs->subs;
     int id = 0;
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
@@ -332,19 +335,22 @@ void* player_thread(void* arg)
     pthread_exit(0);
 }
 
-void* Lobby()
+void* Lobby(void* arg)
 {
+
+    int sm_socket = (int)(long)arg;
+    vector<int>* SUBS = new vector<int>;
+    Game* GAME = new Game;
+
     srand(time(NULL));
-    pid_t server_id = getpid();
-    cout << "   ID игры: " << server_id << endl;
+
     struct sockaddr_in s_addr;
 
-    int sm_socket = socket(AF_INET, SOCK_STREAM, 0);
     int ss_socket = 0; 
 
     if (sm_socket < 0) {
         cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ИГРУ!" << endl;
-        return -1;
+        return;
     }
 
     bzero((char*)&s_addr, sizeof(struct sockaddr_in));
@@ -354,19 +360,19 @@ void* Lobby()
 
     if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ИГРУ!" << endl;
-        return -1;
+        return;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
     if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
-        return -1;
+        return;
     }
     cout << "   АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "   ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
 
     if(listen(sm_socket, MAX_P) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
-        return -1;
+        return;
     }
     cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
     cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
@@ -379,7 +385,11 @@ void* Lobby()
             ss_socket = accept(sm_socket, 0, 0);
             SUBS->push_back(ss_socket);
             pthread_t thread_id;
-            pthread_create(&thread_id, NULL, player_thread, (void*)(long)ss_socket);
+            player_args pargs;
+            pargs.game = GAME;
+            pargs.subs = SUBS;
+            pargs.socket = ss_socket;
+            pthread_create(&thread_id, NULL, player_thread, (void*)&pargs);
             pthread_detach(thread_id);
             sleep(1);
             continue;
