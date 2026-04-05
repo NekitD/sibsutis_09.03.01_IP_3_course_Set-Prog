@@ -1,18 +1,6 @@
 //СТАРТАП-БИБЛИОТЕКА
 #include "game.h"
 
-// int get_line_b(char* n_line, char* o_line, int start, int len, char b){
-//     char c;
-//     for(int i = 0, j = start; i < len, j < len; i++, j++){
-//         c = o_line[j];
-//         if(c == b){
-//             return j + 1;
-//         }
-//         n_line[i] = c;
-//     }
-//     return len - 1;
-// }
-
 int get_line_b(char* n_line, char* o_line, int start, int len, char b){
     if (start >= len) {
         n_line[0] = '\0';
