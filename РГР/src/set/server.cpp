@@ -73,7 +73,7 @@ int main()
     {
         ss_socket = accept(sm_socket, 0, 0);
         pthread_t thread_id;
-        pthread_create(&thread_id, NULL, player_thread, (void*)&ss_socket);
+        pthread_create(&thread_id, NULL, user_thread, (void*)&ss_socket);
         pthread_detach(thread_id);
 
         // СЕРВЕР ПОКА ПУСТ
