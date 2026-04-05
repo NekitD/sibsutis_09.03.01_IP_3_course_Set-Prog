@@ -10,8 +10,9 @@
 #include <arpa/inet.h>
 //#include <thread> 
 #include <pthread.h>
-#include "game.h"
 #include <cstring>
+#include "game.h"
+#include "lobby.h"
 
 using namespace std;
 
