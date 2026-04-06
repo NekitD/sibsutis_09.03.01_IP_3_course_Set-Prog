@@ -18,7 +18,7 @@ class StartupDbContext {
 
         bool auth(string login, string password);
         bool reg(string login, string password);
-        char* get_games() const;
+        char* get_lobbies() const;
         char* get_players_on()const;
         char* get_players_all()const;
         char* get_rating() const;

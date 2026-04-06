@@ -348,19 +348,24 @@ int main()
             cout << "   Введите порт лобби: ";
             cin >> lobby_port;
     
-            strcat(s_msg, "|getlobbyaddr:");
+            strcat(s_msg, "|join:");
             sprintf(s_msg, "%d", lobby_port);
             send(c_sock, s_msg, BUFF_LEN, 0);
     
             dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
-                sockaddr_in lobby_addr;
-                lobby_addr.sin_family = AF_INET;
-                inet_aton(output, &lobby_addr.sin_addr);
-                lobby_addr.sin_port = lobby_port;
-                if(connect(c_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
-                    cout << "Не удалось подключится к лобби." << endl;
+                if(strncmp(request, "allow", 6) == 0){
+                    sockaddr_in lobby_addr;
+                    lobby_addr.sin_family = AF_INET;
+                    inet_aton(output, &lobby_addr.sin_addr);
+                    lobby_addr.sin_port = lobby_port;
+                    if(connect(c_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
+                        cout << "Не удалось подключится к лобби." << endl;
+                        continue;
+                    }
+                } else {
+                    cout << "Не удалось найти указанное лобби." << endl;
                     continue;
                 }
             }

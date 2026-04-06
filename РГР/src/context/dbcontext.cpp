@@ -16,7 +16,7 @@ bool StartupDbContext::reg(string login, string password){
 
 }
 
-char* StartupDbContext::get_games() const{
+char* StartupDbContext::get_lobbies() const{
 
 }
 char* StartupDbContext::get_players_on()const{

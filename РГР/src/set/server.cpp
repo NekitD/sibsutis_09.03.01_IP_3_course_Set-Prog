@@ -43,10 +43,52 @@ void* user_thread(void* arg)
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
 
+        if(strncmp(request, "getplayers", 11) == 0){
+            send(socket, CONTEXT->get_players_on(), BUFF_LEN, 0);
+            continue;
+        }
 
-        
+        if(strncmp(request, "getallplayers", 14) == 0){
+            send(socket, CONTEXT->get_players_all(), BUFF_LEN, 0);
+            continue;
+        }
 
+        if(strncmp(request, "rate", 5) == 0){
+            send(socket, CONTEXT->get_rating(), BUFF_LEN, 0);
+            continue;
+        }
 
+        if(strncmp(request, "mkl", 4) == 0){
+            char* name;
+            int num;
+            //считать name и num из output
+            if(CONTEXT->add_lobby(name, num)){
+                send(socket, "|success", BUFF_LEN, 0);
+            }else{
+                send(socket, "|NO", BUFF_LEN, 0);
+            }
+            continue;
+        }
+
+        if(strncmp(request, "join", 5) == 0){
+            int id = 0;
+            //считать id из request
+            if(CONTEXT->join_lobby(id)){
+                send(socket, "|allow", BUFF_LEN, 0);
+            }else{
+                send(socket, "|NO", BUFF_LEN, 0);
+            }
+            continue;
+        }
+
+        if(strncmp(request, "chats", 6) == 0){
+            send(socket, CONTEXT->get_chats(), BUFF_LEN, 0);
+            continue;
+        }
+
+        // чат с игроком открывается в обход сервера
+
+        send(socket, " ", 2, 0);
     }
     close(socket);
     pthread_exit(0);
