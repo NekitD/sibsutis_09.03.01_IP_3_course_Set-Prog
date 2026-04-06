@@ -12,8 +12,6 @@
 #include <pthread.h>
 #include <cstring>
 #include "lobby.h"
-#include <mysql/mysql.h>
-#include <memory>
 
 using namespace std;
 
