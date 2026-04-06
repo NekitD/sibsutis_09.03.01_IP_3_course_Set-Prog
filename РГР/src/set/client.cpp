@@ -229,6 +229,7 @@ int main()
             cout << "       Пароль: ";
             disableEcho();
             cin >> password;
+            cout << endl;
             enableEcho();
             strcat(s_msg, login.c_str());
             strcat(s_msg, ":");
@@ -270,7 +271,6 @@ int main()
         }
     }
 
-    cout << endl;
     cout << "           Вы успешно вошли на сервер!" << endl;
     cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
     
