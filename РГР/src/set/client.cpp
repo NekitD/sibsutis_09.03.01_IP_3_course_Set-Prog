@@ -110,7 +110,7 @@ int main()
         cin >> g_host;
         if(strncmp(g_host, "exit", 5) == 0){
             char conf = ' ';
-            cout << "===========Выход из игры!===========" << endl;
+            cout << "=======================Выход из игры!=======================" << endl;
             do{
                 cout << "       Вы уверены, что хотите выйти? (y/N): ";
                 cin >> conf;
@@ -464,7 +464,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
 
         if(strncmp(command.c_str(), "exit", 5) == 0){
             char conf = ' ';
-            cout << "===========Выход из игры!===========" << endl;
+            cout << "=======================Выход из игры!=======================" << endl;
             do{
                 cout << "       Вы уверены, что хотите выйти? (y/N): ";
                 cin >> conf;
