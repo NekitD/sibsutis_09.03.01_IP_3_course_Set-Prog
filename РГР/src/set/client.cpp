@@ -312,6 +312,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl; --- В ДОЛГИЙ ЯЩИК
             //cout << "'report [id игрока]' - отправить жалобу на игрока." << endl; --- В ДОЛГИЙ ЯЩИК
             cout << "'exit' - выйти." << endl;
+            continue;
         }
 
         //--------------------------------------------------------------------
