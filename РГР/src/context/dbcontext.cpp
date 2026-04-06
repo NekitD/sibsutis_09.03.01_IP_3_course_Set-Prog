@@ -2,17 +2,17 @@
 #include "dbcontext.h"
 
 
-StartupDbContext::StartupDbContext(string _address, string admin, string pass, int _port): address(_address), port(_port){
-    if(mysql_library_init(0, NULL, NULL)){
-        cout << "ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ SQL-библиотеку" << endl;
-        exit(1);
-    }
-    connect = mysql_init(NULL);
-    if(connect == NULL){
-        cout << "ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ СОЕДИНЕНИЕ" << endl;
-        exit(1);
-    }
-    if(mysql_real_connect(connect, S_ADDRESS, admin.c_str(), pass.c_str(), DATABASE, 0, NULL, 0) == NULL){
+StartupDbContext::StartupDbContext(string _address, int _port, string _database, string _user, string _password):
+address(_address), port(_port), database(_database), user(_user), password(_password)
+{
+    string conn_str = "host=" + address + " " +
+                    "port=" + to_string(port) + " " +
+                    "dbname=" + database + " " +
+                    "user=" + user + " " +
+                    "password=" + password + " ";
+
+    conn = new connection(conn_str);
+    if(!conn->is_open()){
         cout << "ОШИБКА: НЕ УДАЛОСЬ УСТАНОВИТЬ СОЕДИНЕНИЕ" << endl;
         exit(1);
     }
@@ -20,9 +20,11 @@ StartupDbContext::StartupDbContext(string _address, string admin, string pass, i
 }
 
 StartupDbContext::~StartupDbContext(){
-    mysql_close(connect);
-    delete connect;
-    mysql_library_end();
+    if(conn){
+        conn->close();
+        delete conn;
+        conn = nullptr;
+    }
 }
 
 bool StartupDbContext::auth(string login, string password){

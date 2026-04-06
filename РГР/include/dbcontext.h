@@ -1,6 +1,7 @@
 // КОНТЕКСТ БАЗЫ ДАННЫХ (БИБЛИОТЕКА)
 #include <iostream>
 #include <mysql/mysql.h>
+#include <pqxx/pqxx>
 #include <string>
 #include <memory>
 
@@ -10,12 +11,13 @@
 
 
 using namespace std;
+using namespace pqxx;
 
 
 class StartupDbContext {
     
     public:
-        StartupDbContext(string _address, string admin, string pass, int _port);
+        StartupDbContext(string _address, int _port, string _database, string _user, string _password);
         ~StartupDbContext();
 
         bool auth(string login, string password);
@@ -32,5 +34,8 @@ class StartupDbContext {
     private:
         string address;
         int port;
-        MYSQL* connect;
+        connection* conn;
+        string database;
+        string user;
+        string password;
 };
