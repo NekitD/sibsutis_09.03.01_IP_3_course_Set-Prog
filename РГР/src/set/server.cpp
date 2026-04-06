@@ -18,7 +18,7 @@
 
 using namespace std;
 
-StartupDbContext* CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT);
+StartupDbContext* CONTEXT;
 
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
@@ -159,7 +159,13 @@ int main()
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ СЕРВЕР!" << endl;
         return -1;
     }
-
+    string admin;
+    string pswrd;
+    cout << "Ser login: ";
+    cin >> admin;
+    cout << "Ser password: ";
+    cin >> pswrd;
+    CONTEXT = new StartupDbContext(S_ADDRESS, admin, pswrd, S_PORT);
     // Приём пользователей
     for(;;)
     {

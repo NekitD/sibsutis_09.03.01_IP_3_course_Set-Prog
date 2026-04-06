@@ -6,6 +6,7 @@
 
 #define S_ADDRESS "localhost"
 #define S_PORT 5432
+#define DATABASE "StartupDatabase"
 
 
 using namespace std;
@@ -14,7 +15,7 @@ using namespace std;
 class StartupDbContext {
     
     public:
-        StartupDbContext(string _address, int _port);
+        StartupDbContext(string _address, string admin, string pass, int _port);
         ~StartupDbContext();
 
         bool auth(string login, string password);
@@ -31,4 +32,5 @@ class StartupDbContext {
     private:
         string address;
         int port;
+        MYSQL* connect;
 };
