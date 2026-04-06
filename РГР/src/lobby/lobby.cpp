@@ -350,7 +350,7 @@ void* Lobby(void* arg)
 
     if (sm_socket < 0) {
         cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ИГРУ!" << endl;
-        return;
+        return NULL;
     }
 
     bzero((char*)&s_addr, sizeof(struct sockaddr_in));
@@ -360,19 +360,19 @@ void* Lobby(void* arg)
 
     if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ИГРУ!" << endl;
-        return;
+        return NULL;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
     if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
-        return;
+        return NULL;
     }
     cout << "   АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "   ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
 
     if(listen(sm_socket, MAX_P) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
-        return;
+        return NULL;
     }
     cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
     cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
@@ -438,7 +438,7 @@ void* Lobby(void* arg)
         }
     }
     close(sm_socket);
-    return 0;
+    return NULL;
 }
 
 

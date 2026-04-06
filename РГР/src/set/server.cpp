@@ -11,7 +11,6 @@
 //#include <thread> 
 #include <pthread.h>
 #include <cstring>
-#include "game.h"
 #include "lobby.h"
 
 using namespace std;
