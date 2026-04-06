@@ -12,18 +12,40 @@
 #include <pthread.h>
 #include <cstring>
 #include "lobby.h"
+#include "dbcontext.h"
+
+#define MAX_USERS 100
 
 using namespace std;
 
+StartupDbContext* CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT);
 
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
 
 void* user_thread(void* arg)
 {
-    int socket = (int)(long)arg;
+    int socket = (int)arg;
+    char s_msg[BUFF_LEN] = "";
+    char a_msg[BUFF_LEN] = "";
+    //--------------------------------
+    char output[BUFF_LEN] = "";
+    char request[BUFF_LEN] = "";
+    //--------------------------------
+    int rec_l = 0;
+    // Обработка запросов пользователей
     for(;;)
     {
+        recv(rec_l, a_msg, BUFF_LEN, 0);
+        if(rec_l <= 0){
+            close(socket);
+            pthread_exit(0);
+        }
+        ser_decode_msg(a_msg, BUFF_LEN, output, request);
+
+
+        
+
 
     }
     close(socket);
@@ -37,11 +59,11 @@ int main()
     cout << "   ID сервера: " << server_id << endl;
     struct sockaddr_in s_addr;
 
-    int sm_socket = socket(AF_INET, SOCK_STREAM, 0);
-    int ss_socket = 0; 
+    int ser_socket = socket(AF_INET, SOCK_STREAM, 0);
+    int usr_socket = 0; 
 
-    if (sm_socket < 0) {
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ИГРУ!" << endl;
+    if (ser_socket < 0) {
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ЗАПУСТИТЬ СЕРВЕР!" << endl;
         return -1;
     }
 
@@ -50,38 +72,33 @@ int main()
     s_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     s_addr.sin_port = 0;
 
-    if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
+    if(bind(ser_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ СЕРВЕР!" << endl;
         return -1;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
-    if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
+    if (getsockname(ser_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ СЕРВЕРА!" << endl;
         return -1;
     }
     cout << "   АДРЕС СЕРВЕРА: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "   ПОРТ СЕРВЕРА: " << ntohs(s_addr.sin_port) << endl;
 
-    if(listen(sm_socket, MAX_P) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
+    if(listen(ser_socket, MAX_USERS) < 0){
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ СЕРВЕР!" << endl;
         return -1;
     }
 
-    int status;
+    // Приём пользователей
     for(;;)
     {
-        ss_socket = accept(sm_socket, 0, 0);
+        usr_socket = accept(ser_socket, 0, 0);
         pthread_t thread_id;
-        pthread_create(&thread_id, NULL, user_thread, (void*)&ss_socket);
+        pthread_create(&thread_id, NULL, user_thread, (void*)&usr_socket);
         pthread_detach(thread_id);
 
-        if(ss_socket > 0){
-            cout << "DEBUG: Присоединение" << endl;
-        }
-
-        // СЕРВЕР ПОКА ПУСТ
     }
-    close(sm_socket);
+    close(ser_socket);
     return 0;
 }
 
