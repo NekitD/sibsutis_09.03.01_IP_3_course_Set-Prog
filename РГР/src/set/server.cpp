@@ -36,7 +36,7 @@ void* user_thread(void* arg)
     // Обработка запросов пользователей
     for(;;)
     {
-        recv(rec_l, a_msg, BUFF_LEN, 0);
+        rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if(rec_l <= 0){
             close(socket);
             pthread_exit(0);
@@ -59,42 +59,19 @@ void* user_thread(void* arg)
         }
 
         if(strncmp(request, "makelob", 8) == 0){
+            // output содержит "название:количество"
+            char name[BUFF_LEN] = "";
             int num = 0;
-            char c = ' ';
-            char* name = "";
-            int count = 0;
-            while(c != ':'){
-                c = request[count];
-                if(c == '\0'){
-                    num = -1;
-                    break;
-                }
-                sprintf(name, "%c", c);
-                count++;
-            }
-            if(num < 0){
-                send(socket, "|NO", BUFF_LEN, 0);
-                continue;
-            }
-            c = request[count + 1];
-            if(c == '3'){
-                num = 3;
-            }else if(c == '4'){
-                num = 4;
-            }else if(c == '5'){
-                num = 5;
-            }else if(c == '6'){
-                num = 6;
-            }
-
+            sscanf(output, "%[^:]:%d", name, &num);
+    
             if(num < 3 || num > 6){
-                send(socket, "|NO", BUFF_LEN, 0);
+            send(socket, "|NO", BUFF_LEN, 0);
                 continue;
             }
-
+    
             if(CONTEXT->add_lobby(name, num)){
                 send(socket, "|success", BUFF_LEN, 0);
-            }else{
+            } else {
                 send(socket, "|NO", BUFF_LEN, 0);
             }
             continue;

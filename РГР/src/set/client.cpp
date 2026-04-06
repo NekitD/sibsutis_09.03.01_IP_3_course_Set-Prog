@@ -339,9 +339,9 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             if(num == 0){
                 continue;
             }
-            strcat(s_msg, "|makelob:");
             sprintf(s_msg, "%s:", name);
             sprintf(s_msg, "%d", num);
+            strcat(s_msg, "|makelob");
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
