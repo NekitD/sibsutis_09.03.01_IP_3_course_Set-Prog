@@ -75,6 +75,10 @@ int main()
         pthread_create(&thread_id, NULL, user_thread, (void*)&ss_socket);
         pthread_detach(thread_id);
 
+        if(ss_socket > 0){
+            cout << "DEBUG: Присоединение" << endl;
+        }
+
         // СЕРВЕР ПОКА ПУСТ
     }
     close(sm_socket);
