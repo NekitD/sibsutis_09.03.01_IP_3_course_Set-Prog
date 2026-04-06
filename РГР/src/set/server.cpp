@@ -160,7 +160,7 @@ int main()
     cin >> pswrd;
     cout << endl;
     enableEcho();
-    CONTEXT = new StartupDbContext(S_ADDRESS, admin, pswrd, S_PORT);
+    CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT, DATABASE, admin, pswrd);
     // Приём пользователей
     for(;;)
     {
