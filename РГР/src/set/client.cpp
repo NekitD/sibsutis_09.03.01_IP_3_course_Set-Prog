@@ -106,7 +106,7 @@ int main()
         bzero(a_msg, BUFF_LEN);
         bzero(output, BUFF_LEN);
         bzero(request, BUFF_LEN);
-        cout << "   ВВЕДИТЕ АДРЕС СЕРВЕРА (или exit, чтобы выйти): ";
+        cout << "\n   ВВЕДИТЕ АДРЕС СЕРВЕРА (или exit, чтобы выйти): ";
         cin >> g_host;
         if(strncmp(g_host, "exit", 5) == 0){
             char conf = ' ';

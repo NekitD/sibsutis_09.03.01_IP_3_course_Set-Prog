@@ -57,6 +57,43 @@ void* user_thread(void* arg)
             pthread_exit(0);
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
+        
+        if(strncmp(request, "login", 6) == 0){
+            string login_pass = output;
+            size_t separator = login_pass.find(':');
+
+            string login = login_pass.substr(0, separator);
+            string password = login_pass.substr(separator + 1);
+
+            int lstat = CONTEXT->auth(login, password);
+            if(lstat == L_WRONG){
+                send(socket, "|wrong|", BUFF_LEN, 0);
+            }else if (lstat == L_ONLINE){
+                send(socket, "|online|", BUFF_LEN, 0);
+            }else if (lstat == L_SUCCESS){
+                send(socket, "|success|", BUFF_LEN, 0);
+            }
+            continue;
+        }
+
+        if(strncmp(request, "register", 9) == 0){
+            string login_pass = output;
+            size_t separator = login_pass.find(':');
+
+            string login = login_pass.substr(0, separator);
+            string password = login_pass.substr(separator + 1);
+
+            int rstat = CONTEXT->reg(login, password);
+            if(rstat == R_BUSY){
+                send(socket, "|logbusy|", BUFF_LEN, 0);
+            }else if (rstat == R_FAIL){
+                send(socket, "|rfail|", BUFF_LEN, 0);
+            }else if (rstat == R_SUCCESS){
+                send(socket, "|success|", BUFF_LEN, 0);
+            }
+            continue;
+        }
+
 
         if(strncmp(request, "getplayers", 11) == 0){
             send(socket, CONTEXT->get_players_on(), BUFF_LEN, 0);
@@ -74,7 +111,6 @@ void* user_thread(void* arg)
         }
 
         if(strncmp(request, "makelob", 8) == 0){
-            // output содержит "название:количество"
             char name[BUFF_LEN] = "";
             int num = 0;
             sscanf(output, "%[^:]:%d", name, &num);
