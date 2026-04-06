@@ -27,6 +27,36 @@ StartupDbContext::~StartupDbContext(){
     }
 }
 
+connection* StartupDbContext::getConnection(){
+    return conn;
+}
+
+bool StartupDbContext::isConnected(){
+    return (conn != nullptr && conn->is_open());
+}
+
+result StartupDbContext::query(const string& script){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return result();
+    }
+
+    work w(*conn);
+    result res = w.exec(script);
+    w.commit();
+    return res;
+}
+
+void StartupDbContext::exec(const string& script){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    work w(*conn);
+    w.exec(script);
+    w.commit();
+}
+
 bool StartupDbContext::auth(string login, string password){
 
 }

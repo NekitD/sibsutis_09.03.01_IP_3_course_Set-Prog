@@ -20,6 +20,12 @@ class StartupDbContext {
         StartupDbContext(string _address, int _port, string _database, string _user, string _password);
         ~StartupDbContext();
 
+        connection* getConnection();
+        bool isConnected();
+        result query(const string&);
+        void exec(const string& script);
+
+
         bool auth(string login, string password);
         bool reg(string login, string password);
         char* get_lobbies() const;
