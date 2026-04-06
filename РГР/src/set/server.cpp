@@ -13,15 +13,30 @@
 #include <cstring>
 #include "lobby.h"
 #include "dbcontext.h"
+#include <termios.h>
 
 #define MAX_USERS 100
 
 using namespace std;
 
+static struct termios original_t;
+
 StartupDbContext* CONTEXT;
 
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
+
+void disableEcho() {
+    struct termios t;
+    tcgetattr(STDIN_FILENO, &t);
+    original_t = t;
+    t.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t);
+}
+
+void enableEcho() {
+    tcsetattr(STDIN_FILENO, TCSANOW, &original_t);
+}
 
 void* user_thread(void* arg)
 {
@@ -138,10 +153,13 @@ int main()
     }
     string admin;
     string pswrd;
-    cout << "Ser login: ";
+    cout << "Data login: ";
     cin >> admin;
-    cout << "Ser password: ";
+    cout << "Data password: ";
+    disableEcho();
     cin >> pswrd;
+    cout << endl;
+    enableEcho();
     CONTEXT = new StartupDbContext(S_ADDRESS, admin, pswrd, S_PORT);
     // Приём пользователей
     for(;;)
