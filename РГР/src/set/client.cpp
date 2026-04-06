@@ -439,7 +439,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
             if(conf == 'y' || conf == 'Y'){
                 cout << "       Игра закрывается!" << endl;
-                return 0;
+                return false;
             } else {
                 continue;
             }
@@ -463,7 +463,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
     {
         for(;;)
         {
-
+            // retutn true; (будет где-то, чтобы продолжить цикл сессии)
         }
     }
     
@@ -492,6 +492,9 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
 
         if(strncmp(request, "common", 7) == 0){
             cout << "   " << output << endl;
+            if(strncmp(request, "Игра окончена!", 27) == 0){
+                return true; // возвращение в командную строку
+            }
         }
 
         if(status == WAIT_ACCEPT)
