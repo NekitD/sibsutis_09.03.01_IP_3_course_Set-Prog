@@ -17,19 +17,19 @@ LOBBY_DIR = lobby
 GAME_DIR = game
 SET_DIR = set
 
-CONTEXT_SRC = $(SRC)/$(CONTEXT_DIR)/context.cpp
+CONTEXT_SRC = $(SRC)/$(CONTEXT_DIR)/dbcontext.cpp
 LOBBY_SRC = $(SRC)/$(LOBBY_DIR)/lobby.cpp
 GAME_SRC = $(SRC)/$(GAME_DIR)/game.cpp
 CLIENT_SRC = $(SRC)/$(SET_DIR)/client.cpp
 SERVER_SRC = $(SRC)/$(SET_DIR)/server.cpp
 
-CONTEXT_OBJ_FILE = $(OBJ)/$(CONTEXT_DIR)/context.o
+CONTEXT_OBJ_FILE = $(OBJ)/$(CONTEXT_DIR)/dbcontext.o
 LOBBY_OBJ_FILE = $(OBJ)/$(LOBBY_DIR)/lobby.o
 GAME_OBJ_FILE = $(OBJ)/$(GAME_DIR)/game.o
 CLIENT_OBJ = $(OBJ)/$(SET_DIR)/client.o
 SERVER_OBJ = $(OBJ)/$(SET_DIR)/server.o
 
-CONTEXT_DEPS = $(OBJ)/$(CONTEXT_DIR)/context.d
+CONTEXT_DEPS = $(OBJ)/$(CONTEXT_DIR)/dbcontext.d
 LOBBY_DEPS = $(OBJ)/$(LOBBY_DIR)/lobby.d
 GAME_DEPS = $(OBJ)/$(GAME_DIR)/game.d
 CLIENT_DEPS = $(OBJ)/$(SET_DIR)/client.d
