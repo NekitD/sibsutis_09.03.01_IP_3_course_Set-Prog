@@ -26,7 +26,7 @@ void send_to_all(vector<int>*, char*, int);
 void* user_thread(void* arg)
 {
     int socket = (int)(long)arg;
-    char s_msg[BUFF_LEN] = "";
+    //char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     //--------------------------------
     char output[BUFF_LEN] = "";
@@ -58,10 +58,40 @@ void* user_thread(void* arg)
             continue;
         }
 
-        if(strncmp(request, "mkl", 4) == 0){
-            char* name;
-            int num;
-            //считать name и num из output
+        if(strncmp(request, "makelob", 8) == 0){
+            int num = 0;
+            char c = ' ';
+            char* name = "";
+            int count = 0;
+            while(c != ':'){
+                c = request[count];
+                if(c == '\0'){
+                    num = -1;
+                    break;
+                }
+                sprintf(name, "%c", c);
+                count++;
+            }
+            if(num < 0){
+                send(socket, "|NO", BUFF_LEN, 0);
+                continue;
+            }
+            c = request[count + 1];
+            if(c == '3'){
+                num = 3;
+            }else if(c == '4'){
+                num = 4;
+            }else if(c == '5'){
+                num = 5;
+            }else if(c == '6'){
+                num = 6;
+            }
+
+            if(num < 3 || num > 6){
+                send(socket, "|NO", BUFF_LEN, 0);
+                continue;
+            }
+
             if(CONTEXT->add_lobby(name, num)){
                 send(socket, "|success", BUFF_LEN, 0);
             }else{
@@ -71,8 +101,7 @@ void* user_thread(void* arg)
         }
 
         if(strncmp(request, "join", 5) == 0){
-            int id = 0;
-            //считать id из request
+            int id = atoi(output);
             if(CONTEXT->join_lobby(id)){
                 send(socket, "|allow", BUFF_LEN, 0);
             }else{
@@ -81,14 +110,14 @@ void* user_thread(void* arg)
             continue;
         }
 
-        if(strncmp(request, "chats", 6) == 0){
+        if(strncmp(request, "getchats", 9) == 0){
             send(socket, CONTEXT->get_chats(), BUFF_LEN, 0);
             continue;
         }
 
-        // чат с игроком открывается в обход сервера
+        // чат с игроком открывается в обход сервера в отдельном соединении между игроками.
 
-        send(socket, " ", 2, 0);
+        send(socket, " ", 2, 0); // пустое сообщение, чтобы если что, клиент не застрял
     }
     close(socket);
     pthread_exit(0);
