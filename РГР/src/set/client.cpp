@@ -45,7 +45,7 @@ int main()
     char g_host[BUFF_LEN] = "";
     int g_port = 0;
 
-    if(c_sock < 0 || chat_sock < 0 || c_sock < 0){
+    if(c_sock < 0 || chat_sock < 0){
         cout << "НЕ УДАЛОСЬ СОЗДАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
@@ -56,8 +56,8 @@ int main()
     c_addr.sin_port = 0;
     
     if(bind(c_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0 
-    //|| bind(chat_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in) < 0 )
-    ) {
+    || bind(chat_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0 )
+    {
         cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
