@@ -166,6 +166,10 @@ int main()
                         cout << "       Регистрация пройдена!" << endl;
                         break;
                     }
+                    if(strncmp(request, "rfail", 6) == 0){
+                        cout << "       Не удалось пройти регистрацию..." << endl;
+                        break;
+                    }
                 } while(true);
             }
 

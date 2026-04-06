@@ -35,33 +35,54 @@ bool StartupDbContext::isConnected(){
     return (conn != nullptr && conn->is_open());
 }
 
-result StartupDbContext::query(const string& script){
+int StartupDbContext::auth(string login, string password){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
-        return result();
+        return -1;
+    }
+    string q = "SELECT * FROM users WHERE login = $1 AND password = $2";
+    work w(*conn);
+    result res = w.exec_params(q, login, password);
+    w.commit();
+
+    if(res.empty()){
+        return L_WRONG;
+    }
+    if(res[0]["online"].as<int>() == 1){
+        return L_ONLINE;
     }
 
-    work w(*conn);
-    result res = w.exec(script);
-    w.commit();
-    return res;
+    return L_SUCCESS;
 }
 
-void StartupDbContext::exec(const string& script){
+int StartupDbContext::reg(string login, string password){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
-        return;
+        return -1;
     }
+    string q = "SELECT * FROM users WHERE login = $1";
     work w(*conn);
-    w.exec(script);
+    result res = w.exec_params(q, login);
     w.commit();
-}
 
-bool StartupDbContext::auth(string login, string password){
+    if(!res.empty()){
+        return R_BUSY;
+    }
 
-}
-bool StartupDbContext::reg(string login, string password){
+    q = "INSERT INTO users (login, password, online, score) VALUES ($1, $2, $3, $4)";
+    res = w.exec_params(q, login, password, 0, 0);
 
+
+    string q = "SELECT * FROM users WHERE login = $1 AND password = $2";
+
+    res = w.exec_params(q, login, password);
+    w.commit();
+
+    if(res.empty()){
+        return R_FAIL;
+    }
+
+    return R_SUCCESS;
 }
 
 char* StartupDbContext::get_lobbies() const{
