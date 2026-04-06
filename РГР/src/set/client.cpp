@@ -45,35 +45,44 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
 void cli_input(string& text);
 bool client_loop(int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&);
 
+
+
+int socket_init(int& sock, struct sockaddr_in* addr){
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(sock < 0){
+        cout << "НЕ УДАЛОСЬ СОЗДАТЬ КЛИЕНТА!" << endl;
+        return -1;
+    }
+    if(bind(sock, (sockaddr*)addr, sizeof(struct sockaddr_in)) < 0)
+    {
+        cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
+        return -1;
+    }
+    return sock;
+}
+
+
 int main()
 {
     struct hostent *hp;
 
-    int c_sock = socket(AF_INET, SOCK_STREAM, 0);
-    int chat_sock = socket(AF_INET, SOCK_STREAM, 0);
+    int c_sock;
+    int chat_sock;
 
     struct sockaddr_in c_addr;
     struct sockaddr_in s_addr;
-
-    char g_host[BUFF_LEN] = "";
-    int g_port = 0;
-
-    if(c_sock < 0 || chat_sock < 0){
-        cout << "НЕ УДАЛОСЬ СОЗДАТЬ КЛИЕНТА!" << endl;
-        return -1;
-    }
 
     bzero((char*)&c_addr, (sizeof(struct sockaddr_in)));
     c_addr.sin_family = AF_INET;
     c_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     c_addr.sin_port = 0;
-    
-    if(bind(c_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0 
-    || bind(chat_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0 )
-    {
-        cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
+
+    if(socket_init(c_sock, &c_addr) < 0 || socket_init(chat_sock, &c_addr) < 0){
         return -1;
     }
+
+    char g_host[BUFF_LEN] = "";
+    int g_port = 0;
 
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
@@ -167,6 +176,7 @@ int main()
                         cout << endl;
                         cout << "       Повторите пароль: ";
                         cin >> r_pas;
+                        cout << endl;
                         if(password != r_pas){
                             cout << "Пароли не совпадают!" << endl;
                         } else {
@@ -187,6 +197,11 @@ int main()
                     }else{
                         status = NO_ANSWER;
                         cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+                        close(c_sock);
+                        if(socket_init(c_sock, &c_addr) < 0){
+                            cout << "   Не удалось реинициализировать клиента." << endl;
+                            return -1;
+                        }
                         break;
                     }
 
