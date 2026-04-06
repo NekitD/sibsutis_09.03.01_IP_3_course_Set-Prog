@@ -30,7 +30,6 @@ using namespace std;
 
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
-int dl_msg(int* answer, int time);
 
 int main()
 {
@@ -147,9 +146,9 @@ int main()
                     strcat(s_msg, password.c_str());
                     strcat(s_msg, "|register");
                     send(c_sock, s_msg, BUFF_LEN, 0);
+                    ans = -1;
                     ans = recv(c_sock, a_msg, BUFF_LEN, 0);
                     status = LOGGING;
-                    dl_msg(&ans, MAX_DELAY);
                     if(ans > 0){
                         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                     }else{
@@ -182,9 +181,9 @@ int main()
             strcat(s_msg, password.c_str());
             strcat(s_msg, "|login");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             status = NO_ANSWER;
-            dl_msg(&ans, MAX_DELAY);
 
             if(ans > 0){
                 cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
@@ -223,6 +222,13 @@ int main()
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
     //============================================================
+    struct timeval old_tv;
+    socklen_t len = sizeof(old_tv);
+    getsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&old_tv, &len);
+    struct timeval tv;
+    tv.tv_sec = MAX_DELAY;
+    tv.tv_usec = 0;
+    setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
     for(;;)
     {
         bzero(s_msg, BUFF_LEN);
@@ -248,8 +254,8 @@ int main()
             cout << "'join [порт лобби]' - присоединиться к лобби." << endl;
             cout << "'chats' - показать чаты." << endl;
             cout << "'chat' - открыть чат с игроком (если нет, создаётся)." << endl;
-            //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl;
-            //cout << "'report [id игрока]' - отправить жалобу на игрока." << endl;
+            //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl; --- В ДОЛГИЙ ЯЩИК
+            //cout << "'report [id игрока]' - отправить жалобу на игрока." << endl; --- В ДОЛГИЙ ЯЩИК
             cout << "'exit' - выйти." << endl;
         }
 
@@ -259,8 +265,8 @@ int main()
         if(strncmp(command.c_str(), "ps -a", 6) == 0){
             strcat(s_msg, "|getallplayers");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
@@ -270,8 +276,8 @@ int main()
         if(strncmp(command.c_str(), "ps", 2) == 0){
             strcat(s_msg, "|getplayers");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
@@ -284,8 +290,8 @@ int main()
         if(strncmp(command.c_str(), "rate", 5) == 0){
             strcat(s_msg, "|rate");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
@@ -298,8 +304,8 @@ int main()
         if(strncmp(command.c_str(), "ls", 5) == 0){
             strcat(s_msg, "|getlobby");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
@@ -328,8 +334,8 @@ int main()
             sprintf(s_msg, "%s:", name);
             sprintf(s_msg, "%d", num);
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 if(strncmp(request, "success", 8) == 0){
@@ -352,9 +358,10 @@ int main()
             strcat(s_msg, "|join");
             send(c_sock, s_msg, BUFF_LEN, 0);
     
-            dl_msg(&ans, MAX_DELAY);
-            cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
+            ans = -1;
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             if(ans > 0){
+                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 if(strncmp(request, "allow", 6) == 0){
                     sockaddr_in lobby_addr;
                     lobby_addr.sin_family = AF_INET;
@@ -378,12 +385,13 @@ int main()
         if(strncmp(command.c_str(), "chats", 6) == 0){
             strcat(s_msg, "|getchats");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
-            cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
+                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 cout << output << endl;
             }
+
         }
 
         //--------------------------------------------------------------------
@@ -398,10 +406,10 @@ int main()
             strcat(s_msg, target_id.c_str());
             strcat(s_msg, "|chatrequest");
             send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            dl_msg(&ans, MAX_DELAY);
-            cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
+                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 cout << output << endl;
                 status = CHATTING;
                 break;
@@ -431,11 +439,13 @@ int main()
         if(ans <= 0)
         {
             cout << "\nСЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+            continue;
         }
 
         cout << "Неизвестная команда '" << command << "'" << endl;
     }
-
+    
+    setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&old_tv, sizeof(old_tv));
     //============================================================
     // 3. Чат с другим игроком
     //============================================================
@@ -687,14 +697,4 @@ void cli_input(string& text){
     if (!text.empty() && text.back() == '\n') {
         text.pop_back();
     }
-}
-
-int dl_msg(int* answer, int time){
-    for(int i = 0; i <= time; ++i){
-        if(*answer > 0){
-            return *answer;
-        }
-        sleep(1);
-    }
-    return -1;
 }
