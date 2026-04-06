@@ -165,6 +165,7 @@ int main()
                     do{
                         cout << "       Придумайте пароль: ";
                         cin >> password;
+                        cout << endl;
                         cout << "       Повторите пароль: ";
                         cin >> r_pas;
                         if(password != r_pas){
@@ -186,7 +187,7 @@ int main()
                         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                     }else{
                         status = NO_ANSWER;
-                        cout << "       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+                        cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
                         break;
                     }
 
