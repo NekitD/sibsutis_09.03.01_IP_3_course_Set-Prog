@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <cstring>
 #include "lobby.h"
+#include <mysqlx/xdevapi.h> 
 
 using namespace std;
 
