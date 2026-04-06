@@ -9,6 +9,7 @@
 #include <string.h>
 #include <unistd.h> 
 #include "game.h"
+#include <termios.h>
 
 #define LOGGING 100
 #define SUCCESS 200
@@ -24,13 +25,25 @@
 
 
 #define MAX_DELAY 10
-    
+
+static struct termios original_t;
+void disableEcho() {
+    struct termios t;
+    tcgetattr(STDIN_FILENO, &t);
+    original_t = t;
+    t.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t);
+}
+
+void enableEcho() {
+    tcsetattr(STDIN_FILENO, TCSANOW, &original_t);
+}
 
 using namespace std;
 
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
-bool client_loop(int&, string&, int&, char*, char*, char*, char*, int&);
+bool client_loop(int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&);
 
 int main()
 {
@@ -71,6 +84,14 @@ int main()
     int status = WAIT_ACCEPT;
     string login;
     string password;
+
+    struct timeval old_tv;
+    socklen_t len = sizeof(old_tv);
+    getsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&old_tv, &len);
+    struct timeval tv;
+    tv.tv_sec = MAX_DELAY;
+    tv.tv_usec = 0;
+    setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
     //---------------------------------------------------------------------
     cout << "=============================================================" << endl;
     cout << "               Добро пожаловать в СТАРТАП!                   " << endl;
@@ -101,7 +122,7 @@ int main()
                 continue;
             }
         }
-        cout << "   ВВЕДИТЕ ПОРТ СЕРВЕРА:";
+        cout << "   ВВЕДИТЕ ПОРТ СЕРВЕРА: ";
         cin >> g_port;
         cout << endl;
 
@@ -139,9 +160,20 @@ int main()
                         cout << "       Придумайте логин: ";
                         cin >> login;
                     } while(login.size() <= 0);
-  
-                    cout << "       Придумайте пароль: ";
-                    cin >> password;
+                    string r_pas = "fagshdgfkldafdjvixopmklfeakjsgbiodsfkagksjbfjizdpos;clfmaklgnbfxijpozks;lfmklbf";
+                    disableEcho();
+                    do{
+                        cout << "       Придумайте пароль: ";
+                        cin >> password;
+                        cout << "       Повторите пароль: ";
+                        cin >> r_pas;
+                        if(password != r_pas){
+                            cout << "Пароли не совпадают!" << endl;
+                        } else {
+                            break;
+                        }
+                    }while(true);
+                    enableEcho();
                     strcat(s_msg, login.c_str());
                     strcat(s_msg, ":");
                     strcat(s_msg, password.c_str());
@@ -180,7 +212,9 @@ int main()
             cout << "       Логин: ";
             cin >> login;
             cout << "       Пароль: ";
+            disableEcho();
             cin >> password;
+            enableEcho();
             strcat(s_msg, login.c_str());
             strcat(s_msg, ":");
             strcat(s_msg, password.c_str());
@@ -224,24 +258,17 @@ int main()
     cout << "           Вы успешно вошли на сервер!" << endl;
     cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
     
-    while(client_loop(c_sock, login, rec, s_msg, a_msg, output, request, status)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
+    while(client_loop(c_sock, login, rec, s_msg, a_msg, output, request, status, old_tv)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
 
     close(c_sock);
     return 0;
 }
 
-bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg, char* output, char* request, int& status)
+bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv)
 {
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
     //============================================================
-    struct timeval old_tv;
-    socklen_t len = sizeof(old_tv);
-    getsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&old_tv, &len);
-    struct timeval tv;
-    tv.tv_sec = MAX_DELAY;
-    tv.tv_usec = 0;
-    setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
     for(;;)
     {
         bzero(s_msg, BUFF_LEN);
