@@ -56,8 +56,8 @@ int main()
     c_addr.sin_port = 0;
     
     if(bind(c_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0 
-    || bind(chat_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in) < 0 
-    )) {
+    //|| bind(chat_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in) < 0 )
+    ) {
         cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
@@ -87,11 +87,12 @@ int main()
         bzero(request, BUFF_LEN);
         cout << "   ВВЕДИТЕ АДРЕС СЕРВЕРА (или exit, чтобы выйти): ";
         cin >> g_host;
-        if(strncmp(g_host, "exit", 4)){
+        if(strncmp(g_host, "exit", 5) == 0){
             char conf = ' ';
             cout << "===========Выход из игры!===========" << endl;
             do{
                 cout << "       Вы уверены, что хотите выйти? (y/N): ";
+                cin >> conf;
             } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
             if(conf == 'y' || conf == 'Y'){
                 cout << "       Игра закрывается!" << endl;
@@ -411,6 +412,7 @@ int main()
             cout << "===========Выход из игры!===========" << endl;
             do{
                 cout << "       Вы уверены, что хотите выйти? (y/N): ";
+                cin >> conf;
             } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
             if(conf == 'y' || conf == 'Y'){
                 cout << "       Игра закрывается!" << endl;
