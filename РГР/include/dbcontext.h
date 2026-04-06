@@ -14,6 +14,36 @@ using namespace std;
 using namespace pqxx;
 
 
+enum login_status{
+    L_WRONG = 0,
+    L_ONLINE,
+    L_SUCCESS
+};
+
+enum reg_status{
+    R_BUSY = 0,
+    R_SUCCESS,
+    R_FAIL
+};
+
+
+typedef struct User {
+	int ID;
+	int socket;
+	char* login;
+	char* password;
+	int online;
+    int score;
+} User;
+
+typedef struct Lobby {
+    int ID;
+	int socket;
+	char* name;
+	int size;
+} Lobby;
+
+
 class StartupDbContext {
     
     public:
@@ -22,12 +52,9 @@ class StartupDbContext {
 
         connection* getConnection();
         bool isConnected();
-        result query(const string&);
-        void exec(const string& script);
 
-
-        bool auth(string login, string password);
-        bool reg(string login, string password);
+        int auth(string login, string password);
+        int reg(string login, string password);
         char* get_lobbies() const;
         char* get_players_on()const;
         char* get_players_all()const;
