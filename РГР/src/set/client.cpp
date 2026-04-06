@@ -347,9 +347,9 @@ int main()
             int lobby_port;
             cout << "   Введите порт лобби: ";
             cin >> lobby_port;
-    
-            strcat(s_msg, "|join:");
+            
             sprintf(s_msg, "%d", lobby_port);
+            strcat(s_msg, "|join");
             send(c_sock, s_msg, BUFF_LEN, 0);
     
             dl_msg(&ans, MAX_DELAY);
