@@ -25,7 +25,7 @@ void send_to_all(vector<int>*, char*, int);
 
 void* user_thread(void* arg)
 {
-    int socket = (int)arg;
+    int socket = (int)(long)arg;
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     //--------------------------------
