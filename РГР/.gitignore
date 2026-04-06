@@ -2,3 +2,4 @@ obj
 bin
 include/mysql-connector-c++-9.6.0-linux-glibc2.28-aarch64
 CMakeLists.txt
+datareqs
