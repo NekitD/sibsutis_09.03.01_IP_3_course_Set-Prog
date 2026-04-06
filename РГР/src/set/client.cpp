@@ -130,8 +130,7 @@ int main()
 
         bzero((char*)&s_addr, (sizeof(struct sockaddr_in)));
         s_addr.sin_family = AF_INET;
-        //bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length) ;
-        inet_aton(g_host, &s_addr.sin_addr);
+        bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length);
         s_addr.sin_port = htons(g_port);
 
         if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
