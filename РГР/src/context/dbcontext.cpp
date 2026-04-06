@@ -74,7 +74,7 @@ int StartupDbContext::auth(string login, string password){
         return L_ONLINE;
     }
 
-    string update_q = "UPDATE users SET online = true WHERE login = $1";
+    string update_q = "UPDATE users SET online = 1 WHERE login = $1";
     w.exec_params(update_q, login);
     w.commit();
 
