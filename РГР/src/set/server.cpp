@@ -64,7 +64,6 @@ void* user_thread(void* arg)
 
             string login = login_pass.substr(0, separator);
             string password = login_pass.substr(separator + 1);
-
             int lstat = CONTEXT->auth(login, password);
             if(lstat == L_WRONG){
                 send(socket, "|wrong|", BUFF_LEN, 0);
@@ -159,7 +158,6 @@ int main()
     struct sockaddr_in s_addr;
 
     int ser_socket = socket(AF_INET, SOCK_STREAM, 0);
-    int usr_socket = 0; 
 
     if (ser_socket < 0) {
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ЗАПУСТИТЬ СЕРВЕР!" << endl;
@@ -200,9 +198,10 @@ int main()
     // Приём пользователей
     for(;;)
     {
+        int usr_socket = 0; 
         usr_socket = accept(ser_socket, 0, 0);
         pthread_t thread_id;
-        pthread_create(&thread_id, NULL, user_thread, (void*)&usr_socket);
+        pthread_create(&thread_id, NULL, user_thread, (void*)(long)usr_socket);
         pthread_detach(thread_id);
 
     }
