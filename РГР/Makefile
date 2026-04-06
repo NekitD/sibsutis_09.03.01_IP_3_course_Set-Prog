@@ -5,7 +5,7 @@ CFLAGS += -I/usr/include/mariadb
 CPPFLAGS = -MP -MMD
 
 LDFLAGS = -L/usr/lib64 -lmariadb
-LDLIBS = -lpthread -ldl
+LDLIBS = -lpqxx -lpq -pthread -L/usr/lib64
 
 BIN = bin
 SRC = src
