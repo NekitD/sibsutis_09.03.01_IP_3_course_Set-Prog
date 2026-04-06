@@ -82,7 +82,12 @@ void* user_thread(void* arg)
             string login = login_pass.substr(0, separator);
             string password = login_pass.substr(separator + 1);
 
-            int rstat = CONTEXT->reg(login, password);
+            char hashed[crypto_pwhash_STRBYTES];
+                      crypto_pwhash_str(hashed, password.c_str(), password.length(),
+                      crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                      crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+            int rstat = CONTEXT->reg(login, hashed);
             if(rstat == R_BUSY){
                 send(socket, "|logbusy|", BUFF_LEN, 0);
             }else if (rstat == R_FAIL){

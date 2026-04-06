@@ -4,6 +4,7 @@
 #include <pqxx/pqxx>
 #include <string>
 #include <memory>
+#include <sodium.h>
 
 #define S_ADDRESS "localhost"
 #define S_PORT 5432
@@ -55,6 +56,7 @@ class StartupDbContext {
 
         int auth(string login, string password);
         int reg(string login, string password);
+        int logout(string login);
         char* get_lobbies() const;
         char* get_players_on()const;
         char* get_players_all()const;

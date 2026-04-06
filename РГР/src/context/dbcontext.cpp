@@ -54,17 +54,29 @@ int StartupDbContext::auth(string login, string password){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return -1;
     }
-    string q = "SELECT * FROM users WHERE login = $1 AND password = $2";
+
+    string q = "SELECT * FROM users WHERE login = $1";
     work w(*conn);
-    result res = w.exec_params(q, login, password);
+    result res = w.exec_params(q, login);
     w.commit();
 
     if(res.empty()){
         return L_WRONG;
     }
+
+    string stored_hash = res[0]["password"].as<string>();
+    if (crypto_pwhash_str_verify(stored_hash.c_str(),password.c_str(),password.length()) != 0){
+        return L_WRONG;
+    }
+
+
     if(res[0]["online"].as<int>() == 1){
         return L_ONLINE;
     }
+
+    string update_q = "UPDATE users SET online = true WHERE login = $1";
+    w.exec_params(update_q, login);
+    w.commit();
 
     return L_SUCCESS;
 }
@@ -97,6 +109,18 @@ int StartupDbContext::reg(string login, string password){
     }
 
     return R_SUCCESS;
+}
+
+
+int StartupDbContext::logout(string login){
+    if(!isConnected()) return -1;
+    
+    work w(*conn);
+    string q = "UPDATE users SET online = false WHERE login = $1";
+    w.exec_params(q, login);
+    w.commit();
+    
+    return 0;
 }
 
 char* StartupDbContext::get_lobbies() const{
