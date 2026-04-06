@@ -1,6 +1,11 @@
 CC = g++
-CFLAGS = -Wall -g -I./include
+CFLAGS = -Wall -g -I./include -std=c++17
+
+CFLAGS += -I/usr/include/mariadb
 CPPFLAGS = -MP -MMD
+
+LDFLAGS = -L/usr/lib64 -lmariadb
+LDLIBS = -lpthread -ldl
 
 BIN = bin
 SRC = src
@@ -58,11 +63,11 @@ $(SERVER_OBJ): $(SERVER_SRC)
 
 $(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB) $(LOBBY_LIB)
 	@mkdir -p $(BIN)
-	@$(CC) $(CFLAGS) $^ -o $@
+	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(GAME_LIB) $(LOBBY_LIB)
 	@mkdir -p $(BIN)
-	@$(CC) $(CFLAGS) $^ -o $@
+	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 game:
 	@./$(SERVER_TARGET)
