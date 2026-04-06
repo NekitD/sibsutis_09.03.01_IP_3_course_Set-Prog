@@ -87,7 +87,7 @@ int StartupDbContext::reg(string login, string password){
     res = w.exec_params(q, login, password, 0, 0);
 
 
-    string q = "SELECT * FROM users WHERE login = $1 AND password = $2";
+    q = "SELECT * FROM users WHERE login = $1 AND password = $2";
 
     res = w.exec_params(q, login, password);
     w.commit();
