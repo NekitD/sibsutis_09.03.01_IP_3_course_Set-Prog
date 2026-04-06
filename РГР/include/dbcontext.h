@@ -11,20 +11,21 @@ using namespace std;
 
 
 class StartupDbContext {
+    
     public:
-    StartupDbContext();
-    ~StartupDbContext();
+        StartupDbContext(string _address, int _port);
+        ~StartupDbContext();
 
-    bool auth();
-    bool reg();
-    char* get_games() const;
-    char* get_players_on()const;
-    char* get_players_all()const;
-    char* get_rating() const;
-    char* get_chats() const;
+        bool auth(string login, string password);
+        bool reg(string login, string password);
+        char* get_games() const;
+        char* get_players_on()const;
+        char* get_players_all()const;
+        char* get_rating() const;
+        char* get_chats() const;
 
-    bool add_lobby();
-    bool join_lobby(); // bool ?
+        bool add_lobby(string name, int num);
+        bool join_lobby(int id); // bool ?
 
     private:
         string address;
