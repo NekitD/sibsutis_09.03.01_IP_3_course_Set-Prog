@@ -16,14 +16,14 @@ address(_address), port(_port), database(_database), user(_user), password(_pass
         cout << "ОШИБКА: НЕ УДАЛОСЬ УСТАНОВИТЬ СОЕДИНЕНИЕ" << endl;
         exit(1);
     }
-    string init_script = "CREATE TABLE IF NOT EXISTS USERS (ID int Not Null Primary Key," + 
+    string init_script = "CREATE TABLE IF NOT EXISTS USERS (ID Serial Primary Key," + 
                         (string)"socket int," +
 	                    "login varchar(256)," +
 	                    "password varchar(256)," +
 	                    "online int," +
                         "score int);" +
                         "CREATE TABLE IF NOT EXISTS GAMES (" +
-	                    "ID int Not Null Primary Key," +
+	                    "ID Serial Primary Key," +
 	                    "socket int," +
 	                    "name varchar(256)," +
 	                    "size int);";
