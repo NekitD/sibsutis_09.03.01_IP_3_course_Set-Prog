@@ -214,11 +214,6 @@ int main()
                 } while(true);
                 if(status == NO_ANSWER){
                     cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
-                    close(c_sock);
-                    if(socket_init(c_sock, &c_addr) < 0){
-                    cout << "   Не удалось реинициализировать клиента." << endl;
-                        return -1;
-                    }
                     break;
                 }
             }
@@ -238,14 +233,19 @@ int main()
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            status = NO_ANSWER;
+            status = LOGGING;
 
             if(ans > 0){
                 cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
+            }else{
+                cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+                status = NO_ANSWER;
+                break;
             }
 
             if(strncmp(request, "success", 8) == 0){
                 status = SUCCESS;
+                break;
             }
 
             if(strncmp(request, "wrong", 6) == 0){
@@ -257,17 +257,12 @@ int main()
                 cout << "   Пользователь уже онлайн!" << endl;
                 continue;
             }
-
-            if(status == SUCCESS || status == NO_ANSWER){
-                break;
-            }
         
         }while(lr != 'L' && lr != 'l' && lr != 'R' && lr != 'r' && lr != 'E' && lr != 'e');
 
         if(status == SUCCESS){
             break;
         } else {
-            cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
             close(c_sock);
             if(socket_init(c_sock, &c_addr) < 0){
                 cout << "   Не удалось реинициализировать клиента." << endl;
