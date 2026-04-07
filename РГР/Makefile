@@ -44,7 +44,7 @@ CONTEXT_LIB = $(OBJ)/$(CONTEXT_DIR)/libcontext.a
 DIRS = $(OBJ)/$(GAME_DIR) $(OBJ)/$(SET_DIR) $(OBJ)/$(LOBBY_DIR) $(OBJ)/$(CONTEXT_DIR)
 $(shell mkdir -p $(DIRS))
 
-.PHONY: all clean game player
+.PHONY: all clean game player server client
 
 all: $(GAME_LIB) $(LOBBY_LIB) $(CONTEXT_LIB) $(CLIENT_TARGET) $(SERVER_TARGET)
 
@@ -80,10 +80,15 @@ $(SERVER_TARGET): $(SERVER_OBJ) $(GAME_LIB) $(LOBBY_LIB) $(CONTEXT_LIB)
 	@mkdir -p $(BIN)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
-game:
+
+client: $(CLIENT_TARGET)
+
+server: $(SERVER_TARGET)
+
+run-ser:
 	@./$(SERVER_TARGET)
 
-player:
+run-cli:
 	@./$(CLIENT_TARGET)
 
 -include $(GAME_DEPS) $(LOBBY_DEPS) $(CLIENT_DEPS) $(SERVER_DEPS)
