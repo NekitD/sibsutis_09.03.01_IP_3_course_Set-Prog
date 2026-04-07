@@ -74,8 +74,8 @@ int StartupDbContext::auth(string login, string password){
         return L_ONLINE;
     }
 
-    string update_q = "UPDATE users SET online = 1 WHERE login = $1";
-    w.exec_params(update_q, login);
+    string update_q = "UPDATE users SET online = $1 WHERE login = $2";
+    w.exec_params(update_q, 1, login);
     w.commit();
 
     return L_SUCCESS;
@@ -116,8 +116,8 @@ int StartupDbContext::logout(string login){
     if(!isConnected()) return -1;
     
     work w(*conn);
-    string q = "UPDATE users SET online = false WHERE login = $1";
-    w.exec_params(q, login);
+    string q = "UPDATE users SET online = $1 WHERE login = $2";
+    w.exec_params(q, 0, login);
     w.commit();
     
     return 0;
