@@ -147,6 +147,11 @@ void* user_thread(void* arg)
             continue;
         }
 
+        if(strncmp(request, "exit", 9) == 0){
+            CONTEXT->logout(output);
+            break;
+        }
+
         // чат с игроком открывается в обход сервера в отдельном соединении между игроками.
 
         send(socket, " ", 2, 0); // пустое сообщение, чтобы если что, клиент не застрял
