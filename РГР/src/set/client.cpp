@@ -196,12 +196,6 @@ int main()
                         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                     }else{
                         status = NO_ANSWER;
-                        cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
-                        close(c_sock);
-                        if(socket_init(c_sock, &c_addr) < 0){
-                            cout << "   Не удалось реинициализировать клиента." << endl;
-                            return -1;
-                        }
                         break;
                     }
 
@@ -218,11 +212,17 @@ int main()
                         break;
                     }
                 } while(true);
+                if(status == NO_ANSWER){
+                    cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+                    close(c_sock);
+                    if(socket_init(c_sock, &c_addr) < 0){
+                    cout << "   Не удалось реинициализировать клиента." << endl;
+                        return -1;
+                    }
+                    break;
+                }
             }
 
-            if(status == NO_ANSWER){
-                break;
-            }
             cout << endl;
             cout << "       Логин: ";
             cin >> login;
@@ -249,12 +249,12 @@ int main()
             }
 
             if(strncmp(request, "wrong", 6) == 0){
-                cout << "Неверный логин или пароль!" << endl;
+                cout << "   Неверный логин или пароль!" << endl;
                 continue;
             }
 
             if(strncmp(request, "online", 7) == 0){
-                cout << "Пользователь уже онлайн!" << endl;
+                cout << "   Пользователь уже онлайн!" << endl;
                 continue;
             }
 
@@ -267,6 +267,12 @@ int main()
         if(status == SUCCESS){
             break;
         } else {
+            cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+            close(c_sock);
+            if(socket_init(c_sock, &c_addr) < 0){
+                cout << "   Не удалось реинициализировать клиента." << endl;
+                return -1;
+            }
             continue;
         }
     }
