@@ -46,7 +46,7 @@ using namespace std;
 
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
-bool client_loop(int&, int&, int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&);
+bool client_loop(int&, int&, int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&, struct sockaddr_in&);
 bool commandexists(string command);
 
 
@@ -290,13 +290,15 @@ int main()
     cout << "           Вы успешно вошли на сервер!" << endl;
     cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
     
-    while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, s_msg, a_msg, output, request, status, old_tv)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
+    while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, s_msg, a_msg, output, request, status, old_tv, s_addr)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
 
     close(c_sock);
     return 0;
 }
 
-bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, int& rec, char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv)
+bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, int& rec, 
+    char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv,
+    struct sockaddr_in& s_addr)
 {
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
@@ -447,9 +449,14 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 if(strncmp(request, "allow", 6) == 0){
                     int lobby_port = atoi(output);
                     sockaddr_in lobby_addr;
+
+                    
+                    //inet_aton(output, &lobby_addr.sin_addr);
+                    bzero(&lobby_addr, sizeof(struct sockaddr_in));
+                    bcopy(&s_addr, &lobby_addr, sizeof(struct sockaddr_in));
                     lobby_addr.sin_family = AF_INET;
-                    inet_aton(output, &lobby_addr.sin_addr);
-                    lobby_addr.sin_port = lobby_port;
+                    lobby_addr.sin_port = htons(lobby_port);
+                    cout << "DEB:" << lobby_addr.sin_port << endl;
                     if(connect(lobby_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
                         cout << "Не удалось подключится к лобби." << endl;
                         continue;

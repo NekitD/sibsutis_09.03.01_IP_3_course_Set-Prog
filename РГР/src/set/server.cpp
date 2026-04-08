@@ -136,11 +136,13 @@ void* user_thread(void* arg)
                 lobby_args largs;
                 largs.id = lob_id;
                 largs.context = CONTEXT;
+                largs.size = num;
                 pthread_create(&lobby_t, NULL, lobby_thread, (void*)&largs);
                 pthread_detach(lobby_t);
+                sleep(1); 
             } else {
                 send(socket, "|NO", BUFF_LEN, 0);
-                cout << lob_id << endl;
+                //cout << lob_id << endl;
             }
             continue;
         }
