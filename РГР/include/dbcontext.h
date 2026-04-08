@@ -57,11 +57,11 @@ class StartupDbContext {
         int auth(string login, string password);
         int reg(string login, string password);
         int logout(string login);
-        char* get_lobbies() const;
-        char* get_players_on()const;
-        char* get_players_all()const;
-        char* get_rating() const;
-        char* get_chats() const;
+        char* get_lobbies();
+        char* get_players_on();
+        char* get_players_all();
+        char* get_rating();
+        char* get_chats();
 
         bool add_lobby(string name, int num);
         bool join_lobby(int id); // bool ?

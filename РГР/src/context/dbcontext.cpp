@@ -123,20 +123,88 @@ int StartupDbContext::logout(string login){
     return 0;
 }
 
-char* StartupDbContext::get_lobbies() const{
+char* StartupDbContext::get_lobbies(){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return "";
+    }
+    string q = "SELECT * FROM games";
+    work w(*conn);
+    result res = w.exec(q);
+    w.commit();
+    char* answer = "";
+    strcat(answer, "---------------------------------------------------\n");
+    strcat(answer, "   ID      Название        К-во игроков\n");
+    strcat(answer, "---------------------------------------------------\n");
+    for(int i = 0; i < res.size(); i++){
+        sprintf(answer, "   %d     %s      %d\n", res[i]["id"], res[i]["name"], res[i]["size"]);
+    }
+    return answer;
 
 }
-char* StartupDbContext::get_players_on()const{
+char* StartupDbContext::get_players_on(){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return "";
+    }
+    string q = "SELECT * FROM players WHERE online = $1";
+    work w(*conn);
+    result res = w.exec_params(q, 1);
+    w.commit();
+    char* answer = "";
+    strcat(answer, "---------------------------------------------------\n");
+    strcat(answer, "    ID      Логин\n");
+    strcat(answer, "---------------------------------------------------\n");
+    for(int i = 0; i < res.size(); i++){
+        sprintf(answer, "   %d     %s\n", res[i]["id"], res[i]["login"]);
+    }
+    return answer;
+}
+char* StartupDbContext::get_players_all(){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return "";
+    }
+    string q = "SELECT * FROM players WHERE online = $1";
+    work w(*conn);
+    result res = w.exec_params(q, 1);
+    w.commit();
+    char* answer = "";
+    strcat(answer, "---------------------------------------------------\n");
+    strcat(answer, "   ID      Логин        Статус\n");
+    strcat(answer, "---------------------------------------------------\n");
+    for(int i = 0; i < res.size(); i++){
+        sprintf(answer, "   %d     %s       ", res[i]["id"], res[i]["login"]);
+        if(res[i]["online"].as<int>()){
+            sprintf(answer, "Онлайн");
+        }else{
+            sprintf(answer, "Не в сети");
+        }
+        strcat(answer, "\n");
+    }
+    return answer;
+}
+
+char* StartupDbContext::get_rating(){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return "";
+    }
+    string q = "SELECT * FROM players ORDER BY score";
+    work w(*conn);
+    result res = w.exec_params(q, 1);
+    w.commit();
+    char* answer = "";
+    strcat(answer, "---------------------------------------------------\n");
+    strcat(answer, "    Место   ID      Логин        Рейтинг\n");
+    strcat(answer, "---------------------------------------------------\n");
+    for(int i = 0; i < res.size(); i++){
+        sprintf(answer, "   %d)   %d     %s       %d\n", i+1, res[i]["id"], res[i]["login"], res[i]["score"]);
+    }
+    return answer;
 
 }
-char* StartupDbContext::get_players_all()const{
-
-}
-
-char* StartupDbContext::get_rating() const{
-
-}
-char* StartupDbContext::get_chats() const{
+char* StartupDbContext::get_chats(){
 
 }
 
