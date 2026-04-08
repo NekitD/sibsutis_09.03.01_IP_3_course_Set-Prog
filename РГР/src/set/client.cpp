@@ -542,11 +542,14 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
         }
         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
 
+
+        if(strncmp(request, "over", 5) == 0){
+            cout << "   Игра окончена!" << endl;
+            return true; // возвращение в командную строку
+        }
+
         if(strncmp(request, "common", 7) == 0){
             cout << "   " << output << endl;
-            if(strncmp(request, "Игра окончена!", 27) == 0){
-                return true; // возвращение в командную строку
-            }
         }
 
         if(status == WAIT_ACCEPT)

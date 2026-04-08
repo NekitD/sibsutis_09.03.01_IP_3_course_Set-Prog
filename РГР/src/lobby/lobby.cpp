@@ -432,7 +432,7 @@ void* Lobby(void* arg)
         }
         if(status == OVER){
             GAME->Endgame();
-            send_to_all(SUBS, "Игра окончена!|common|", BUFF_LEN);
+            send_to_all(SUBS, "|over|", BUFF_LEN);
             sleep(1);
             break;
         }
