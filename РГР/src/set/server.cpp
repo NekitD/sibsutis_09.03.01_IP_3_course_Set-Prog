@@ -201,10 +201,6 @@ int main()
     cout << "   АДРЕС СЕРВЕРА: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "   ПОРТ СЕРВЕРА: " << ntohs(s_addr.sin_port) << endl;
 
-    if(listen(ser_socket, MAX_USERS) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ СЕРВЕР!" << endl;
-        return -1;
-    }
     string admin;
     string pswrd;
     cout << "Data login: ";
@@ -214,6 +210,11 @@ int main()
     cin >> pswrd;
     cout << endl;
     enableEcho();
+
+    if(listen(ser_socket, MAX_USERS) < 0){
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ СЕРВЕР!" << endl;
+        return -1;
+    }
     CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT, DATABASE, admin, pswrd);
     // Приём пользователей
     for(;;)
