@@ -240,9 +240,9 @@ bool StartupDbContext::add_lobby(string name, int num){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return false;
     }
-    string q = "INSERT INTO games (name, size) VALUES ($1, $2)";
+    string q = "INSERT INTO games (name, size, busy) VALUES ($1, $2, $3)";
     work w(*conn);
-    w.exec_params(q, name, num);
+    w.exec_params(q, name, num, 0);
     w.commit();
     q = "SELECT FROM games WHERE name = $1, size = $2";
     result res = w.exec_params(q, name, num);
