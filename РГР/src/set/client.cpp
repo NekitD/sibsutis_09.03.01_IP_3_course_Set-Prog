@@ -329,6 +329,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             if(ans > 0){
                 cout << output << endl;
             }
+            continue;
         }
 
         if(strncmp(command.c_str(), "ps", 2) == 0){
@@ -340,6 +341,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             if(ans > 0){
                 cout << output << endl;
             }
+            continue;
         }
 
         //--------------------------------------------------------------------
@@ -354,6 +356,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             if(ans > 0){
                 cout << output << endl;
             }
+            continue;
         }
 
         //--------------------------------------------------------------------
@@ -368,6 +371,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             if(ans > 0){
                 cout << output << endl;
             }
+            continue;
         }
 
         //--------------------------------------------------------------------
@@ -402,6 +406,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
                     cout << "Не удалось создать лобби." << endl;
                 }
             }
+            continue;
         }
 
         //--------------------------------------------------------------------
@@ -434,6 +439,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
                     continue;
                 }
             }
+            continue;
         }
 
 
@@ -449,7 +455,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
                 cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 cout << output << endl;
             }
-
+            continue;
         }
 
         //--------------------------------------------------------------------
@@ -472,6 +478,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
                 status = CHATTING;
                 break;
             }
+            continue;
         }
 
 
@@ -697,6 +704,8 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             continue;
         }
     }
+
+    return true;
 }
 
 // Структкра сообщения (сервер -> клиент) "output|request|p_status"
