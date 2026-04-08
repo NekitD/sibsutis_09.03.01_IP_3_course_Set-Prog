@@ -443,7 +443,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             sprintf(s_msg, "%d", lobby_id);
             strcat(s_msg, "|join");
             send(c_sock, s_msg, BUFF_LEN, 0);
-    
+            bzero(s_msg, BUFF_LEN);
             ans = -1;
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             if(ans > 0){
@@ -458,7 +458,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                     bcopy(&s_addr, &lobby_addr, sizeof(struct sockaddr_in));
                     lobby_addr.sin_family = AF_INET;
                     lobby_addr.sin_port = htons(lobby_port);
-                    cout << "DEB:" << lobby_addr.sin_port << endl;
                     if(connect(lobby_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
                         cout << "Не удалось подключится к лобби." << endl;
                         continue;
