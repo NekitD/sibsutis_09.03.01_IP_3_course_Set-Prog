@@ -102,21 +102,21 @@ void* user_thread(void* arg)
 
 
         if(strncmp(request, "getplayers", 11) == 0){
-            strcat(s_msg, CONTEXT->get_players_on());
+            strcat(s_msg, CONTEXT->get_players_on().c_str());
             strcat(s_msg, "|");
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
         if(strncmp(request, "getallplayers", 14) == 0){
-            strcat(s_msg, CONTEXT->get_players_all());
+            strcat(s_msg, CONTEXT->get_players_all().c_str());
             strcat(s_msg, "|");
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
         if(strncmp(request, "rate", 5) == 0){
-            strcat(s_msg, CONTEXT->get_rating());
+            strcat(s_msg, CONTEXT->get_rating().c_str());
             strcat(s_msg, "|");
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
@@ -151,7 +151,7 @@ void* user_thread(void* arg)
         }
 
         if(strncmp(request, "getchats", 9) == 0){
-            strcat(s_msg, CONTEXT->get_chats());
+            strcat(s_msg, CONTEXT->get_chats().c_str());
             strcat(s_msg, "|");
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
