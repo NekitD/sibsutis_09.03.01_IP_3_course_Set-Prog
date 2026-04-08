@@ -41,7 +41,7 @@ void enableEcho() {
 void* user_thread(void* arg)
 {
     int socket = (int)(long)arg;
-    //char s_msg[BUFF_LEN] = "";
+    char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     //--------------------------------
     char output[BUFF_LEN] = "";
@@ -51,6 +51,8 @@ void* user_thread(void* arg)
     // Обработка запросов пользователей
     for(;;)
     {
+        bzero(s_msg, BUFF_LEN);
+        bzero(a_msg, BUFF_LEN);
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if(rec_l <= 0){
             close(socket);
@@ -100,17 +102,23 @@ void* user_thread(void* arg)
 
 
         if(strncmp(request, "getplayers", 11) == 0){
-            send(socket, CONTEXT->get_players_on(), BUFF_LEN, 0);
+            strcat(s_msg, CONTEXT->get_players_on());
+            strcat(s_msg, "|");
+            send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
         if(strncmp(request, "getallplayers", 14) == 0){
-            send(socket, CONTEXT->get_players_all(), BUFF_LEN, 0);
+            strcat(s_msg, CONTEXT->get_players_all());
+            strcat(s_msg, "|");
+            send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
         if(strncmp(request, "rate", 5) == 0){
-            send(socket, CONTEXT->get_rating(), BUFF_LEN, 0);
+            strcat(s_msg, CONTEXT->get_rating());
+            strcat(s_msg, "|");
+            send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
@@ -143,7 +151,9 @@ void* user_thread(void* arg)
         }
 
         if(strncmp(request, "getchats", 9) == 0){
-            send(socket, CONTEXT->get_chats(), BUFF_LEN, 0);
+            strcat(s_msg, CONTEXT->get_chats());
+            strcat(s_msg, "|");
+            send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
