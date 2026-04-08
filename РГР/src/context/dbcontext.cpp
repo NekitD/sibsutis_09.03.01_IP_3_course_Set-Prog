@@ -113,7 +113,10 @@ int StartupDbContext::reg(string login, string password){
 
 
 int StartupDbContext::logout(string login){
-    if(!isConnected()) return -1;
+    if(!isConnected()){
+        cout << "NO CON" << endl;
+        return -1;
+    }
     
     work w(*conn);
     string q = "UPDATE users SET online = $1 WHERE login = $2";
@@ -132,13 +135,16 @@ string StartupDbContext::get_lobbies(){
     work w(*conn);
     result res = w.exec(q);
     w.commit();
-    char* answer = "";
-    strcat(answer, "---------------------------------------------------\n");
-    strcat(answer, "   ID      Название        К-во игроков\n");
-    strcat(answer, "---------------------------------------------------\n");
-    for(size_t i = 1; i <= res.size(); i++){
-        sprintf(answer, "   %d     %s      %d\n", res[i]["id"].as<int>(), res[i]["name"].as<string>(), 
+    string answer;
+    answer += "===================================================\n";
+    answer += "     ID           Название          К-во игроков\n";
+    answer += "===================================================\n";
+    for(size_t i = 0; i < res.size(); i++){
+        char buff[256];
+        sprintf(buff, "   %d          %s          %d\n", res[i]["id"].as<int>(), res[i]["name"].as<string>(), 
                                                                             res[i]["size"].as<int>());
+        answer += buff;
+        answer += "---------------------------------------------------\n";
     }
     return answer;
 
@@ -153,13 +159,14 @@ string StartupDbContext::get_players_on(){
     result res = w.exec_params(q, 1);
     w.commit();
     string answer;
-    answer += "---------------------------------------------------\n";
-    answer += "    ID      Логин\n";
-    answer += "---------------------------------------------------\n";
+    answer += "===================================================\n";
+    answer += "           ID                   Логин          \n";
+    answer += "===================================================\n";
     for(size_t i = 0; i < res.size(); i++){
         char buff[256];
-        sprintf(buff, "     %d     %s\n", res[i]["id"].as<int>(), res[i]["login"].as<string>().c_str());
+        sprintf(buff, "           %d                    %s\n", res[i]["id"].as<int>(), res[i]["login"].as<string>().c_str());
         answer += buff;
+        answer += "---------------------------------------------------\n";
     }
     return answer;
 }
@@ -168,22 +175,26 @@ string StartupDbContext::get_players_all(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM users WHERE online = $1";
+    string q = "SELECT * FROM users";
     work w(*conn);
-    result res = w.exec_params(q, 1);
+    result res = w.exec(q);
     w.commit();
-    char* answer = "";
-    strcat(answer, "---------------------------------------------------\n");
-    strcat(answer, "   ID      Логин        Статус\n");
-    strcat(answer, "---------------------------------------------------\n");
-    for(size_t i = 1; i <= res.size(); i++){
-        sprintf(answer, "   %d     %s       ", res[i]["id"], res[i]["login"]);
-        if(res[i]["online"].as<int>()){
-            sprintf(answer, "Онлайн");
+    string answer;
+    answer += "===================================================\n";
+    answer += "        ID          Логин        Статус\n";
+    answer += "===================================================\n";
+    for(size_t i = 0; i < res.size(); i++){
+        char buff[256];
+        char buff2[20];
+        sprintf(buff, "       %d            %s          ", res[i]["id"].as<int>(), res[i]["login"].as<string>().c_str());
+        if(res[i]["online"].as<int>() == 1){
+            sprintf(buff2, "%s\n", "Онлайн");
         }else{
-            sprintf(answer, "Не в сети");
+            sprintf(buff2, "%s\n", "Не в сети");
         }
-        strcat(answer, "\n");
+        strcat(buff, buff2);
+        answer += buff;
+        answer += "---------------------------------------------------\n";
     }
     return answer;
 }
@@ -195,14 +206,18 @@ string StartupDbContext::get_rating(){
     }
     string q = "SELECT * FROM users ORDER BY score";
     work w(*conn);
-    result res = w.exec_params(q, 1);
+    result res = w.exec(q);
     w.commit();
-    char* answer = "";
-    strcat(answer, "---------------------------------------------------\n");
-    strcat(answer, "    Место   ID      Логин        Рейтинг\n");
-    strcat(answer, "---------------------------------------------------\n");
-    for(size_t i = 1; i <= res.size(); i++){
-        sprintf(answer, "   %d)   %d     %s       %d\n", i+1, res[i]["id"], res[i]["login"], res[i]["score"]);
+    string answer;
+    answer += "===================================================\n";
+    answer += "    Место       ID          Логин        Рейтинг\n";
+    answer += "===================================================\n";
+    for(size_t i = 0; i < res.size(); i++){
+        char buff[256];
+        sprintf(buff, "     %ld)         %d          %s         %d\n", i+1, res[i]["id"].as<int>(), 
+                                                res[i]["login"].as<string>().c_str(), res[i]["score"].as<int>());
+        answer += buff;
+        answer += "---------------------------------------------------\n";
     }
     return answer;
 
