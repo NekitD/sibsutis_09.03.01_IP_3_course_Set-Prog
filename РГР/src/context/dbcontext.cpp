@@ -235,22 +235,25 @@ string StartupDbContext::get_chats(){
 
 }
 
-bool StartupDbContext::add_lobby(string name, int num){
+int StartupDbContext::add_lobby(string name, int num){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
-        return false;
+        return -1;
     }
     string q = "INSERT INTO games (name, size, busy) VALUES ($1, $2, $3)";
     work w(*conn);
     w.exec_params(q, name, num, 0);
     w.commit();
-    q = "SELECT FROM games WHERE name = $1, size = $2";
+    q = "SELECT * FROM games WHERE name = $1, size = $2";
     result res = w.exec_params(q, name, num);
     w.commit();
     if(res.empty()){
-        return false;
+        return -1;
     }
-    return true;
+    q = "SELECT * FROM games ORDER BY id DESC";
+    res = w.exec(q);
+    w.commit();
+    return res[0]["id"].as<int>();
 
 }
 int StartupDbContext::join_lobby(int id){

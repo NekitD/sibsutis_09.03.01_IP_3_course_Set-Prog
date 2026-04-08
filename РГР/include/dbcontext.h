@@ -63,7 +63,7 @@ class StartupDbContext {
         string get_rating();
         string get_chats();
 
-        bool add_lobby(string name, int num);
+        int add_lobby(string name, int num);
         int join_lobby(int id);
 
     private:
