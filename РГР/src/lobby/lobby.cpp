@@ -461,6 +461,7 @@ void* lobby_thread(void* arg)
         if(status == OVER){
             GAME->Endgame();
             send_to_all(SUBS, "|over|", BUFF_LEN);
+            CONTEXT->rm_lobby(lobby_id);
             sleep(1);
             break;
         }

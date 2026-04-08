@@ -66,6 +66,7 @@ class StartupDbContext {
         void set_lobby_num(int id, int nv);
         int add_lobby(string name, int num);
         int join_lobby(int id);
+        void rm_lobby(int id);
 
     private:
         string address;

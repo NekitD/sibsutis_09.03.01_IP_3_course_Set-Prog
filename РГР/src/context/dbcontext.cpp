@@ -282,4 +282,15 @@ void StartupDbContext::set_lobby_num(int id, int nv){
     w.commit();
 }
 
+void StartupDbContext::rm_lobby(int id){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    string q = "DELETE FROM games WHERE id = $1";
+    work w(*conn);
+    result res = w.exec_params(q, id);
+    w.commit();
+} 
+
 
