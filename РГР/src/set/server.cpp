@@ -12,7 +12,6 @@
 #include <pthread.h>
 #include <cstring>
 #include "lobby.h"
-#include "dbcontext.h"
 #include <termios.h>
 
 #define MAX_USERS 100
@@ -133,9 +132,15 @@ void* user_thread(void* arg)
             send(socket, "|NO", BUFF_LEN, 0);
                 continue;
             }
-    
-            if(CONTEXT->add_lobby(name, num)){
+            int lob_id = CONTEXT->add_lobby(name, num);
+            if(lob_id >= 0){
                 send(socket, "|success", BUFF_LEN, 0);
+                pthread_t lobby_t;
+                lobby_args largs;
+                largs.id = lob_id;
+                largs.context = CONTEXT;
+                pthread_create(&lobby_t, NULL, lobby_thread, (void*)&largs);
+                pthread_detach(lobby_t);
             } else {
                 send(socket, "|NO", BUFF_LEN, 0);
             }
