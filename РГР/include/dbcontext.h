@@ -68,6 +68,7 @@ class StartupDbContext {
         int join_lobby(int id);
         void rm_lobby(int id);
         void set_lobby_port(int id, int port);
+        void set_lobby_status(int id, bool ready);
 
     private:
         string address;

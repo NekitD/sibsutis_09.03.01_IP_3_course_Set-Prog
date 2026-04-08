@@ -84,6 +84,7 @@ void* player_thread(void* arg)
                     cout << endl << "   Игра начинается!\n" << endl;
                     send_to_all(SUBS, "Игра начинается!|common|", BUFF_LEN);
                     GAME->setStatus(START);
+                    CONTEXT->set_lobby_status(lobby_id, true);
                 }
             }
             continue;

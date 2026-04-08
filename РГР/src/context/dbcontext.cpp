@@ -304,4 +304,15 @@ void StartupDbContext::set_lobby_port(int id, int port){
     w.commit();
 }
 
+void StartupDbContext::set_lobby_status(int id, bool ready){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    string q = "UPDATE games SET began = $1 WHERE id = $2";
+    work w(*conn);
+    result res = w.exec_params(q, ready, id);
+    w.commit();
+}
+
 
