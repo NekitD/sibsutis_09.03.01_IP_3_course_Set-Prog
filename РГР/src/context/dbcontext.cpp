@@ -294,7 +294,7 @@ void StartupDbContext::set_lobby_num(int id, int nv){
     }
     string q = "UPDATE games SET busy = $1 WHERE id = $2";
     work w(*conn);
-    result res = w.exec_params(q, nv, id);
+    w.exec_params(q, nv, id);
     w.commit();
 }
 
@@ -305,7 +305,7 @@ void StartupDbContext::rm_lobby(int id){
     }
     string q = "DELETE FROM games WHERE id = $1";
     work w(*conn);
-    result res = w.exec_params(q, id);
+    w.exec_params(q, id);
     w.commit();
 } 
 
@@ -316,7 +316,7 @@ void StartupDbContext::set_lobby_port(int id, int port){
     }
     string q = "UPDATE games SET port = $1 WHERE id = $2";
     work w(*conn);
-    result res = w.exec_params(q, port, id);
+    w.exec_params(q, port, id);
     w.commit();
 }
 
@@ -327,7 +327,20 @@ void StartupDbContext::set_lobby_status(int id, bool ready){
     }
     string q = "UPDATE games SET began = $1 WHERE id = $2";
     work w(*conn);
-    result res = w.exec_params(q, ready, id);
+    w.exec_params(q, ready, id);
+    w.commit();
+}
+
+void StartupDbContext::add_player_score(string login, int score){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    string q = "UPDATE users SET score = $1 WHERE login = $2";
+    string q1 = "SELECT * FROM users WHERE login = $1";
+    work w(*conn);
+    result r = w.exec_params(q1, login);
+    result res = w.exec_params(q, r[0]["score"].as<int>() + score, login);
     w.commit();
 }
 

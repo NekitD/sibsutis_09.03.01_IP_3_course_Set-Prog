@@ -709,7 +709,7 @@ void Game::drop_cards(){
 }
 
 
-void Game::Endgame() const{
+void Game::Endgame(StartupDbContext* context){
     int max = 0;
     int c_score = 0;
     cout << "======================================" << endl;
@@ -725,10 +725,17 @@ void Game::Endgame() const{
     }
     cout << endl;
     for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-        cout << (**pl) << endl;
+        cout << (**pl) << "     ";
+        int reward;
         if((*pl)->getScore() == max && (*pl)->getStatus() != LEFT){
             winners.push_back(*pl);
+            reward = count_reward((*pl)->getScore(), getPnum(), true, winners.size(), REWARD_K);
         }
+        if((*pl)->getStatus() == LEFT){
+            reward = count_reward(-REWARD_K * getPnum(), 0, false, 0, 0);
+        }
+        cout << "(К рейтингу: " << reward << ")" << endl;
+        context->add_player_score((*pl)->get_nick(), reward);
     }
     if(winners.size() > 1){
         cout << "       ПОБЕДИТЕЛИ:" << endl;
@@ -738,6 +745,14 @@ void Game::Endgame() const{
     
     for(vector<Player*>::const_iterator pl = winners.begin(); pl != winners.end(); pl++){
         cout << "      " <<(**pl).get_nick() << endl;
+    }
+}
+
+int Game::count_reward(int score, int pnum, bool winner, int winn, int k){
+    if(winner){
+        return score + (k * pnum)/winn;
+    }else{
+        return score;
     }
 }
 
