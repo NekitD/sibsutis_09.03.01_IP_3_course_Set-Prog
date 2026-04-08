@@ -252,28 +252,24 @@ int StartupDbContext::add_lobby(string creator, string name, int num){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return -1;
     }
-    string q = "INSERT INTO games (name, size, busy, creator) VALUES ($1, $2, $3, $4)";
-    string q1 = "SELECT * FROM users WHERE login = $1";
+    
     work w(*conn);
-    result r = w.exec_params(q, creator);
-    w.commit();
 
-    int cid = r[0]["id"].as<int>();
-
-    w.exec_params(q, name, num, 0, cid);
-    w.commit();
-    q = "SELECT * FROM games WHERE name = $1 AND size = $2 AND began = $3 AND creator = $4";
-    result res = w.exec_params(q, name, num, false, cid);
-    w.commit();
-    if(res.empty()){
+    string q1 = "SELECT id FROM users WHERE login = $1";
+    string q2 = "INSERT INTO games (name, size, busy, creator) VALUES ($1, $2, $3, $4) RETURNING id";
+    result r = w.exec_params(q1, creator);
+    if(r.empty()){
         return -1;
     }
-    q = "SELECT * FROM games ORDER BY id DESC";
-    res = w.exec(q);
+    int cid = r[0]["id"].as<int>();
+        
+    result res = w.exec_params(q2,name, num, 0, cid);  
+    int game_id = res[0]["id"].as<int>();
     w.commit();
-    return res[0]["id"].as<int>();
-
+        
+    return game_id;
 }
+
 int StartupDbContext::join_lobby(int id){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;

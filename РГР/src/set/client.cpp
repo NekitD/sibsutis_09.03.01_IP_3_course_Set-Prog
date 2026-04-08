@@ -411,8 +411,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             if(num == 0){
                 continue;
             }
-            sprintf(s_msg, "%s:", name);
-            sprintf(s_msg, "%d", num);
+            sprintf(s_msg, "%s:%d", name, num);
             strcat(s_msg, "|makelob");
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;
