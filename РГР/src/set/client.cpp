@@ -17,8 +17,8 @@
 #define EXIT 1000
 
 #define REDIRECT 2000 
-/*Сокет сервера прекращает соединение с игроком 
-и игрок пытается подсоединиться к лобби, адрес и порт которого ему прислал сервер
+/*Сокет сервера прекращает общение с игроком 
+и игрок пытается подсоединиться к лобби, порт которого ему прислал сервер
 и там с игроком уже общается лобби через сокет, который оно выделяет для него*/
 
 #define CHATTING 3000 
@@ -46,7 +46,7 @@ using namespace std;
 
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
-bool client_loop(int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&);
+bool client_loop(int&, int&, int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&);
 bool commandexists(string command);
 
 
@@ -72,6 +72,7 @@ int main()
 
     int c_sock;
     int chat_sock;
+    int lobby_sock;
 
     struct sockaddr_in c_addr;
     struct sockaddr_in s_addr;
@@ -81,7 +82,8 @@ int main()
     c_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     c_addr.sin_port = 0;
 
-    if(socket_init(c_sock, &c_addr) < 0 || socket_init(chat_sock, &c_addr) < 0){
+    if(socket_init(c_sock, &c_addr) < 0 || socket_init(chat_sock, &c_addr) < 0
+    || socket_init(lobby_sock, &c_addr) < 0){
         return -1;
     }
 
@@ -288,13 +290,13 @@ int main()
     cout << "           Вы успешно вошли на сервер!" << endl;
     cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
     
-    while(client_loop(c_sock, login, rec, s_msg, a_msg, output, request, status, old_tv)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
+    while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, s_msg, a_msg, output, request, status, old_tv)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
 
     close(c_sock);
     return 0;
 }
 
-bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv)
+bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, int& rec, char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv)
 {
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
@@ -448,7 +450,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
                     lobby_addr.sin_family = AF_INET;
                     inet_aton(output, &lobby_addr.sin_addr);
                     lobby_addr.sin_port = lobby_port;
-                    if(connect(c_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
+                    if(connect(lobby_sock, (sockaddr*)&lobby_addr, sizeof(struct sockaddr_in)) < 0){
                         cout << "Не удалось подключится к лобби." << endl;
                         continue;
                     }
