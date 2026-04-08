@@ -131,7 +131,7 @@ string StartupDbContext::get_lobbies(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM games";
+    string q = "SELECT * FROM games ORDER BY id";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
@@ -154,7 +154,7 @@ string StartupDbContext::get_players_on(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM users WHERE online = $1";
+    string q = "SELECT * FROM users WHERE online = $1 ORDER BY id";
     work w(*conn);
     result res = w.exec_params(q, 1);
     w.commit();
@@ -175,7 +175,7 @@ string StartupDbContext::get_players_all(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM users";
+    string q = "SELECT * FROM users ORDER BY id";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
@@ -204,7 +204,7 @@ string StartupDbContext::get_rating(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM users ORDER BY score DESC";
+    string q = "SELECT * FROM users ORDER BY score DESC, id ASC";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
