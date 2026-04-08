@@ -26,7 +26,7 @@ address(_address), port(_port), database(_database), user(_user), password(_pass
 	                    "ID Serial Primary Key," +
 	                    "socket int," +
 	                    "name varchar(256)," +
-	                    "size int);";
+	                    "size int," + "busy int, port int);";
     work w(*conn);
     result res = w.exec(init_script);
     w.commit();
