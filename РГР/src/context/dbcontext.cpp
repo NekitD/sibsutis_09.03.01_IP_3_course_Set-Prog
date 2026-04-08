@@ -26,7 +26,7 @@ address(_address), port(_port), database(_database), user(_user), password(_pass
 	                    "ID Serial Primary Key," +
 	                    "socket int," +
 	                    "name varchar(256)," +
-	                    "size int," + "busy int, port int);";
+	                    "size int," + "busy int, port int, began bool);";
     work w(*conn);
     result res = w.exec(init_script);
     w.commit();
@@ -244,8 +244,8 @@ int StartupDbContext::add_lobby(string name, int num){
     work w(*conn);
     w.exec_params(q, name, num, 0);
     w.commit();
-    q = "SELECT * FROM games WHERE name = $1, size = $2";
-    result res = w.exec_params(q, name, num);
+    q = "SELECT * FROM games WHERE name = $1, size = $2, began = $3";
+    result res = w.exec_params(q, name, num, false);
     w.commit();
     if(res.empty()){
         return -1;
@@ -292,5 +292,16 @@ void StartupDbContext::rm_lobby(int id){
     result res = w.exec_params(q, id);
     w.commit();
 } 
+
+void StartupDbContext::set_lobby_port(int id, int port){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    string q = "UPDATE games SET port = $1 WHERE id = $2";
+    work w(*conn);
+    result res = w.exec_params(q, port, id);
+    w.commit();
+}
 
 
