@@ -246,13 +246,26 @@ bool StartupDbContext::add_lobby(string name, int num){
     w.commit();
     q = "SELECT FROM games WHERE name = $1, size = $2";
     result res = w.exec_params(q, name, num);
+    w.commit();
     if(res.empty()){
         return false;
     }
     return true;
 
 }
-bool StartupDbContext::join_lobby(int id){// bool ?
+int StartupDbContext::join_lobby(int id){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return -1;
+    }
+    string q = "SELECT * FROM games WHERE id = $1";
+    work w(*conn);
+    result res = w.exec_params(q, id);
+    w.commit();
+    if(res.empty()){
+        return -1;
+    }
+    return res[0]["port"].as<int>();
 }
 
 

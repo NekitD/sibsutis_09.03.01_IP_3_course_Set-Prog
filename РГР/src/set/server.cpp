@@ -144,11 +144,14 @@ void* user_thread(void* arg)
 
         if(strncmp(request, "join", 5) == 0){
             int id = atoi(output);
-            if(CONTEXT->join_lobby(id)){
-                send(socket, "|allow", BUFF_LEN, 0);
+            int port = CONTEXT->join_lobby(id);
+            sprintf(s_msg, "%d", port);
+            if(port > 0){
+                strcat(s_msg, "|allow");
             }else{
-                send(socket, "|NO", BUFF_LEN, 0);
+                strcat(s_msg, "|NO");
             }
+            send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 

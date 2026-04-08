@@ -430,11 +430,11 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
         // Запрос на присоединение к лобби
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "join", 5) == 0){
-            int lobby_port;
-            cout << "   Введите порт лобби: ";
-            cin >> lobby_port;
+            int lobby_id;
+            cout << "   Введите ID лобби: ";
+            cin >> lobby_id;
             
-            sprintf(s_msg, "%d", lobby_port);
+            sprintf(s_msg, "%d", lobby_id);
             strcat(s_msg, "|join");
             send(c_sock, s_msg, BUFF_LEN, 0);
     
@@ -443,6 +443,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             if(ans > 0){
                 cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 if(strncmp(request, "allow", 6) == 0){
+                    int lobby_port = atoi(output);
                     sockaddr_in lobby_addr;
                     lobby_addr.sin_family = AF_INET;
                     inet_aton(output, &lobby_addr.sin_addr);

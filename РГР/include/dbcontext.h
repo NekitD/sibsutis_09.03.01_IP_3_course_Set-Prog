@@ -64,7 +64,7 @@ class StartupDbContext {
         string get_chats();
 
         bool add_lobby(string name, int num);
-        bool join_lobby(int id); // bool ?
+        int join_lobby(int id);
 
     private:
         string address;
