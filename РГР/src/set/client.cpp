@@ -781,5 +781,5 @@ void cli_input(string& text){
 
 bool commandexists(string command){
     return command == "ps" || command == "psa" || command == "rate" || command == "exit" || command == "ls"
-            || command == "mkl" || command == "join" || command == "chat" || command == "chats";
+            || command == "mkl" || command == "join" || command == "chat" || command == "chats" || command == "help";
 }
