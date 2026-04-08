@@ -411,7 +411,9 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             if(num == 0){
                 continue;
             }
-            sprintf(s_msg, "%s:%d", name, num);
+            cout << name << endl;
+            sprintf(s_msg, "%d:", num);
+            strcat(s_msg, name.c_str());
             strcat(s_msg, "|makelob");
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;

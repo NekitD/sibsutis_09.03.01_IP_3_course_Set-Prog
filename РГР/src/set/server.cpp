@@ -124,11 +124,9 @@ void* user_thread(void* arg)
         if(strncmp(request, "makelob", 8) == 0){
             char name[BUFF_LEN] = "";
             int num = 0;
-            sscanf(output, "%[^:]:%d", name, &num);
-            cout << "NUM: " << num;
+            sscanf(output, "%d:%[^|]", &num, name);
             if(num < 3 || num > 6){
                 send(socket, "|NO", BUFF_LEN, 0);
-                cout << "DEB: OUTNUM" << endl; //--------------------
                 continue;
             }
             int lob_id = CONTEXT->add_lobby(p_login, name, num);
@@ -142,7 +140,6 @@ void* user_thread(void* arg)
                 pthread_detach(lobby_t);
             } else {
                 send(socket, "|NO", BUFF_LEN, 0);
-                cout << "DEB: NOPE" << endl; //--------------------
                 cout << lob_id << endl;
             }
             continue;
