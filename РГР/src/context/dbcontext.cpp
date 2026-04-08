@@ -236,6 +236,20 @@ string StartupDbContext::get_chats(){
 }
 
 bool StartupDbContext::add_lobby(string name, int num){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return false;
+    }
+    string q = "INSERT INTO games (name, size) VALUES ($1, $2)";
+    work w(*conn);
+    w.exec_params(q, name, num);
+    w.commit();
+    q = "SELECT FROM games WHERE name = $1, size = $2";
+    result res = w.exec_params(q, name, num);
+    if(res.empty()){
+        return false;
+    }
+    return true;
 
 }
 bool StartupDbContext::join_lobby(int id){// bool ?
