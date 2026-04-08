@@ -738,6 +738,10 @@ void Game::Endgame(StartupDbContext* context){
         if((*pl)->getStatus() == LEFT){
             reward = count_reward(-REWARD_K * getPnum(), 0, false, 0, 0);
         }
+
+        if((*pl)->getScore() != max){
+            reward = count_reward((*pl)->getScore(), getPnum(), false, winners.size(), REWARD_K);
+        }
         cout << "(К рейтингу: " << reward << ")" << endl;
         context->add_player_score((*pl)->get_nick(), reward);
     }
