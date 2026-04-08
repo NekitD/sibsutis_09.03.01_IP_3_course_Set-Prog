@@ -350,7 +350,8 @@ void* lobby_thread(void* arg)
     int sm_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (sm_socket < 0) {
         cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ЛОББИ!" << endl;
-        return NULL;
+        close(sm_socket);
+        pthread_exit(0);
     }
     struct sockaddr_in s_addr;
 
@@ -360,12 +361,14 @@ void* lobby_thread(void* arg)
     s_addr.sin_port = 0;
     if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ЛОББИ!" << endl;
-        return NULL;
+        close(sm_socket);
+        pthread_exit(0);
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
     if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ЛОББИ!" << endl;
-        return NULL;
+        close(sm_socket);
+        pthread_exit(0);
     }
 
     lobby_args* largs = (lobby_args*)arg;
@@ -387,7 +390,8 @@ void* lobby_thread(void* arg)
 
     if(listen(sm_socket, lobby_size) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ЛОББИ!" << endl;
-        return NULL;
+        close(sm_socket);
+        pthread_exit(0);
     }
     //cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
     //cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
@@ -455,7 +459,7 @@ void* lobby_thread(void* arg)
         }
     }
     close(sm_socket);
-    return NULL;
+    pthread_exit(0);
 }
 
 
