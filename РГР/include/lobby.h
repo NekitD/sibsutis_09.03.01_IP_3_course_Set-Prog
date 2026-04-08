@@ -26,6 +26,7 @@ typedef struct player_args {
 typedef struct lobby_args {
     int id;
     StartupDbContext* context;
+    int size;
 } lobby_args;
 
 

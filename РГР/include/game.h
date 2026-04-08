@@ -133,7 +133,7 @@ class Player
 class Game 
 {
     public:
-        Game();
+        Game(int _pmax);
         ~Game();
         void game_init();
         vector<Card*>* get_profs() const;
@@ -147,6 +147,7 @@ class Game
         int getStatus() const;
         int getPnum() const;
         int getRnum() const;
+        int getMnum() const;
         int get_player_id(char* nick) const;
         string get_player_nick(int id) const;
         int get_player_status(int id) const;
@@ -194,6 +195,7 @@ class Game
 
     private:
         int p_num = 0;
+        int p_max;
         vector<Card*>* g_profs;
         vector<Card*>* g_skills;
         vector<Card*>* g_emoji;

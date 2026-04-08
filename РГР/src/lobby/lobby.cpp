@@ -80,7 +80,7 @@ void* player_thread(void* arg)
                 cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
-                cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
+                cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getMnum() << "\n" << endl;
                 if (GAME->isGameReady()){
                     cout << endl << "   Игра начинается!\n" << endl;
                     send_to_all(SUBS, "Игра начинается!|common|", BUFF_LEN);
@@ -348,6 +348,10 @@ void* lobby_thread(void* arg)
 {
 
     int sm_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (sm_socket < 0) {
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ЛОББИ!" << endl;
+        return NULL;
+    }
     struct sockaddr_in s_addr;
 
     bzero((char*)&s_addr, sizeof(struct sockaddr_in));
@@ -355,57 +359,38 @@ void* lobby_thread(void* arg)
     s_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     s_addr.sin_port = 0;
     if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ СЕРВЕР!" << endl;
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ЛОББИ!" << endl;
         return NULL;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
     if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ СЕРВЕРА!" << endl;
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ЛОББИ!" << endl;
         return NULL;
     }
 
     lobby_args* largs = (lobby_args*)arg;
     int lobby_id = largs->id;
+    int lobby_size = largs->size;
     StartupDbContext* CONTEXT = largs->context;
     CONTEXT->set_lobby_port(lobby_id, s_addr.sin_port);
 
     vector<int>* SUBS = new vector<int>;
-    Game* GAME = new Game;
+    Game* GAME = new Game(lobby_size);
 
     srand(time(NULL));
 
-    struct sockaddr_in s_addr;
-
     int ss_socket = 0; 
 
-    if (sm_socket < 0) {
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ СОЗДАТЬ ИГРУ!" << endl;
-        return NULL;
-    }
 
-    bzero((char*)&s_addr, sizeof(struct sockaddr_in));
-    s_addr.sin_family = AF_INET;
-    s_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    s_addr.sin_port = 0;
+    //cout << "   АДРЕС ЛОББИ: " << inet_ntoa(s_addr.sin_addr) << endl;
+    //cout << "   ПОРТ ЛОББИ: " << ntohs(s_addr.sin_port) << endl;
 
-    if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ИГРУ!" << endl;
+    if(listen(sm_socket, lobby_size) < 0){
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ЛОББИ!" << endl;
         return NULL;
     }
-    unsigned int s_len = sizeof(struct sockaddr_in);
-    if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
-        return NULL;
-    }
-    cout << "   АДРЕС ИГРЫ: " << inet_ntoa(s_addr.sin_addr) << endl;
-    cout << "   ПОРТ ИГРЫ: " << ntohs(s_addr.sin_port) << endl;
-
-    if(listen(sm_socket, MAX_P) < 0){
-        cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
-        return NULL;
-    }
-    cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
-    cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
+    //cout << endl << "   Игроков: " << GAME->getPnum() << " / {" << MIN_P << " - " << MAX_P << "}" << endl;
+    //cout << "   Готовы: " << GAME->getRnum() << " / " << MAX_P << "\n" << endl;
     GAME->setStatus(PRE);
     int status;
     for(;;)
