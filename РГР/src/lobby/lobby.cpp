@@ -76,6 +76,7 @@ void* player_thread(void* arg)
 
         if(p_status == PRE_TO_PLAY){
             if(strncmp(request, "readytoplay", 12) == 0){
+                SUBS->push_back(socket);
                 cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
                 GAME->set_player_status(id, READY_TO_PLAY);
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
@@ -412,7 +413,6 @@ void* lobby_thread(void* arg)
         status = GAME->getStatus();
         if (status == PRE){
             ss_socket = accept(sm_socket, 0, 0);
-            SUBS->push_back(ss_socket);
             pthread_t thread_id;
             player_args pargs;
             pargs.game = GAME;
@@ -462,7 +462,7 @@ void* lobby_thread(void* arg)
             continue;
         }
         if(status == OVER){
-            GAME->Endgame();
+            GAME->Endgame(CONTEXT);
             send_to_all(SUBS, "|over|", BUFF_LEN);
             CONTEXT->rm_lobby(lobby_id);
             sleep(1);
