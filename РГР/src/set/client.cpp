@@ -454,6 +454,11 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                         cout << "Не удалось подключится к лобби." << endl;
                         continue;
                     }
+                    status = WAIT_ACCEPT;
+                    strcat(s_msg, login.c_str());
+                    strcat(s_msg, "|join");
+                    send(lobby_sock, s_msg, BUFF_LEN, 0);
+                    break;
                 } else {
                     cout << "Не удалось найти указанное лобби." << endl;
                     continue;
@@ -531,7 +536,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
     }
     
-    setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&old_tv, sizeof(old_tv));
+    //setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&old_tv, sizeof(old_tv));
     //============================================================
     // 3. Чат с другим игроком
     //============================================================
