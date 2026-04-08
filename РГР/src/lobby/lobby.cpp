@@ -29,13 +29,14 @@ void* player_thread(void* arg)
     ser_decode_msg(a_msg, BUFF_LEN, output, request);
     if (strncmp(request, "join", 4) == 0){
         GAME->addPlayer(output, socket);
-        CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
         id = GAME->get_player_id(output);
         if(id < 0){
             cout << "   ОШИБКА ID." << endl;
+            GAME->remPlayer(socket);
             close(socket);
             pthread_exit(0);
         }
+        CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
         strcat(s_msg, "||PRE_TO_PLAY");
         send(socket, s_msg, BUFF_LEN, 0);
         GAME->set_player_status(id, PRE_TO_PLAY);
