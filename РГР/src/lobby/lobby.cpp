@@ -8,6 +8,9 @@ void* player_thread(void* arg)
     int socket = pargs->socket;
     Game* GAME = pargs->game;
     vector<int>* SUBS = pargs->subs;
+    int lobby_id = pargs->lobby_id;
+    StartupDbContext* CONTEXT = pargs->context;
+
     int id = 0;
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
@@ -335,10 +338,30 @@ void* player_thread(void* arg)
     pthread_exit(0);
 }
 
-void* Lobby(void* arg)
+void* lobby_thread(void* arg)
 {
 
-    int sm_socket = (int)(long)arg;
+    int sm_socket = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in s_addr;
+
+    bzero((char*)&s_addr, sizeof(struct sockaddr_in));
+    s_addr.sin_family = AF_INET;
+    s_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    s_addr.sin_port = 0;
+    if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ СЕРВЕР!" << endl;
+        return NULL;
+    }
+    unsigned int s_len = sizeof(struct sockaddr_in);
+    if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
+        cout << "   ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ СЕРВЕРА!" << endl;
+        return NULL;
+    }
+
+    lobby_args* largs = (lobby_args*)arg;
+    int lobby_id = largs->id;
+    StartupDbContext* CONTEXT = largs->context;
+
     vector<int>* SUBS = new vector<int>;
     Game* GAME = new Game;
 
@@ -389,6 +412,8 @@ void* Lobby(void* arg)
             pargs.game = GAME;
             pargs.subs = SUBS;
             pargs.socket = ss_socket;
+            pargs.context = CONTEXT;
+            pargs.lobby_id = lobby_id;
             pthread_create(&thread_id, NULL, player_thread, (void*)&pargs);
             pthread_detach(thread_id);
             sleep(1);

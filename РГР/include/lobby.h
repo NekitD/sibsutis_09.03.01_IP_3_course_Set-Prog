@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include "game.h"
 #include <cstring>
+#include "dbcontext.h"
 
 using namespace std;
 
@@ -18,8 +19,18 @@ typedef struct player_args {
     int socket;
     Game* game;
     vector<int>* subs;
+    int lobby_id;
+    StartupDbContext* context;
 } player_args;
+
+
+typedef struct lobby_args {
+    int id;
+    StartupDbContext* context;
+} lobby_args;
+
 
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
 void* player_thread(void* arg);
+void* lobby_thread(void* arg);
