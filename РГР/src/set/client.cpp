@@ -41,9 +41,13 @@ void enableEcho() {
 
 using namespace std;
 
+
+
+
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
 bool client_loop(int&, string&, int&, char*, char*, char*, char*, int&, struct timeval&);
+bool commandexists(string command);
 
 
 
@@ -297,6 +301,10 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
         int ans = -1;
         cout << "[" << login << "]$ ";
         cin >> command;
+        if(!commandexists(command)){
+            cout << "Неизвестная команда '" << command << "'" << endl;
+            continue;
+        }
         strcat(s_msg, login.c_str());
         //--------------------------------------------------------------------
         // Инструкция
@@ -304,11 +312,11 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
         if(strncmp(command.c_str(), "help", 5) == 0){
             cout << endl;
             cout << "'ps' - показать список игроков онлайн." << endl;
-            cout << "'ps -a' - показать список всех игроков." << endl;
+            cout << "'psa' - показать список всех игроков." << endl;
             cout << "'rate' - показать рейтинг." << endl;
             cout << "'ls' - показать список лобби." << endl;
             cout << "'mkl' - создать лобби." << endl;
-            cout << "'join [порт лобби]' - присоединиться к лобби." << endl;
+            cout << "'join' - присоединиться к лобби." << endl;
             cout << "'chats' - показать чаты." << endl;
             cout << "'chat' - открыть чат с игроком (если нет, создаётся)." << endl;
             //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl; --- В ДОЛГИЙ ЯЩИК
@@ -320,7 +328,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
         //--------------------------------------------------------------------
         // Запрос списка игроков
         //--------------------------------------------------------------------
-        if(strncmp(command.c_str(), "ps -a", 6) == 0){
+        if(strncmp(command.c_str(), "psa", 6) == 0){
             strcat(s_msg, "|getallplayers");
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;
@@ -510,7 +518,6 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             continue;
         }
 
-        cout << "Неизвестная команда '" << command << "'" << endl;
     }
     
     setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&old_tv, sizeof(old_tv));
@@ -770,4 +777,9 @@ void cli_input(string& text){
     if (!text.empty() && text.back() == '\n') {
         text.pop_back();
     }
+}
+
+bool commandexists(string command){
+    return command == "ps" || command == "psa" || command == "rate" || command == "exit" || command == "ls"
+            || command == "mkl" || command == "join" || command == "chat" || command == "chats";
 }
