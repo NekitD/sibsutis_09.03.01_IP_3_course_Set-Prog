@@ -123,7 +123,7 @@ int StartupDbContext::logout(string login){
     return 0;
 }
 
-char* StartupDbContext::get_lobbies(){
+string StartupDbContext::get_lobbies(){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
@@ -136,13 +136,14 @@ char* StartupDbContext::get_lobbies(){
     strcat(answer, "---------------------------------------------------\n");
     strcat(answer, "   ID      Название        К-во игроков\n");
     strcat(answer, "---------------------------------------------------\n");
-    for(int i = 0; i < res.size(); i++){
-        sprintf(answer, "   %d     %s      %d\n", res[i]["id"], res[i]["name"], res[i]["size"]);
+    for(size_t i = 1; i <= res.size(); i++){
+        sprintf(answer, "   %d     %s      %d\n", res[i]["id"].as<int>(), res[i]["name"].as<string>(), 
+                                                                            res[i]["size"].as<int>());
     }
     return answer;
 
 }
-char* StartupDbContext::get_players_on(){
+string StartupDbContext::get_players_on(){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
@@ -151,16 +152,18 @@ char* StartupDbContext::get_players_on(){
     work w(*conn);
     result res = w.exec_params(q, 1);
     w.commit();
-    char* answer = "";
-    strcat(answer, "---------------------------------------------------\n");
-    strcat(answer, "    ID      Логин\n");
-    strcat(answer, "---------------------------------------------------\n");
-    for(int i = 0; i < res.size(); i++){
-        sprintf(answer, "   %d     %s\n", res[i]["id"], res[i]["login"]);
+    string answer;
+    answer += "---------------------------------------------------\n";
+    answer += "    ID      Логин\n";
+    answer += "---------------------------------------------------\n";
+    for(size_t i = 0; i < res.size(); i++){
+        char buff[256];
+        sprintf(buff, "     %d     %s\n", res[i]["id"].as<int>(), res[i]["login"].as<string>().c_str());
+        answer += buff;
     }
     return answer;
 }
-char* StartupDbContext::get_players_all(){
+string StartupDbContext::get_players_all(){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
@@ -173,7 +176,7 @@ char* StartupDbContext::get_players_all(){
     strcat(answer, "---------------------------------------------------\n");
     strcat(answer, "   ID      Логин        Статус\n");
     strcat(answer, "---------------------------------------------------\n");
-    for(int i = 0; i < res.size(); i++){
+    for(size_t i = 1; i <= res.size(); i++){
         sprintf(answer, "   %d     %s       ", res[i]["id"], res[i]["login"]);
         if(res[i]["online"].as<int>()){
             sprintf(answer, "Онлайн");
@@ -185,7 +188,7 @@ char* StartupDbContext::get_players_all(){
     return answer;
 }
 
-char* StartupDbContext::get_rating(){
+string StartupDbContext::get_rating(){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
@@ -198,13 +201,13 @@ char* StartupDbContext::get_rating(){
     strcat(answer, "---------------------------------------------------\n");
     strcat(answer, "    Место   ID      Логин        Рейтинг\n");
     strcat(answer, "---------------------------------------------------\n");
-    for(int i = 0; i < res.size(); i++){
+    for(size_t i = 1; i <= res.size(); i++){
         sprintf(answer, "   %d)   %d     %s       %d\n", i+1, res[i]["id"], res[i]["login"], res[i]["score"]);
     }
     return answer;
 
 }
-char* StartupDbContext::get_chats(){
+string StartupDbContext::get_chats(){
 
 }
 
