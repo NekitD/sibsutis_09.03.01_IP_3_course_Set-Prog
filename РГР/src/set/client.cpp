@@ -554,22 +554,25 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         bzero(a_msg, BUFF_LEN);
         bzero(output, BUFF_LEN);
         bzero(request, BUFF_LEN);
-        rec = recv(c_sock, a_msg, BUFF_LEN, 0);
+        rec = recv(lobby_sock, a_msg, BUFF_LEN, 0);
         if (rec == 0)
         { 
             cout << "СОЕДИНЕНИЕ ПРЕРВАНО!" << endl;
-            break;
+            close(lobby_sock);
+            return true;
         }
         if (rec < 0)
         { 
             cout << " ОШИБКА СЕРВЕРА! (Invalid server socket)" << endl;
-            break;
+            close(lobby_sock);
+            return true;
         }
         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
 
 
         if(strncmp(request, "over", 5) == 0){
             cout << "   Игра окончена!" << endl;
+            close(lobby_sock);
             return true; // возвращение в командную строку
         }
 
@@ -590,9 +593,10 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cin >> a;
             } while (a != 'y' && a != 'Y' && a != 'q' && a != 'Q');
             if (a == 'q' || a == 'Q'){
-                break;
+                close(lobby_sock);
+                return true;
             }
-            if(send(c_sock, "|readytoplay", BUFF_LEN, 0) < 0){
+            if(send(lobby_sock, "|readytoplay", BUFF_LEN, 0) < 0){
                 cout << "   Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
                 cout << "   Ожидание других игроков..." << endl;
@@ -601,7 +605,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
-            send(c_sock, " ", 1, 0);
+            send(lobby_sock, " ", 1, 0);
             sleep(1);
             continue;
         }
@@ -616,7 +620,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         
                 strcat(s_msg, manual.c_str());
                 strcat(s_msg, "|sendhist");
-                send(c_sock, s_msg, BUFF_LEN, 0);
+                send(lobby_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
             if(strncmp(request, "givejchoice", 11) == 0){
@@ -631,7 +635,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, choice.c_str());
                 strcat(s_msg, "|jchoice");
-                send(c_sock, s_msg, BUFF_LEN, 0);
+                send(lobby_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
             continue;
@@ -648,7 +652,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 } while(v != 1 && v != 2 && v != 3);
                 sprintf(s_msg, "%d", v);
                 strcat(s_msg, "|claim");
-                send(c_sock, s_msg, BUFF_LEN, 0);
+                send(lobby_sock, s_msg, BUFF_LEN, 0);
             }
 
             if(strncmp(request, "claim", 6) == 0){
@@ -657,7 +661,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                     cout << "\n   Работодатель готов Вас выслушать. Введите 'Y', когда будете готовы отвечать на собеседовании: ";
                     cin >> r;
                 } while(r != 'Y' && r != 'y');
-                send(c_sock, "|readytoanswer", BUFF_LEN, 0);
+                send(lobby_sock, "|readytoanswer", BUFF_LEN, 0);
                 continue;
             }
 
@@ -668,7 +672,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cli_input(resume);
                 strcat(s_msg, resume.c_str());
                 strcat(s_msg, "|sendanswer");
-                send(c_sock, s_msg, BUFF_LEN, 0);
+                send(lobby_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
 
@@ -681,7 +685,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cli_input(answ);
                 strcat(s_msg, answ.c_str());
                 strcat(s_msg, "|aquest");
-                send(c_sock, s_msg, BUFF_LEN, 0);
+                send(lobby_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
             continue;
@@ -697,7 +701,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cin >> h;
             } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
             if(h == 'N' || h == 'n'){
-                send(c_sock, "|noquest", BUFF_LEN, 0);
+                send(lobby_sock, "|noquest", BUFF_LEN, 0);
                 continue;
             }
             string question;
@@ -707,7 +711,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             strcat(s_msg, output);
             strcat(s_msg, question.c_str());
             strcat(s_msg, "|quest");
-            send(c_sock, s_msg, BUFF_LEN, 0);
+            send(lobby_sock, s_msg, BUFF_LEN, 0);
         }
 
         if(status == SCORING){
@@ -718,7 +722,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             } while(score < 1 || score > 5);
             sprintf(s_msg, "%d", score);
             strcat(s_msg, "|score");
-            send(c_sock, s_msg, BUFF_LEN, 0);
+            send(lobby_sock, s_msg, BUFF_LEN, 0);
             continue;
         }
     }
