@@ -204,7 +204,7 @@ string StartupDbContext::get_rating(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM users ORDER BY score";
+    string q = "SELECT * FROM users ORDER BY score DESC";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
@@ -220,9 +220,10 @@ string StartupDbContext::get_rating(){
         int cscore = res[i]["score"].as<int>();
         if(cscore != score){
             place++;
+            score = cscore;
         }
         char buff[256];
-        sprintf(buff, "     %ld)         %d          %s         %d\n", place, res[i]["id"].as<int>(), 
+        sprintf(buff, "     %ld)         %d          %s             %d\n", place, res[i]["id"].as<int>(), 
                                                 res[i]["login"].as<string>().c_str(), cscore);
         answer += buff;
         answer += "---------------------------------------------------\n";
