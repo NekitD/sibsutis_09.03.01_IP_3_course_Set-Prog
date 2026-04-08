@@ -48,6 +48,7 @@ void* user_thread(void* arg)
     char request[BUFF_LEN] = "";
     //--------------------------------
     int rec_l = 0;
+    string p_login;
     // Обработка запросов пользователей
     for(;;)
     {
@@ -72,6 +73,7 @@ void* user_thread(void* arg)
             }else if (lstat == L_ONLINE){
                 send(socket, "|online|", BUFF_LEN, 0);
             }else if (lstat == L_SUCCESS){
+                p_login = login;
                 send(socket, "|success|", BUFF_LEN, 0);
             }
             continue;
@@ -158,7 +160,7 @@ void* user_thread(void* arg)
         }
 
         if(strncmp(request, "exit", 9) == 0){
-            CONTEXT->logout(output);
+            CONTEXT->logout(p_login);
             break;
         }
 
@@ -200,7 +202,8 @@ int main()
     }
     cout << "   АДРЕС СЕРВЕРА: " << inet_ntoa(s_addr.sin_addr) << endl;
     cout << "   ПОРТ СЕРВЕРА: " << ntohs(s_addr.sin_port) << endl;
-
+    cout << endl;
+    cout << "Необходимо подключиться к базе данных." << endl;
     string admin;
     string pswrd;
     cout << "Data login: ";
@@ -211,11 +214,13 @@ int main()
     cout << endl;
     enableEcho();
 
+    CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT, DATABASE, admin, pswrd);
+
     if(listen(ser_socket, MAX_USERS) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ СЕРВЕР!" << endl;
         return -1;
     }
-    CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT, DATABASE, admin, pswrd);
+    cout << "СЕРВЕР ГОТОВ К РАБОТЕ!" << endl;
     // Приём пользователей
     for(;;)
     {
