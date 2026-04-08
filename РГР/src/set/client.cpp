@@ -381,7 +381,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         //--------------------------------------------------------------------
         // Запрос списка лобби
         //--------------------------------------------------------------------
-        if(strncmp(command.c_str(), "ls", 5) == 0){
+        if(strncmp(command.c_str(), "ls", 3) == 0){
             strcat(s_msg, "|getlobby");
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;

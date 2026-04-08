@@ -165,6 +165,13 @@ void* user_thread(void* arg)
             continue;
         }
 
+        if(strncmp(request, "getlobby", 9) == 0){
+            strcat(s_msg, CONTEXT->get_lobbies().c_str());
+            strcat(s_msg, "|");
+            send(socket, s_msg, BUFF_LEN, 0);
+            continue;
+        }
+
         if(strncmp(request, "exit", 9) == 0){
             CONTEXT->logout(p_login);
             break;
