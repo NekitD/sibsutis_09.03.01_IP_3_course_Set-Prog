@@ -212,10 +212,18 @@ string StartupDbContext::get_rating(){
     answer += "===================================================\n";
     answer += "    Место       ID          Логин        Рейтинг\n";
     answer += "===================================================\n";
+
+    int place = 1;
+    int score = res[0]["score"].as<int>();
+
     for(size_t i = 0; i < res.size(); i++){
+        int cscore = res[i]["score"].as<int>();
+        if(cscore != score){
+            place++;
+        }
         char buff[256];
-        sprintf(buff, "     %ld)         %d          %s         %d\n", i+1, res[i]["id"].as<int>(), 
-                                                res[i]["login"].as<string>().c_str(), res[i]["score"].as<int>());
+        sprintf(buff, "     %ld)         %d          %s         %d\n", place, res[i]["id"].as<int>(), 
+                                                res[i]["login"].as<string>().c_str(), cscore);
         answer += buff;
         answer += "---------------------------------------------------\n";
     }
