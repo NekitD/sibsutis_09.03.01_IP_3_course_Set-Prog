@@ -129,7 +129,7 @@ int main()
                 cin >> conf;
             } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
             if(conf == 'y' || conf == 'Y'){
-                cout << "       Игра закрывается!" << endl;
+                cout << "=======================Игра закрывается!=======================" << endl;
                 return 0;
             } else {
                 continue;
@@ -305,7 +305,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
             cout << "Неизвестная команда '" << command << "'" << endl;
             continue;
         }
-        strcat(s_msg, login.c_str());
+        //strcat(s_msg, login.c_str());
         //--------------------------------------------------------------------
         // Инструкция
         //--------------------------------------------------------------------
@@ -502,7 +502,7 @@ bool client_loop(int& c_sock, string& login, int& rec, char* s_msg, char* a_msg,
                 cin >> conf;
             } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
             if(conf == 'y' || conf == 'Y'){
-                cout << "       Игра закрывается!" << endl;
+                cout << "=======================Игра закрывается!=======================" << endl;
                 strcat(s_msg, "|exit");
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 return false;
