@@ -147,7 +147,7 @@ char* StartupDbContext::get_players_on(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM players WHERE online = $1";
+    string q = "SELECT * FROM users WHERE online = $1";
     work w(*conn);
     result res = w.exec_params(q, 1);
     w.commit();
@@ -165,7 +165,7 @@ char* StartupDbContext::get_players_all(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM players WHERE online = $1";
+    string q = "SELECT * FROM users WHERE online = $1";
     work w(*conn);
     result res = w.exec_params(q, 1);
     w.commit();
@@ -190,7 +190,7 @@ char* StartupDbContext::get_rating(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM players ORDER BY score";
+    string q = "SELECT * FROM users ORDER BY score";
     work w(*conn);
     result res = w.exec_params(q, 1);
     w.commit();
