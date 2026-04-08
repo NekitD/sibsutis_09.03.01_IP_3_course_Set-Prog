@@ -22,8 +22,6 @@ static struct termios original_t;
 
 StartupDbContext* CONTEXT;
 
-void ser_decode_msg(char* msg, int mlen, char* output, char* request);
-void send_to_all(vector<int>*, char*, int);
 
 void disableEcho() {
     struct termios t;
@@ -241,12 +239,4 @@ int main()
     }
     close(ser_socket);
     return 0;
-}
-
-// Структкра сообщения (клиент -> сервер) "output|request"
-void ser_decode_msg(char* msg, int mlen, char* output, char* request){
-    bzero(output, mlen);
-    bzero(request, mlen);
-    int bc = get_line_b(output, msg, 0, mlen, '|');
-    bc = get_line_b(request, msg, bc, mlen, ' ');
 }
