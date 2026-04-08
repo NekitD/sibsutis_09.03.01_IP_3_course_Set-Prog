@@ -114,12 +114,17 @@ int Player::getScore() const{
     return score;
 }
 
-void Player::print_skills() const{
+string Player::print_skills() const{
+    string res;
     if(p_skills){
         for(vector<Card*>::const_iterator sk = p_skills->begin(); sk != p_skills->end(); sk++){
             cout << "    - " <<**sk << endl;
+            res += "    - ";
+            res += (**sk).get_text();
+            res += "\n";
         }
     }
+    return res;
 }
 
 
@@ -590,12 +595,18 @@ bool Game::no_questions() const{
     return true;
 }
 
-void Game::open_p(int id) const{
+string Game::open_p(int id) const{
+    string res;
+    char buf[BUFF_LEN];
     Player* p = getPlayer(id);
-    cout << "   Карты " << get_player_nick(id) << ": " << endl;
-    cout << "   Эмоция: " << p->getEmoji()->get_text() << endl;
-    cout << "   Навыки:" << endl;
-    p->print_skills();
+    sprintf(buf, "   Карты %s: \n   Эмоция: %s\n   Навыки:\n%s\n");
+    //cout << "   Карты " << get_player_nick(id) << ": " << endl;
+    //cout << "   Эмоция: " << p->getEmoji()->get_text() << endl;
+    //cout << "   Навыки:" << endl;
+    //p->print_skills();
+    res+=buf;
+    res+=p->print_skills();
+    return res;
 }
 
 int Game::get_scoreb() const{
@@ -713,47 +724,79 @@ void Game::drop_cards(){
 }
 
 
-void Game::Endgame(StartupDbContext* context){
+string Game::Endgame(StartupDbContext* context){
+    string result;
     int max = 0;
     int c_score = 0;
-    cout << "======================================" << endl;
-    cout << "       Игра окончена!" << endl;
-    cout << "======================================" << endl;
-    print_players();
-    vector<Player*> winners;
-    for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-        c_score = (*pl)->getScore();
-        if(c_score > max){
-            max = c_score;
-        }
+    
+    result += "======================================\n";
+    result += "       ИГРА ОКОНЧЕНА!\n";
+    result += "======================================\n";
+    
+    // Сохраняем информацию об игроках в строку
+    string players_info;
+    for(auto pl : *g_players){
+        char buffer[256];
+        sprintf(buffer, "%s (очки: %d)\n", 
+                pl->get_nick().c_str(), 
+                pl->getScore());
+        players_info += buffer;
     }
-    cout << endl;
-    for(vector<Player*>::const_iterator pl = g_players->begin(); pl != g_players->end(); pl++){
-        cout << (**pl) << "     ";
-        int reward;
-        if((*pl)->getScore() == max && (*pl)->getStatus() != LEFT){
-            winners.push_back(*pl);
-            reward = count_reward((*pl)->getScore(), getPnum(), true, winners.size(), REWARD_K);
+    result += players_info;
+    
+    for(auto pl : *g_players){
+        if(pl->getStatus() != LEFT && pl->getScore() > max){
+            max = pl->getScore();
         }
-        if((*pl)->getStatus() == LEFT){
-            reward = count_reward(-REWARD_K * getPnum(), 0, false, 0, 0);
-        }
-
-        if((*pl)->getScore() != max){
-            reward = count_reward((*pl)->getScore(), getPnum(), false, winners.size(), REWARD_K);
-        }
-        cout << "(К рейтингу: " << reward << ")" << endl;
-        context->add_player_score((*pl)->get_nick(), reward);
-    }
-    if(winners.size() > 1){
-        cout << "       ПОБЕДИТЕЛИ:" << endl;
-    } else {
-        cout << "       ПОБЕДИТЕЛЬ:" << endl;
     }
     
-    for(vector<Player*>::const_iterator pl = winners.begin(); pl != winners.end(); pl++){
-        cout << "      " <<(**pl).get_nick() << endl;
+    vector<Player*> winners;
+    for(auto pl : *g_players){
+        if(pl->getStatus() != LEFT && pl->getScore() == max){
+            winners.push_back(pl);
+        }
     }
+    
+    result += "\n";
+    
+    for(auto pl : *g_players){
+        char buffer[256];
+        int reward;
+        
+        if(pl->getStatus() == LEFT){
+            reward = -REWARD_K * getPnum();
+            sprintf(buffer, "%s (вышел из игры) - изменение рейтинга: %d\n", 
+                    pl->get_nick().c_str(), reward);
+        }
+        else if(pl->getScore() == max){
+            reward = REWARD_K / winners.size();
+            sprintf(buffer, "%s - ПОБЕДИТЕЛЬ! Очки: %d, изменение рейтинга: +%d\n", 
+                    pl->get_nick().c_str(), pl->getScore(), reward);
+        }
+        else {
+            reward = -REWARD_K / (getPnum() - winners.size());
+            sprintf(buffer, "%s - очки: %d, изменение рейтинга: %d\n", 
+                    pl->get_nick().c_str(), pl->getScore(), reward);
+        }
+        
+        result += buffer;
+        context->add_player_score(pl->get_nick(), reward);
+    }
+    
+    result += "\n";
+    if(winners.size() > 1){
+        result += "       ПОБЕДИТЕЛИ:\n";
+    } else {
+        result += "       ПОБЕДИТЕЛЬ:\n";
+    }
+    
+    for(auto pl : winners){
+        result += "      " + pl->get_nick() + "\n";
+    }
+    
+    result += "======================================\n";
+    
+    return result;
 }
 
 int Game::count_reward(int score, int pnum, bool winner, int winn, int k){
@@ -788,18 +831,27 @@ void Employ_Info::setManual(string n_man){
     manual = n_man;
 }
 
-void Employ_Info::print_profs() const{
+string Employ_Info::print_profs() const{
+    string res = "";
     if(e_profs){
-        cout << "-------------------" << endl;
-        cout << " Вакансии:" << endl;
-        cout << "-------------------" << endl;
+        // cout << "-------------------" << endl;
+        // cout << " Вакансии:" << endl;
+        // cout << "-------------------" << endl;
+        res += "-------------------\n";
+        res += "Вакансии:\n";
+        res += "-------------------\n";
         int i = 1;
         for(vector<Card*>::const_iterator pr = e_profs->begin(); pr != e_profs->end(); pr++){
-            cout << " " << i << ") " << **pr << endl;
+            //cout << " " << i << ") " << **pr << endl;
+            char buf[256];
+            sprintf(buf, " %d) %s\n", i, (*pr)->get_text());
+            res += buf;
             i++;
         }
-        cout << "-------------------" << endl;
+        //cout << "-------------------" << endl;
+        res += "-------------------\n";
     }
+    return res;
 }
 
 void Employ_Info::add_claim(int vac, int id){

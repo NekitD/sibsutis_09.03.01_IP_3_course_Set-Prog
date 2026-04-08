@@ -692,8 +692,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
             if(strncmp(request, "quest", 6) == 0){
                 string answ;
-                cout << "   Вопрос." << endl;
-                cout << "   " << output << endl;
+                //cout << "   Вопрос." << endl;
+                //cout << "   " << output << endl;
                 cout << endl;
                 cout << "   Введите ваш ответ." << endl;
                 cli_input(answ);

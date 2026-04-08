@@ -75,7 +75,7 @@ class Employ_Info
         Employ_Info();
         ~Employ_Info();
         vector<Card*>* getProfs() const;
-        void print_profs() const;
+        string print_profs() const;
         string getManual() const;
         void setManual(string n_man);
         void add_claim(int vac, int id);
@@ -118,7 +118,7 @@ class Player
         vector<Card*>* getSkills() const;
         Card* getEmoji() const;
 
-        void print_skills() const;
+        string print_skills() const;
 
     private:
         int id;
@@ -178,7 +178,7 @@ class Game
         void rem_question();
         bool no_questions() const;
 
-        void open_p(int id) const;
+        string open_p(int id) const;
 
         int get_scoreb() const;
         void set_scoreb(int ns);
@@ -189,7 +189,7 @@ class Game
 
         void drop_cards();
 
-        void Endgame(StartupDbContext* context);
+        string Endgame(StartupDbContext* context);
 
         int count_reward(int score, int pnum, bool winner, int winn, int k);
 
