@@ -375,7 +375,7 @@ void* lobby_thread(void* arg)
     int lobby_id = largs->id;
     int lobby_size = largs->size;
     StartupDbContext* CONTEXT = largs->context;
-    CONTEXT->set_lobby_port(lobby_id, s_addr.sin_port);
+    CONTEXT->set_lobby_port(lobby_id, ntohs(s_addr.sin_port));
 
     vector<int>* SUBS = new vector<int>;
     Game* GAME = new Game(lobby_size);
