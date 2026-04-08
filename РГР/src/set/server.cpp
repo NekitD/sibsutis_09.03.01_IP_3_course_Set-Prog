@@ -132,7 +132,7 @@ void* user_thread(void* arg)
             send(socket, "|NO", BUFF_LEN, 0);
                 continue;
             }
-            int lob_id = CONTEXT->add_lobby(name, num);
+            int lob_id = CONTEXT->add_lobby(p_login, name, num);
             if(lob_id >= 0){
                 send(socket, "|success", BUFF_LEN, 0);
                 pthread_t lobby_t;

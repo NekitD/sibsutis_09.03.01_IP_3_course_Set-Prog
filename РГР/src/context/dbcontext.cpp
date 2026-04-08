@@ -26,7 +26,7 @@ address(_address), port(_port), database(_database), user(_user), password(_pass
 	                    "ID Serial Primary Key," +
 	                    "socket int," +
 	                    "name varchar(256)," +
-	                    "size int," + "busy int, port int, began bool);";
+	                    "size int," + "busy int, port int, began bool, creator int);";
     work w(*conn);
     result res = w.exec(init_script);
     w.commit();
@@ -132,17 +132,27 @@ string StartupDbContext::get_lobbies(){
         return "";
     }
     string q = "SELECT * FROM games ORDER BY id";
+    string q2 = "SELECT * FROM users WHERE id = $1";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
+    result res1 = w.exec_params(q, res1[0]["creator"].as<int>());
+    w.commit();
     string answer;
-    answer += "===================================================\n";
-    answer += "     ID           Название          К-во игроков\n";
-    answer += "===================================================\n";
+    string creator = res1[0]["login"].as<string>();
+    answer += "============================================================================================\n";
+    answer += "     ID           Название           Создатель          К-во игроков         Игра началась\n";
+    answer += "=============================================================================================\n";
     for(size_t i = 0; i < res.size(); i++){
         char buff[256];
-        sprintf(buff, "   %d          %s          %d\n", res[i]["id"].as<int>(), res[i]["name"].as<string>(), 
-                                                                            res[i]["size"].as<int>());
+        bool stat = res[i]["began"].as<bool>();
+        sprintf(buff, "   %d          %s           %s          %d/%d         \n", 
+            res[i]["id"].as<int>(), res[i]["name"].as<string>(), creator, 
+            res[i]["busy"].as<int>(),res[i]["size"].as<int>());
+        if(stat){
+            char buff2[3] = "*";
+            strcat(buff, buff2);
+        }
         answer += buff;
         answer += "---------------------------------------------------\n";
     }
@@ -235,17 +245,23 @@ string StartupDbContext::get_chats(){
 
 }
 
-int StartupDbContext::add_lobby(string name, int num){
+int StartupDbContext::add_lobby(string creator, string name, int num){
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return -1;
     }
-    string q = "INSERT INTO games (name, size, busy) VALUES ($1, $2, $3)";
+    string q = "INSERT INTO games (name, size, busy, creator) VALUES ($1, $2, $3, $4)";
+    string q1 = "SELECT * FROM users WHERE login = $1";
     work w(*conn);
-    w.exec_params(q, name, num, 0);
+    result r = w.exec_params(q, creator);
     w.commit();
-    q = "SELECT * FROM games WHERE name = $1, size = $2, began = $3";
-    result res = w.exec_params(q, name, num, false);
+
+    int cid = r[0]["id"].as<int>();
+
+    w.exec_params(q, name, num, 0, cid);
+    w.commit();
+    q = "SELECT * FROM games WHERE name = $1, size = $2, began = $3, creator = $4";
+    result res = w.exec_params(q, name, num, false, cid);
     w.commit();
     if(res.empty()){
         return -1;
