@@ -131,33 +131,35 @@ string StartupDbContext::get_lobbies(){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
         return "";
     }
-    string q = "SELECT * FROM games ORDER BY id";
-    string q2 = "SELECT * FROM users WHERE id = $1";
+    
+    string q = "SELECT g.id, g.name, g.size, g.busy, g.began, u.login as creator "
+               "FROM games g JOIN users u ON g.creator = u.id "
+               "ORDER BY g.id";
+    
     work w(*conn);
     result res = w.exec(q);
     w.commit();
-    result res1 = w.exec_params(q, res1[0]["creator"].as<int>());
-    w.commit();
+    
     string answer;
-    string creator = res1[0]["login"].as<string>();
     answer += "============================================================================================\n";
     answer += "     ID           Название           Создатель          К-во игроков         Игра началась\n";
     answer += "=============================================================================================\n";
+    
     for(size_t i = 0; i < res.size(); i++){
-        char buff[256];
+        char buff[512];
         bool stat = res[i]["began"].as<bool>();
-        sprintf(buff, "   %d          %s           %s          %d/%d         \n", 
-            res[i]["id"].as<int>(), res[i]["name"].as<string>(), creator, 
-            res[i]["busy"].as<int>(),res[i]["size"].as<int>());
-        if(stat){
-            char buff2[3] = "*";
-            strcat(buff, buff2);
-        }
+        snprintf(buff, sizeof(buff), "   %-8d %-16s %-16s %d/%d         %s\n", 
+            res[i]["id"].as<int>(), 
+            res[i]["name"].as<string>().c_str(), 
+            res[i]["creator"].as<string>().c_str(),
+            res[i]["busy"].as<int>(),
+            res[i]["size"].as<int>(),
+            stat ? "Да" : "Нет"
+        );
         answer += buff;
         answer += "---------------------------------------------------\n";
     }
     return answer;
-
 }
 string StartupDbContext::get_players_on(){
     if(!isConnected()){
@@ -260,7 +262,7 @@ int StartupDbContext::add_lobby(string creator, string name, int num){
 
     w.exec_params(q, name, num, 0, cid);
     w.commit();
-    q = "SELECT * FROM games WHERE name = $1, size = $2, began = $3, creator = $4";
+    q = "SELECT * FROM games WHERE name = $1 AND size = $2 AND began = $3 AND creator = $4";
     result res = w.exec_params(q, name, num, false, cid);
     w.commit();
     if(res.empty()){
