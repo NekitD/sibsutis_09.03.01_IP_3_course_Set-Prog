@@ -220,6 +220,9 @@ int main()
                     cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
                     break;
                 }
+                lr = ' ';
+                cout << endl;
+                continue;
             }
 
             cout << endl;
@@ -243,22 +246,28 @@ int main()
                 cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             }else{
                 cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+                cout << endl;
                 status = NO_ANSWER;
                 break;
             }
 
             if(strncmp(request, "success", 8) == 0){
+                cout << endl;
                 status = SUCCESS;
                 break;
             }
 
             if(strncmp(request, "wrong", 6) == 0){
                 cout << "   Неверный логин или пароль!" << endl;
+                lr = ' ';
+                cout << endl;
                 continue;
             }
 
             if(strncmp(request, "online", 7) == 0){
                 cout << "   Пользователь уже онлайн!" << endl;
+                lr = ' ';
+                cout << endl;
                 continue;
             }
         
