@@ -29,6 +29,7 @@ void* player_thread(void* arg)
     ser_decode_msg(a_msg, BUFF_LEN, output, request);
     if (strncmp(request, "join", 4) == 0){
         GAME->addPlayer(output, socket);
+        CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
         id = GAME->get_player_id(output);
         if(id < 0){
             cout << "   ОШИБКА ID." << endl;
@@ -49,6 +50,7 @@ void* player_thread(void* arg)
         g_status = GAME->getStatus();
         if (rec_l == 0){
             GAME->remPlayer(id);
+            CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
             for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
                 if(*itd == id){
                     SUBS->erase(itd);
@@ -60,6 +62,7 @@ void* player_thread(void* arg)
         if (rec_l < 0){
             cout << "   Разрыв соединения с игроком " << GAME->get_player_nick(id) << " из-за ошибки сокета." << endl;
             GAME->remPlayer(id);
+            CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
             for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
                 if(*itd == id){
                     SUBS->erase(itd);
