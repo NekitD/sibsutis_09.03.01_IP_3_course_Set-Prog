@@ -83,6 +83,8 @@ void* player_thread(void* arg)
                 sprintf(s_msg, "   %s готов играть!\n   Готовы: %d / %d\n|common|", GAME->get_player_nick(id), 
                                                                     GAME->getRnum(), GAME->getMnum());
                 //cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
+                send_to_all(SUBS, s_msg, BUFF_LEN);
+                bzero(s_msg, BUFF_LEN);
                 GAME->set_player_status(id, READY_TO_PLAY);
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
                 //cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getMnum() << "\n" << endl;
@@ -151,9 +153,9 @@ void* player_thread(void* arg)
                     }
                     // cout << "   Соискатель "<< GAME->get_player_nick(id) << " претендует на вакансию " 
                     //     << GAME->EmployInfo()->getProfs()->at(vn)->get_text() << endl;
-                    sprintf(s_msg, "   Соискатель %s претендует на вакансию %s", 
+                    sprintf(s_msg, "   Соискатель %s претендует на вакансию %s|common|", 
                         GAME->get_player_nick(id), GAME->EmployInfo()->getProfs()->at(vn)->get_text());
-                    send_to_all(SUBS, s_msg, BUFF_LEN); // ?????????????????????????????
+                    send_to_all(SUBS, s_msg, BUFF_LEN);
                     GAME->EmployInfo()->add_claim(vn, id);
                     send(socket, "|claim|ANSWERING", BUFF_LEN, 0);
                     continue;
@@ -174,8 +176,11 @@ void* player_thread(void* arg)
                     } 
                     strcat(s_msg, "|areanswerm");
                     strcat(s_msg, "|ANSWERING");
-                    cout << "   Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
+                    //cout << "   Соискатель " << GAME->get_player_nick(id) << " готовится отвечать..." << endl;
                     send(socket, s_msg, BUFF_LEN, 0);
+                    bzero(s_msg, BUFF_LEN);
+                    sprintf(s_msg, "   Соискатель %s готовится отвечать...\n|common|", GAME->get_player_nick(id));
+                    send_to_all(SUBS, s_msg, BUFF_LEN);
                     continue;
                 }
                 GAME->setStatus(P_MAKE);
@@ -183,7 +188,7 @@ void* player_thread(void* arg)
                 strcat(s_msg, "|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
                 bzero(s_msg, BUFF_LEN);
-                sprintf(s_msg, "   Соискатель %s пишет резюме...\n", GAME->get_player_nick(id));
+                sprintf(s_msg, "   Соискатель %s пишет резюме...\n|common|", GAME->get_player_nick(id));
                 //cout << "   Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
                 continue;
             }
@@ -201,7 +206,7 @@ void* player_thread(void* arg)
                 strcat(s_msg, output);
                 //cout << "   " << output << endl;
                 //cout << endl;
-                strcat(s_msg, "\n\n   Время для вопросов.");
+                strcat(s_msg, "\n\n   Время для вопросов.|common|");
                 //cout << "   Время для вопросов." << endl;
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 GAME->setStatus(QUESTIONS);
@@ -224,7 +229,7 @@ void* player_thread(void* arg)
             if(GAME->get_player_status(id) == QUESTIONING){
                 if(strncmp(request, "noquest", 8) == 0){
                     //cout << "   " <<GAME->get_player_nick(id) << " не имеет больше вопросов." << endl;
-                    sprintf(s_msg, "   %s не имеет больше вопросов.", GAME->get_player_nick(id));
+                    sprintf(s_msg, "   %s не имеет больше вопросов.|common|", GAME->get_player_nick(id));
                     send_to_all(SUBS, s_msg, BUFF_LEN);
                     bzero(s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
@@ -263,8 +268,8 @@ void* player_thread(void* arg)
             
             if(!(GAME->get_questions()->empty())){
                 string qu = *(GAME->get_questions()->begin());
-                cout << "   " << qu << endl;
-                sprintf(s_msg, "   %s\n", qu);
+                //cout << "   " << qu << endl;
+                sprintf(s_msg, "   %s\n|common|", qu);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 bzero(s_msg, BUFF_LEN);
                 //strcat(s_msg, qu.c_str());
@@ -291,7 +296,7 @@ void* player_thread(void* arg)
                         score = 5;
                     }
                     //cout << "   " << GAME->get_player_nick(id) << " поставил оценку." << endl;
-                    sprintf(s_msg, "   %s поставил оценку.\n", GAME->get_player_nick(id));
+                    sprintf(s_msg, "   %s поставил оценку.\n|common|", GAME->get_player_nick(id));
                     send_to_all(SUBS, s_msg, BUFF_LEN);
                     bzero(s_msg, BUFF_LEN);
                     GAME->add_scoreb(score);
@@ -302,7 +307,7 @@ void* player_thread(void* arg)
                         cout << "\n   " << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
                             << GAME->get_scoreb() << " очков!" << endl;
 
-                        sprintf(s_msg, "\n   %s получил %d очков!", GAME->get_player_nick(GAME->get_answering_id())
+                        sprintf(s_msg, "\n   %s получил %d очков!|common|", GAME->get_player_nick(GAME->get_answering_id())
                             ,GAME->get_scoreb() );
                         send_to_all(SUBS, s_msg, BUFF_LEN);
                         bzero(s_msg, BUFF_LEN);
@@ -368,9 +373,9 @@ void* player_thread(void* arg)
                     }
                     strcat(s_msg, "\n\n");
                 }
-                bzero(s_msg, BUFF_LEN);
+                //bzero(s_msg, BUFF_LEN);
                 //cout << "   Работодатель " << GAME->get_player_nick(GAME->getEmployerId()) << " выбирает сотрудников..." << endl;
-                sprintf(s_msg, "   Работодатель %s выбирает сотрудников...\n", GAME->get_player_nick(GAME->getEmployerId()));
+                sprintf(s_msg, "   Работодатель %s выбирает сотрудников...\n|common|", GAME->get_player_nick(GAME->getEmployerId()));
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, " Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
@@ -466,7 +471,7 @@ void* lobby_thread(void* arg)
             GAME->print_players();
             GAME->drop_cards();
             int emp = GAME->getEmployerId();
-            sprintf(s_msg, "==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...\n",
+            sprintf(s_msg, "==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...|common|\n",
                 GAME->getEmployer() + 1, GAME->get_player_nick(emp));
             send_to_all(SUBS, s_msg, BUFF_LEN);
             //cout << "==============================================================" << endl;
@@ -484,7 +489,7 @@ void* lobby_thread(void* arg)
         }
         if(status == P_OPEN){
             //cout << endl;
-            sprintf(s_msg, "\n%s\n\n   Время для выставления оценок!\n", GAME->open_p(GAME->get_answering_id()));
+            sprintf(s_msg, "\n%s\n\n   Время для выставления оценок!\n|common|", GAME->open_p(GAME->get_answering_id()));
             //GAME->open_p(GAME->get_answering_id());
             GAME->set_scoreb(0);
             //cout << endl;
