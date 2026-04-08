@@ -148,16 +148,16 @@ string StartupDbContext::get_lobbies(){
     for(size_t i = 0; i < res.size(); i++){
         char buff[512];
         bool stat = res[i]["began"].as<bool>();
-        snprintf(buff, sizeof(buff), "   %-8d %-16s %-16s %d/%d         %s\n", 
+        snprintf(buff, sizeof(buff), "      %d             %s              %s                %d/%d               %s\n", 
             res[i]["id"].as<int>(), 
             res[i]["name"].as<string>().c_str(), 
             res[i]["creator"].as<string>().c_str(),
             res[i]["busy"].as<int>(),
             res[i]["size"].as<int>(),
-            stat ? "Да" : "Нет"
+            stat ? "*" : " "
         );
         answer += buff;
-        answer += "---------------------------------------------------\n";
+        answer += "---------------------------------------------------------------------------------------------\n";
     }
     return answer;
 }
@@ -256,14 +256,14 @@ int StartupDbContext::add_lobby(string creator, string name, int num){
     work w(*conn);
 
     string q1 = "SELECT id FROM users WHERE login = $1";
-    string q2 = "INSERT INTO games (name, size, busy, creator) VALUES ($1, $2, $3, $4) RETURNING id";
+    string q2 = "INSERT INTO games (name, size, busy, creator, began) VALUES ($1, $2, $3, $4, $5) RETURNING id";
     result r = w.exec_params(q1, creator);
     if(r.empty()){
         return -1;
     }
     int cid = r[0]["id"].as<int>();
         
-    result res = w.exec_params(q2,name, num, 0, cid);  
+    result res = w.exec_params(q2,name, num, 0, cid, false);  
     int game_id = res[0]["id"].as<int>();
     w.commit();
         
