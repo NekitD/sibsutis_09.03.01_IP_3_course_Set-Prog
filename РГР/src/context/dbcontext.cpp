@@ -12,6 +12,7 @@ address(_address), port(_port), database(_database), user(_user), password(_pass
                     "password=" + password + " ";
 
     conn = new connection(conn_str);
+    pthread_mutex_init(&db_mutex, 0);
     if(!conn->is_open()){
         cout << "ОШИБКА: НЕ УДАЛОСЬ УСТАНОВИТЬ СОЕДИНЕНИЕ" << endl;
         exit(1);
@@ -36,6 +37,7 @@ StartupDbContext::~StartupDbContext(){
         conn->close();
         delete conn;
         conn = nullptr;
+        pthread_mutex_destroy(&db_mutex);
     }
 }
 
@@ -44,12 +46,14 @@ connection* StartupDbContext::getConnection(){
 }
 
 bool StartupDbContext::isConnected(){
-    return (conn != nullptr && conn->is_open());
+    return (conn != nullptr);
 }
 
 int StartupDbContext::auth(string login, string password){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return -1;
     }
 
@@ -59,29 +63,34 @@ int StartupDbContext::auth(string login, string password){
     w.commit();
 
     if(res.empty()){
+        pthread_mutex_unlock(&db_mutex);
         return L_WRONG;
     }
 
     string stored_hash = res[0]["password"].as<string>();
     if (crypto_pwhash_str_verify(stored_hash.c_str(),password.c_str(),password.length()) != 0){
+        pthread_mutex_unlock(&db_mutex);
         return L_WRONG;
     }
 
 
     if(res[0]["online"].as<int>() == 1){
+        pthread_mutex_unlock(&db_mutex);
         return L_ONLINE;
     }
 
     string update_q = "UPDATE users SET online = $1 WHERE login = $2";
     w.exec_params(update_q, 1, login);
     w.commit();
-
+    pthread_mutex_unlock(&db_mutex);
     return L_SUCCESS;
 }
 
 int StartupDbContext::reg(string login, string password){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return -1;
     }
     string q = "SELECT * FROM users WHERE login = $1";
@@ -90,6 +99,7 @@ int StartupDbContext::reg(string login, string password){
     w.commit();
 
     if(!res.empty()){
+        pthread_mutex_unlock(&db_mutex);
         return R_BUSY;
     }
 
@@ -104,16 +114,19 @@ int StartupDbContext::reg(string login, string password){
     w.commit();
 
     if(res.empty()){
+        pthread_mutex_unlock(&db_mutex);
         return R_FAIL;
     }
-
+    pthread_mutex_unlock(&db_mutex);
     return R_SUCCESS;
 }
 
 
 int StartupDbContext::logout(string login){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "NO CON" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return -1;
     }
     
@@ -121,13 +134,15 @@ int StartupDbContext::logout(string login){
     string q = "UPDATE users SET online = $1 WHERE login = $2";
     w.exec_params(q, 0, login);
     w.commit();
-    
+    pthread_mutex_unlock(&db_mutex);
     return 0;
 }
 
 string StartupDbContext::get_lobbies(){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return "";
     }
     
@@ -138,7 +153,7 @@ string StartupDbContext::get_lobbies(){
     work w(*conn);
     result res = w.exec(q);
     w.commit();
-    
+    pthread_mutex_unlock(&db_mutex);
     string answer;
     answer += "=============================================================================================\n";
     answer += "     ID           Название           Создатель          К-во игроков         Игра началась\n";
@@ -161,14 +176,17 @@ string StartupDbContext::get_lobbies(){
     return answer;
 }
 string StartupDbContext::get_players_on(){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return "";
     }
     string q = "SELECT * FROM users WHERE online = $1 ORDER BY id";
     work w(*conn);
     result res = w.exec_params(q, 1);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
     string answer;
     answer += "===================================================\n";
     answer += "           ID                   Логин          \n";
@@ -182,14 +200,17 @@ string StartupDbContext::get_players_on(){
     return answer;
 }
 string StartupDbContext::get_players_all(){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return "";
     }
     string q = "SELECT * FROM users ORDER BY id";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
     string answer;
     answer += "===================================================\n";
     answer += "        ID          Логин        Статус\n";
@@ -211,14 +232,17 @@ string StartupDbContext::get_players_all(){
 }
 
 string StartupDbContext::get_rating(){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return "";
     }
     string q = "SELECT * FROM users ORDER BY score DESC, id ASC";
     work w(*conn);
     result res = w.exec(q);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
     string answer;
     answer += "===================================================\n";
     answer += "    Место       ID          Логин        Рейтинг\n";
@@ -247,8 +271,10 @@ string StartupDbContext::get_chats(){
 }
 
 int StartupDbContext::add_lobby(string creator, string name, int num){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return -1;
     }
     
@@ -259,6 +285,7 @@ int StartupDbContext::add_lobby(string creator, string name, int num){
     result r = w.exec_params(q1, creator);
     w.commit();
     if(r.empty()){
+        pthread_mutex_unlock(&db_mutex);
         return -1;
     }
     int cid = r[0]["id"].as<int>();
@@ -266,19 +293,22 @@ int StartupDbContext::add_lobby(string creator, string name, int num){
     result res = w.exec_params(q2,name, num, 0, cid, false);  
     int game_id = res[0]["id"].as<int>();
     w.commit();
-        
+    pthread_mutex_unlock(&db_mutex);    
     return game_id;
 }
 
 int StartupDbContext::join_lobby(int id){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return -1;
     }
     string q = "SELECT * FROM games WHERE id = $1";
     work w(*conn);
     result res = w.exec_params(q, id);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
     if(res.empty()){
         return -1;
     }
@@ -286,52 +316,66 @@ int StartupDbContext::join_lobby(int id){
 }
 
 void StartupDbContext::set_lobby_num(int id, int nv){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "UPDATE games SET busy = $1 WHERE id = $2";
     work w(*conn);
     w.exec_params(q, nv, id);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 }
 
 void StartupDbContext::rm_lobby(int id){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "DELETE FROM games WHERE id = $1";
     work w(*conn);
     w.exec_params(q, id);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 } 
 
 void StartupDbContext::set_lobby_port(int id, int port){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "UPDATE games SET port = $1 WHERE id = $2";
     work w(*conn);
     w.exec_params(q, port, id);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 }
 
 void StartupDbContext::set_lobby_status(int id, bool ready){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "UPDATE games SET began = $1 WHERE id = $2";
     work w(*conn);
     w.exec_params(q, ready, id);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 }
 
 void StartupDbContext::add_player_score(string login, int score){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "UPDATE users SET score = $1 WHERE login = $2";
@@ -341,29 +385,36 @@ void StartupDbContext::add_player_score(string login, int score){
     w.commit();
     result res = w.exec_params(q, r[0]["score"].as<int>() + score, login);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 }
 
 
 void StartupDbContext::clear_online(){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "UPDATE users SET online = $1";
     work w(*conn);
     w.exec_params(q, 0);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 }
 
 void StartupDbContext::clear_lobbies(){
+    pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
         return;
     }
     string q = "TRUNCATE TABLE games";
     work w(*conn);
     w.exec(q);
     w.commit();
+    pthread_mutex_unlock(&db_mutex);
 }
 
 

@@ -52,7 +52,6 @@ void* user_thread(void* arg)
         bzero(a_msg, BUFF_LEN);
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         if(rec_l <= 0){
-            sleep(2);
             CONTEXT->logout(p_login);
             close(socket);
             pthread_exit(0);

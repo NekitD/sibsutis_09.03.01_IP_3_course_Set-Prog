@@ -80,4 +80,5 @@ class StartupDbContext {
         string database;
         string user;
         string password;
+        pthread_mutex_t db_mutex;
 };
