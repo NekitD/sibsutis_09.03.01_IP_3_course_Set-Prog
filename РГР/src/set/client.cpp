@@ -43,8 +43,6 @@ void enableEcho() {
 using namespace std;
 
 
-
-
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
 bool client_loop(int&, int&, int&, string&, int&, char*, char*, char*, char*, 
@@ -67,6 +65,8 @@ int socket_init(int& sock, struct sockaddr_in* addr){
     return sock;
 }
 
+
+//--------------------------------------------------------------------------------------------
 
 int main()
 {

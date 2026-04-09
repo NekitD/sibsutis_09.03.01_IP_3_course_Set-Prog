@@ -311,9 +311,9 @@ void* player_thread(void* arg)
                     GAME->set_player_status(id, WAITING);
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
-                        cout << endl;
-                        cout << "\n   " << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
-                            << GAME->get_scoreb() << " очков!" << endl;
+                        // cout << endl;
+                        // cout << "\n   " << GAME->get_player_nick(GAME->get_answering_id()) << " получил " 
+                        //     << GAME->get_scoreb() << " очков!" << endl;
 
                         sprintf(s_msg, "\n   %s получил %d очков!|common|", GAME->get_player_nick(GAME->get_answering_id()).c_str()
                             ,GAME->get_scoreb() );

@@ -118,7 +118,7 @@ string Player::print_skills() const{
     string res;
     if(p_skills){
         for(vector<Card*>::const_iterator sk = p_skills->begin(); sk != p_skills->end(); sk++){
-            cout << "    - " <<**sk << endl;
+            //cout << "    - " <<**sk << endl;
             res += "    - ";
             res += (**sk).get_text();
             res += "\n";
