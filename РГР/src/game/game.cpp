@@ -411,16 +411,20 @@ void Game::setStatus(int ns){
     status = ns;
 }
 
-void Game::addPlayer(char* nick, int id){
+char* Game::addPlayer(char* nick, int id){
     Player* p = new Player(nick, id);
     g_players->push_back(p);
     p_num = getPnum();
-    cout << "   " << nick << " присоединился к игре!" << endl;
-    cout << "   Игроков: " << getPnum() << " / " << p_max << endl;
-    cout << "   Готовы: " << getRnum() << " / " << p_max<< "\n" << endl;
+    char tosend[BUFF_LEN];
+    sprintf(tosend, "   %s присоединился к игре!\n   Игроков: %d / %d\n   Готовы: %d / %d\n\n", 
+        nick, getPnum(), p_max, getRnum(), p_max);
+    // cout << "   " << nick << " присоединился к игре!" << endl;
+    // cout << "   Игроков: " << getPnum() << " / " << p_max << endl;
+    // cout << "   Готовы: " << getRnum() << " / " << p_max<< "\n" << endl;
     if(getPnum() >= MAX_P){
         setStatus(FULL);
     }
+    return tosend;
 }
 
 int Game::getPnum() const{
@@ -458,24 +462,26 @@ int Game::get_player_status(int id) const{
     return WAIT_ACCEPT;
 }
 
-void Game::remPlayer(int id){
+char* Game::remPlayer(int id){
+    char res[BUFF_LEN];
     for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
         if((*p)->get_id() == id){
-            cout << "   " << get_player_nick(id) << " покинул игру." << endl;
+            sprintf(res, "   %s покинул игру.\n");
+            //cout << "   " << get_player_nick(id) << " покинул игру." << endl;
             if (getStatus() == PRE || getStatus() == FULL){
                 //cout << "   " << get_player_nick(id) << " покинул игру." << endl;
                 g_players->erase(p);
-                cout << "   Игроков: " << getPnum() << " / " << p_max << endl;
-                cout << "   Готовы: " << getRnum() << " / " << p_max << "\n" << endl;
+                char buf[BUFF_LEN];
+                sprintf(buf, "   Игроков: %d / %d\n   Готовы: %d / %d\n",
+                    getPnum(), p_max, getRnum(), p_max);
+                //cout << "   Игроков: " << getPnum() << " / " << p_max << endl;
+                //cout << "   Готовы: " << getRnum() << " / " << p_max << "\n" << endl;
+                strcat(res, buf);
             } else {
                 (*p)->setStatus(LEFT);
-                // if(getPnum() < MIN_P){
-                //     cout << "   Количество игроков меньше " << MIN_P << endl;
-                //     setStatus(OVER);
-                // }
                 setStatus(OVER);
             }
-            break;
+            return res;
         }
     }
 }

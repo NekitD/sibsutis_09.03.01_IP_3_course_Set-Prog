@@ -156,8 +156,8 @@ class Game
 
         void set_player_status(int id, int ns);
         void setStatus(int ns);
-        void addPlayer(char* nick, int id);
-        void remPlayer(int id);
+        char* addPlayer(char* nick, int id);
+        char* remPlayer(int id);
 
         Player* getPlayer(int id) const;
         int getEmployerId() const;
