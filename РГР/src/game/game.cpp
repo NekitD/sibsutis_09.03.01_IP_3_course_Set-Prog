@@ -435,20 +435,21 @@ void Game::setStatus(int ns){
     status = ns;
 }
 
-char* Game::addPlayer(char* nick, int id){
+string Game::addPlayer(char* nick, int id){
     Player* p = new Player(nick, id);
     g_players->push_back(p);
     p_num = getPnum();
-    char tosend[BUFF_LEN];
-    sprintf(tosend, "   %s присоединился к игре!\n   Игроков: %d / %d\n   Готовы: %d / %d\n\n", 
+    
+    char buffer[BUFF_LEN];
+    snprintf(buffer, BUFF_LEN, 
+        "   %s присоединился к игре!\n   Игроков: %d / %d\n   Готовы: %d / %d\n\n", 
         nick, getPnum(), p_max, getRnum(), p_max);
-    // cout << "   " << nick << " присоединился к игре!" << endl;
-    // cout << "   Игроков: " << getPnum() << " / " << p_max << endl;
-    // cout << "   Готовы: " << getRnum() << " / " << p_max<< "\n" << endl;
+    
     if(getPnum() >= MAX_P){
         setStatus(FULL);
     }
-    return tosend;
+    
+    return string(buffer);
 }
 
 int Game::getPnum() const{
@@ -486,28 +487,32 @@ int Game::get_player_status(int id) const{
     return WAIT_ACCEPT;
 }
 
-char* Game::remPlayer(int id){
-    char res[BUFF_LEN];
-    for(vector<Player*>::iterator p = g_players->begin(); p != g_players->end(); p++){
-        if((*p)->get_id() == id){
-            sprintf(res, "   %s покинул игру.\n");
-            //cout << "   " << get_player_nick(id) << " покинул игру." << endl;
+string Game::remPlayer(int id){
+    string result;
+    
+    for(auto it = g_players->begin(); it != g_players->end(); ++it){
+        if((*it)->get_id() == id){
+            char buffer[BUFF_LEN];
+            sprintf(buffer, "   %s покинул игру.\n", get_player_nick(id).c_str());
+            result += buffer;
+            
             if (getStatus() == PRE || getStatus() == FULL){
-                //cout << "   " << get_player_nick(id) << " покинул игру." << endl;
-                g_players->erase(p);
+                delete *it;
+                g_players->erase(it);
+                
                 char buf[BUFF_LEN];
                 sprintf(buf, "   Игроков: %d / %d\n   Готовы: %d / %d\n",
                     getPnum(), p_max, getRnum(), p_max);
-                //cout << "   Игроков: " << getPnum() << " / " << p_max << endl;
-                //cout << "   Готовы: " << getRnum() << " / " << p_max << "\n" << endl;
-                strcat(res, buf);
+                result += buf;
             } else {
-                (*p)->setStatus(LEFT);
+                (*it)->setStatus(LEFT);
                 setStatus(OVER);
             }
-            return res;
+            return result;
         }
     }
+    
+    return "   Игрок не найден.\n";
 }
 
 void Game::set_player_status(int id, int ns){
