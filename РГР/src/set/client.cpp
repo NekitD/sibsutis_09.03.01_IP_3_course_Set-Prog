@@ -15,15 +15,7 @@
 #define LOGGING 100
 #define SUCCESS 200
 #define NO_ANSWER 500
-#define EXIT 1000
-
-#define REDIRECT 2000 
-/*Сокет сервера прекращает общение с игроком 
-и игрок пытается подсоединиться к лобби, порт которого ему прислал сервер
-и там с игроком уже общается лобби через сокет, который оно выделяет для него*/
-
 #define CHATTING 3000 
-
 
 #define MAX_DELAY 10
 
@@ -452,9 +444,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 if(strncmp(request, "allow", 6) == 0){
                     int lobby_port = atoi(output);
                     sockaddr_in lobby_addr;
-
-                    
-                    //inet_aton(output, &lobby_addr.sin_addr);
                     bzero(&lobby_addr, sizeof(struct sockaddr_in));
                     bcopy(&s_addr, &lobby_addr, sizeof(struct sockaddr_in));
                     lobby_addr.sin_family = AF_INET;
@@ -545,7 +534,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
     }
     
-    //setsockopt(c_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&old_tv, sizeof(old_tv));
     //============================================================
     // 3. Чат с другим игроком
     //============================================================
@@ -592,7 +580,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
         if(strncmp(request, "common", 7) == 0){
             cout << output << endl;
-            continue; // try continue in common
+            continue;
         }
 
         if(status == WAIT_ACCEPT)

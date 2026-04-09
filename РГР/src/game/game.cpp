@@ -800,7 +800,6 @@ string Game::Endgame(StartupDbContext* context){
     result += "       ИГРА ОКОНЧЕНА!\n";
     result += "======================================\n";
     
-    // Сохраняем информацию об игроках в строку
     string players_info;
     for(auto pl : *g_players){
         char buffer[256];
@@ -893,21 +892,16 @@ void Employ_Info::setManual(string n_man){
 string Employ_Info::print_profs() const{
     string res = "";
     if(e_profs){
-        // cout << "-------------------" << endl;
-        // cout << " Вакансии:" << endl;
-        // cout << "-------------------" << endl;
         res += "-------------------\n";
         res += "Вакансии:\n";
         res += "-------------------\n";
         int i = 1;
         for(vector<Card*>::const_iterator pr = e_profs->begin(); pr != e_profs->end(); pr++){
-            //cout << " " << i << ") " << **pr << endl;
             char buf[256];
             sprintf(buf, " %d) %s\n", i, (*pr)->get_text().c_str());
             res += buf;
             i++;
         }
-        //cout << "-------------------" << endl;
         res += "-------------------\n";
     }
     return res;

@@ -8,7 +8,6 @@
 #include <string.h>
 #include <unistd.h> 
 #include <arpa/inet.h>
-//#include <thread> 
 #include <pthread.h>
 #include <cstring>
 #include "lobby.h"
@@ -145,7 +144,6 @@ void* user_thread(void* arg)
                 sleep(1); 
             } else {
                 send(socket, "|NO", BUFF_LEN, 0);
-                //cout << lob_id << endl;
             }
             continue;
         }

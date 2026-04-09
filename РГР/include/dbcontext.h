@@ -1,6 +1,5 @@
 // КОНТЕКСТ БАЗЫ ДАННЫХ (БИБЛИОТЕКА)
 #include <iostream>
-#include <mysql/mysql.h>
 #include <pqxx/pqxx>
 #include <string>
 #include <memory>
