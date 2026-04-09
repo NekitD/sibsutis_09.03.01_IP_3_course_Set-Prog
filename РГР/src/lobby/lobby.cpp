@@ -84,12 +84,12 @@ void* player_thread(void* arg)
         if(p_status == PRE_TO_PLAY){
             if(strncmp(request, "readytoplay", 12) == 0){
                 SUBS->push_back(socket);
-                sprintf(s_msg, "   %s готов играть!\n   Готовы: %d / %d\n|common|", GAME->get_player_nick(id).c_str(), 
-                                                                    GAME->getRnum(), GAME->getMnum());
                 //cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 bzero(s_msg, BUFF_LEN);
                 GAME->set_player_status(id, READY_TO_PLAY);
+                sprintf(s_msg, "   %s готов играть!\n   Готовы: %d / %d\n|common|", GAME->get_player_nick(id).c_str(), 
+                                            GAME->getRnum(), GAME->getMnum());
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
                 //cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getMnum() << "\n" << endl;
                 if (GAME->isGameReady()){
