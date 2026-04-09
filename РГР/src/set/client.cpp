@@ -741,7 +741,7 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
     bzero(request, mlen);
     int bc = get_line_b(output, msg, 0, mlen, '|');
     bc = get_line_b(request, msg, bc, mlen, '|');
-    char pstat[STA_LEN] = "";
+    char pstat[BUFF_LEN] = "";
     bc = get_line_b(pstat, msg, bc, mlen, ' ');
     if (strncmp(pstat, "WAIT_ACCEPT", 12) == 0){
         status = WAIT_ACCEPT;
