@@ -631,18 +631,18 @@ bool Game::no_questions() const{
     return true;
 }
 
-string Game::open_p(int id) const{
-    string res;
-    char buf[BUFF_LEN];
+string Game::open_p(int id) const {
+    string result;
     Player* p = getPlayer(id);
-    sprintf(buf, "   Карты %s: \n   Эмоция: %s\n   Навыки:\n%s\n");
-    //cout << "   Карты " << get_player_nick(id) << ": " << endl;
-    //cout << "   Эмоция: " << p->getEmoji()->get_text() << endl;
-    //cout << "   Навыки:" << endl;
-    //p->print_skills();
-    res+=buf;
-    res+=p->print_skills();
-    return res;
+    result += "   Карты " + get_player_nick(id) + ":\n";
+    if(p->getEmoji()){
+        result += "   Эмоция: " + p->getEmoji()->get_text() + "\n";
+    } else {
+        result += "   Эмоция: (не получена)\n";
+    }
+    result += "   Навыки:\n";
+    result += p->print_skills();
+    return result;
 }
 
 int Game::get_scoreb() const{
