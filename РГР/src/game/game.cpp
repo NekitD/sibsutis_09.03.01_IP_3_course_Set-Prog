@@ -817,7 +817,7 @@ string Game::Endgame(StartupDbContext* context){
                     pl->get_nick().c_str(), reward);
         }
         else if(pl->getScore() == max){
-            reward = REWARD_K / winners.size();
+            reward = (REWARD_K * getPnum()) / winners.size();
             sprintf(buffer, "%s - ПОБЕДИТЕЛЬ! Очки: %d, изменение рейтинга: +%d\n", 
                     pl->get_nick().c_str(), pl->getScore(), reward);
         }
@@ -845,14 +845,6 @@ string Game::Endgame(StartupDbContext* context){
     result += "======================================\n";
     
     return result;
-}
-
-int Game::count_reward(int score, int pnum, bool winner, int winn, int k){
-    if(winner){
-        return score + (k * pnum)/winn;
-    }else{
-        return score;
-    }
 }
 
 

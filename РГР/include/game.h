@@ -17,7 +17,7 @@ using namespace std;
 #define MAX_P 3
 #define EMPLOYER_PROFS_NUM 3
 #define SKILL_NUM 4
-#define REWARD_K 10
+#define REWARD_K 5
 
 enum game_status {
     PRE = 0, // набор лобби.
@@ -191,8 +191,6 @@ class Game
         void drop_cards();
 
         string Endgame(StartupDbContext* context);
-
-        int count_reward(int score, int pnum, bool winner, int winn, int k);
 
     private:
         int p_num = 0;
