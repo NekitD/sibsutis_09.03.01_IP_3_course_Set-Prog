@@ -130,6 +130,7 @@ void* player_thread(void* arg)
                 //cout << "   История:" << endl;
                 // cout << "   " << GAME->EmployInfo()->getManual() << endl;
                 strcat(s_msg, GAME->EmployInfo()->print_profs().c_str());
+                strcat(s_msg, "|common|");
                 //GAME->EmployInfo()->print_profs();
                 //cout << endl;
                 send_to_all(SUBS, s_msg, BUFF_LEN);
@@ -258,7 +259,7 @@ void* player_thread(void* arg)
 
             if(strncmp(request, "aquest", 7) == 0){
                 //cout << "   " << GAME->get_player_nick(id) << ": " << output << endl;
-                sprintf(s_msg, "   %s: %s\n\n", GAME->get_player_nick(id).c_str(), output);
+                sprintf(s_msg, "   %s: %s\n\n|common|", GAME->get_player_nick(id).c_str(), output);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 bzero(s_msg, BUFF_LEN);
                 GAME->rem_question();
@@ -346,6 +347,7 @@ void* player_thread(void* arg)
                     }
                     strcat(s_msg, "\n");
                     strcat(s_msg, GAME->assign_professions().c_str());
+                    strcat(s_msg, "|common|");
                     send_to_all(SUBS, s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
                     send(socket, "||WAITING", BUFF_LEN, 0);
