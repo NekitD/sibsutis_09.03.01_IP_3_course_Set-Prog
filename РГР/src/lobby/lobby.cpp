@@ -30,6 +30,7 @@ void* player_thread(void* arg)
     ser_decode_msg(a_msg, BUFF_LEN, output, request);
     if (strncmp(request, "join", 4) == 0){
         strcat(s_msg, GAME->addPlayer(output, socket).c_str());
+        strcat(s_msg, "|common|");
         send_to_all(SUBS, s_msg, BUFF_LEN);
         bzero(s_msg, BUFF_LEN);
         id = GAME->get_player_id(output);
@@ -56,6 +57,7 @@ void* player_thread(void* arg)
         g_status = GAME->getStatus();
         if (rec_l == 0){
             strcat(s_msg, GAME->remPlayer(id).c_str());
+            strcat(s_msg, "|common|");
             send_to_all(SUBS, s_msg, BUFF_LEN);
             CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
             for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
