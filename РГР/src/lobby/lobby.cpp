@@ -37,7 +37,7 @@ void* player_thread(void* arg)
             //cout << "   ОШИБКА ID." << endl;
             send_to_all(SUBS, "   ОШИБКА ID.|common|", BUFF_LEN);
             //send_to_all(SUBS, GAME->remPlayer(socket), BUFF_LEN);
-            GAME->remPlayer(socket);
+            //GAME->remPlayer(socket);
             close(socket);
             pthread_exit(0);
         }
@@ -55,7 +55,7 @@ void* player_thread(void* arg)
         p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
         if (rec_l == 0){
-            strcat(s_msg, GAME->remPlayer(socket).c_str());
+            strcat(s_msg, GAME->remPlayer(id).c_str());
             send_to_all(SUBS, s_msg, BUFF_LEN);
             CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
             for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
@@ -125,7 +125,7 @@ void* player_thread(void* arg)
                     continue;
                 }
                 GAME->EmployInfo()->setManual((string)output);
-                strcat(s_msg, "   История:");
+                strcat(s_msg, "   История:\n");
                 strcat(s_msg, GAME->EmployInfo()->getManual().c_str());
                 //cout << "   История:" << endl;
                 // cout << "   " << GAME->EmployInfo()->getManual() << endl;
@@ -168,7 +168,6 @@ void* player_thread(void* arg)
                     GAME->GiveEmojiToPlayer(GAME->getPlayer(id));
                     vector<Card*>* p_skills = GAME->getPlayer(id)->getSkills();
                     Card* emo = GAME->getPlayer(id)->getEmoji();
-                    strcat(s_msg, " Ваша очередь на собеседование!\n ");
                     strcat(s_msg, " Эмоция: ");
                     strcat(s_msg, emo->get_text().c_str());
                     strcat(s_msg, "\n");
