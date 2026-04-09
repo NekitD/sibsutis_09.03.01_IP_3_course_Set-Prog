@@ -146,7 +146,7 @@ string StartupDbContext::get_lobbies(){
     answer += "     ID           Название           Создатель          К-во игроков         Игра началась\n";
     answer += "=============================================================================================\n";
     
-    for(size_t i = 0; i < res.size(); i++){
+    for(int i = 0; i < res.size(); i++){
         char buff[512];
         bool stat = res[i]["began"].as<bool>();
         snprintf(buff, sizeof(buff), "      %d             %s              %s                %d/%d               %s\n", 
@@ -175,7 +175,7 @@ string StartupDbContext::get_players_on(){
     answer += "===================================================\n";
     answer += "           ID                   Логин          \n";
     answer += "===================================================\n";
-    for(size_t i = 0; i < res.size(); i++){
+    for(int i = 0; i < res.size(); i++){
         char buff[256];
         sprintf(buff, "           %d                    %s\n", res[i]["id"].as<int>(), res[i]["login"].as<string>().c_str());
         answer += buff;
@@ -196,7 +196,7 @@ string StartupDbContext::get_players_all(){
     answer += "===================================================\n";
     answer += "        ID          Логин        Статус\n";
     answer += "===================================================\n";
-    for(size_t i = 0; i < res.size(); i++){
+    for(int i = 0; i < res.size(); i++){
         char buff[256];
         char buff2[20];
         sprintf(buff, "       %d            %s          ", res[i]["id"].as<int>(), res[i]["login"].as<string>().c_str());
@@ -229,14 +229,14 @@ string StartupDbContext::get_rating(){
     int place = 1;
     int score = res[0]["score"].as<int>();
 
-    for(size_t i = 0; i < res.size(); i++){
+    for(int i = 0; i < res.size(); i++){
         int cscore = res[i]["score"].as<int>();
         if(cscore != score){
             place++;
             score = cscore;
         }
         char buff[256];
-        sprintf(buff, "     %ld)         %d          %s             %d\n", place, res[i]["id"].as<int>(), 
+        sprintf(buff, "     %d)         %d          %s             %d\n", place, res[i]["id"].as<int>(), 
                                                 res[i]["login"].as<string>().c_str(), cscore);
         answer += buff;
         answer += "---------------------------------------------------\n";
@@ -245,7 +245,7 @@ string StartupDbContext::get_rating(){
 
 }
 string StartupDbContext::get_chats(){
-
+    return " ";
 }
 
 int StartupDbContext::add_lobby(string creator, string name, int num){

@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define BUFF_LEN 4096
+#define BUFF_LEN 8092
 #define MIN_P 3
 #define MAX_P 3
 #define EMPLOYER_PROFS_NUM 3

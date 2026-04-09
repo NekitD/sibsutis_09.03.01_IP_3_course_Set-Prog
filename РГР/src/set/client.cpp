@@ -791,7 +791,7 @@ void cli_input(string& text){
     text += " ";
     cout << "   (для завершения введите пустую строку или 'END'):\n" << endl;
     //cin.ignore();
-    int max_len = BUFF_LEN - 300;
+    long unsigned int max_len = BUFF_LEN - 300;
     string line;
     while (true) {
         cout << "(" << text.size() - 1 << "/" << max_len << "): ";

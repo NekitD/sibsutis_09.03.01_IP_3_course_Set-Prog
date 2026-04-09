@@ -84,9 +84,12 @@ void* user_thread(void* arg)
             string password = login_pass.substr(separator + 1);
 
             char hashed[crypto_pwhash_STRBYTES];
-                      crypto_pwhash_str(hashed, password.c_str(), password.length(),
+            if(crypto_pwhash_str(hashed, password.c_str(), password.length(),
                       crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                      crypto_pwhash_MEMLIMIT_INTERACTIVE);
+                      crypto_pwhash_MEMLIMIT_INTERACTIVE) < 0){
+                        cout << "ОШИБКА ШИФРОВАНИЯ!(" << login << ")" << endl;
+            }
+            
 
             int rstat = CONTEXT->reg(login, hashed);
             if(rstat == R_BUSY){

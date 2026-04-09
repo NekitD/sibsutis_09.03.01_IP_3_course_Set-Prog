@@ -23,7 +23,8 @@ void* player_thread(void* arg)
     int g_status = GAME->getStatus();
     if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){;
         //cout << "   Неудачная попытка подключения" << endl;
-        send_to_all(SUBS, "   Неудачная попытка подключения|common|", BUFF_LEN);
+        strcat(s_msg, "   Неудачная попытка подключения|common|");
+        send_to_all(SUBS, s_msg, BUFF_LEN);
         close(socket);
         pthread_exit(0);
     }
@@ -36,7 +37,8 @@ void* player_thread(void* arg)
         id = GAME->get_player_id(output);
         if(id < 0){
             //cout << "   ОШИБКА ID." << endl;
-            send_to_all(SUBS, "   ОШИБКА ID.|common|", BUFF_LEN);
+            strcat(s_msg, "   ОШИБКА ID.|common|");
+            send_to_all(SUBS, s_msg, BUFF_LEN);
             //send_to_all(SUBS, GAME->remPlayer(socket), BUFF_LEN);
             //GAME->remPlayer(socket);
             close(socket);
@@ -91,11 +93,18 @@ void* player_thread(void* arg)
                 sprintf(s_msg, "   %s готов играть!\n   Готовы: %d / %d\n|common|", GAME->get_player_nick(id).c_str(), 
                                             GAME->getRnum(), GAME->getMnum());
                 send_to_all(SUBS, s_msg, BUFF_LEN);
-                send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
+                bzero(s_msg, BUFF_LEN);
+                strcat(s_msg, "||READY_TO_PLAY");
+                send(socket, s_msg, BUFF_LEN, 0);
                 //cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getMnum() << "\n" << endl;
                 if (GAME->isGameReady()){
+                    bzero(s_msg, BUFF_LEN);
+                    strcat(s_msg, "\n======================================\n");
+                    strcat(s_msg, "       ИГРА НАЧИНАЕТСЯ!\n");
+                    strcat(s_msg, "\n======================================\n");
+                    strcat(s_msg, "|common|");
                     //cout << endl << "   Игра начинается!\n" << endl;
-                    send_to_all(SUBS, "Игра начинается!|common|", BUFF_LEN);
+                    send_to_all(SUBS, s_msg, BUFF_LEN);
                     GAME->setStatus(START);
                     CONTEXT->set_lobby_status(lobby_id, true);
                 }
@@ -365,7 +374,7 @@ void* player_thread(void* arg)
         
                 for (size_t i = 0; i < vacancies->size(); i++) {
                     char buffer[256];
-                    sprintf(buffer, "   Вакансия %d: %s\n", i+1, vacancies->at(i)->get_text().c_str());
+                    sprintf(buffer, "   Вакансия %ld: %s\n", i+1, vacancies->at(i)->get_text().c_str());
                     strcat(s_msg, buffer);
             
                     vector<int>* claimants = GAME->EmployInfo()->get_claims_for_vacancy(i);
@@ -475,7 +484,7 @@ void* lobby_thread(void* arg)
             continue;
         }
         if(status == START){
-            if(GAME->getEmployer() >= GAME->get_players()->size()){
+            if((size_t)GAME->getEmployer() >= GAME->get_players()->size()){
                 GAME->setStatus(OVER);
                 continue;
             }

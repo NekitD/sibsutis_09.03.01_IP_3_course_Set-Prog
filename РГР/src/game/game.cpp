@@ -150,7 +150,19 @@ Card* Player::getEmoji() const{
 }
 
 
-Game::Game(int _pmax): p_max(_pmax)
+Game::Game(int _pmax):
+    p_max(_pmax),
+    p_num(0),
+    g_profs(nullptr),
+    g_skills(nullptr),
+    g_emoji(nullptr),
+    g_players(nullptr),
+    g_employ(nullptr),
+    status(PRE),
+    employer(0),
+    answering_num(0),
+    g_questions(nullptr),
+    score_buf(0)
 {
     game_init();
 }
@@ -598,7 +610,7 @@ int Game::get_answering_num() const{
 }
 
 int Game::get_answering_id() const{
-    if(getEmployer() + answering_num >= g_players->size()){
+    if(getEmployer() + answering_num >= (int)g_players->size()){
         return g_players->at(getEmployer() + answering_num - g_players->size())->get_id();
     }
     return g_players->at(getEmployer() + answering_num)->get_id();
@@ -775,7 +787,6 @@ void Game::drop_cards(){
 string Game::Endgame(StartupDbContext* context){
     string result;
     int max = 0;
-    int c_score = 0;
     
     result += "======================================\n";
     result += "       ИГРА ОКОНЧЕНА!\n";
