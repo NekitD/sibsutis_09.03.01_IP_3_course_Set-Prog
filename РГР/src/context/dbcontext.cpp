@@ -97,6 +97,7 @@ int StartupDbContext::reg(string login, string password){
 
     q = "INSERT INTO users (login, password, online, score) VALUES ($1, $2, $3, $4)";
     res = w.exec_params(q, login, password, 0, 0);
+    w.commit();
 
 
     q = "SELECT * FROM users WHERE login = $1 AND password = $2";
@@ -258,6 +259,7 @@ int StartupDbContext::add_lobby(string creator, string name, int num){
     string q1 = "SELECT id FROM users WHERE login = $1";
     string q2 = "INSERT INTO games (name, size, busy, creator, began) VALUES ($1, $2, $3, $4, $5) RETURNING id";
     result r = w.exec_params(q1, creator);
+    w.commit();
     if(r.empty()){
         return -1;
     }
@@ -338,6 +340,7 @@ void StartupDbContext::add_player_score(string login, int score){
     string q1 = "SELECT * FROM users WHERE login = $1";
     work w(*conn);
     result r = w.exec_params(q1, login);
+    w.commit();
     result res = w.exec_params(q, r[0]["score"].as<int>() + score, login);
     w.commit();
 }
