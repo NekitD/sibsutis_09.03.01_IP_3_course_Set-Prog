@@ -15,8 +15,8 @@ void* player_thread(void* arg)
     char s_msg[BUFF_LEN] = "";
     char a_msg[BUFF_LEN] = "";
     //--------------------------------
-    char output[BUFF_LEN] = "";
-    char request[BUFF_LEN] = "";
+    char output[OUT_LEN] = "";
+    char request[REQ_LEN] = "";
     //--------------------------------
     int p_status = WAIT_ACCEPT;
     int rec_l = 0;

@@ -7,12 +7,15 @@
 #include <cstring>
 #include <unistd.h>
 #include <algorithm>
-#include <bits/stdc++.h>
+#include <bits/stdc++.h> // для рандомайзера
 #include "dbcontext.h"
 
 using namespace std;
 
-#define BUFF_LEN 8092
+#define BUFF_LEN 4096
+#define OUT_LEN 4096-300
+#define REQ_LEN 150
+#define STA_LEN 150
 #define MIN_P 3
 #define MAX_P 3
 #define EMPLOYER_PROFS_NUM 3

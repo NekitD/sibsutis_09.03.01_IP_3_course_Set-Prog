@@ -75,10 +75,12 @@ $(SERVER_OBJ): $(SERVER_SRC)
 $(SERVER_TARGET): $(SERVER_OBJ) $(LOBBY_LIB) $(GAME_LIB) $(CONTEXT_LIB)
 	@mkdir -p $(BIN)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+	@echo "Сервер готов к запуску!"
 
 $(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB) $(CONTEXT_LIB)
 	@mkdir -p $(BIN)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+	@echo "Клиент готов к запуску!"
 
 
 client: $(CLIENT_TARGET)
