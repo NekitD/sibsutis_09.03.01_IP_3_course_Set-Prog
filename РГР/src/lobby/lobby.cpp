@@ -129,6 +129,7 @@ void* player_thread(void* arg)
                 GAME->EmployInfo()->setManual((string)output);
                 strcat(s_msg, "   История:\n");
                 strcat(s_msg, GAME->EmployInfo()->getManual().c_str());
+                strcat(s_msg, "\n");
                 //cout << "   История:" << endl;
                 // cout << "   " << GAME->EmployInfo()->getManual() << endl;
                 strcat(s_msg, GAME->EmployInfo()->print_profs().c_str());

@@ -892,7 +892,7 @@ string Employ_Info::print_profs() const{
         for(vector<Card*>::const_iterator pr = e_profs->begin(); pr != e_profs->end(); pr++){
             //cout << " " << i << ") " << **pr << endl;
             char buf[256];
-            sprintf(buf, " %d) %s\n", i, (*pr)->get_text());
+            sprintf(buf, " %d) %s\n", i, (*pr)->get_text().c_str());
             res += buf;
             i++;
         }
