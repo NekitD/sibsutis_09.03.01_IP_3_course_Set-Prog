@@ -85,11 +85,10 @@ void* player_thread(void* arg)
             if(strncmp(request, "readytoplay", 12) == 0){
                 SUBS->push_back(socket);
                 //cout << "   " << GAME->get_player_nick(id) << " готов играть!" << endl;
-                send_to_all(SUBS, s_msg, BUFF_LEN);
-                bzero(s_msg, BUFF_LEN);
                 GAME->set_player_status(id, READY_TO_PLAY);
                 sprintf(s_msg, "   %s готов играть!\n   Готовы: %d / %d\n|common|", GAME->get_player_nick(id).c_str(), 
                                             GAME->getRnum(), GAME->getMnum());
+                send_to_all(SUBS, s_msg, BUFF_LEN);
                 send(socket, "||READY_TO_PLAY", BUFF_LEN, 0);
                 //cout << "   Готовы: " << GAME->getRnum() << " / " << GAME->getMnum() << "\n" << endl;
                 if (GAME->isGameReady()){
@@ -481,7 +480,7 @@ void* lobby_thread(void* arg)
             GAME->drop_cards();
             int emp = GAME->getEmployerId();
             sprintf(s_msg, "%s==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...|common|\n",
-                GAME->print_players(), GAME->getEmployer() + 1, GAME->get_player_nick(emp).c_str());
+                GAME->print_players().c_str(), GAME->getEmployer() + 1, GAME->get_player_nick(emp).c_str());
             send_to_all(SUBS, s_msg, BUFF_LEN);
             bzero(s_msg, BUFF_LEN);
             //cout << "==============================================================" << endl;

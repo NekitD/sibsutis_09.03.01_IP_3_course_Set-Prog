@@ -144,7 +144,7 @@ class Game
         void print_profs() const;
         void print_skills() const;
         void print_emoji() const;
-        char* print_players() const;
+        string print_players() const;
         int getStatus() const;
         int getPnum() const;
         int getRnum() const;

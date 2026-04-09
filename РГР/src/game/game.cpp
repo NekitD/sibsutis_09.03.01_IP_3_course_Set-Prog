@@ -403,28 +403,29 @@ void Game::print_emoji() const{
         }
     }
 }
-char* Game::print_players() const{
-    char res[BUFF_LEN] = "";
+string Game::print_players() const {
+    string result;
+    
     if (g_players == nullptr || g_players->empty()){
-        //cout << "   НЕТ ИГРОКОВ" << endl;
-        strcat(res, "   НЕТ ИГРОКОВ");
-        return res;
+        result = "   НЕТ ИГРОКОВ";
+        return result;
     }
-    if(g_players){
-        //cout << "=========ИГРОКИ=========" << endl;
-        strcat(res, "=========ИГРОКИ=========\n");
-        for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
-            char buf[BUFF_LEN];
-            cout << "   " << **p << endl;
-            sprintf(buf, "   %s (%s):   %d  %s\n", 
-                (**p).get_nick().c_str(), (**p).print_profs().c_str(), (**p).getScore(), 
-                get_player_status((**p).get_id()) == LEFT ? "(Вышел)" : "");
-            strcat(res, buf);
-        }
-        strcat(res, "========================");
-        //cout << "========================" << endl;
+    
+    result += "=========ИГРОКИ=========\n";
+    
+    for(auto p = g_players->begin(); p != g_players->end(); ++p){
+        char buffer[BUFF_LEN];
+        snprintf(buffer, BUFF_LEN, 
+            "   %s (%s):   %d  %s\n", 
+            (*p)->get_nick().c_str(), 
+            (*p)->print_profs().c_str(), 
+            (*p)->getScore(), 
+            (get_player_status((*p)->get_id()) == LEFT) ? "(Вышел)" : "");
+        result += buffer;
     }
-    return res;
+    
+    result += "========================\n";
+    return result;
 }
 
 int Game::getStatus() const{
