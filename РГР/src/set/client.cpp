@@ -590,7 +590,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         }
 
         if(strncmp(request, "common", 7) == 0){
-            cout << "   " << output << endl;
+            cout << output << endl;
+            continue; // try continue in common
         }
 
         if(status == WAIT_ACCEPT)
