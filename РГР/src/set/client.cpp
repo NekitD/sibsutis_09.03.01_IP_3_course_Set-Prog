@@ -10,6 +10,7 @@
 #include <unistd.h> 
 #include "game.h"
 #include <termios.h>
+#include <signal.h>
 
 #define LOGGING 100
 #define SUCCESS 200
@@ -659,6 +660,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         if(status == ANSWERING){
             if(strncmp(request, "areanswerm", 11) == 0){
                 cout << endl;
+                cout << "Ваша очередь на собеседование!" << endl;
                 cout << output << endl;
                 int v = 0;
                 do{
