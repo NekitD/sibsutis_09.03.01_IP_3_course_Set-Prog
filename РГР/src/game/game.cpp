@@ -664,7 +664,8 @@ bool Game::score_over() const{
 }
 
 
-void Game::assign_professions() {
+string Game::assign_professions() {
+    string result;
     vector<Card*>* vacancies = g_employ->getProfs();
     
     for (size_t i = 0; i < vacancies->size(); i++) {
@@ -673,8 +674,10 @@ void Game::assign_professions() {
         Card* profession = vacancies->at(i);
         
         if (!claimants || claimants->empty()) {
-            cout << "Вакансия \"" << profession->get_text() 
-                 << "\" никому не досталась (нет претендентов)" << endl;
+            char buffer[256];
+            sprintf(buffer, "Вакансия \"%s\" никому не досталась (нет претендентов)\n", 
+                    profession->get_text().c_str());
+            result += buffer;
             continue;  
         }
         
@@ -685,14 +688,19 @@ void Game::assign_professions() {
                 if (chosen_player) {
                     chosen_player->addProf(profession);
                     chosen_player->addScore(3);
-                    cout << "Вакансия \"" << profession->get_text() 
-                         << "\" достаётся " << chosen_player->get_nick() 
-                         << " (выбор работодателя)!" << endl;
+                    char buffer[256];
+                    sprintf(buffer, "Вакансия \"%s\" достаётся %s (выбор работодателя)!\n", 
+                            profession->get_text().c_str(), 
+                            chosen_player->get_nick().c_str());
+                    result += buffer;
                     continue;
                 }
             } else {
-                cout << "Работодатель выбрал " << getPlayer(chosen_player_id)->get_nick() 
-                     << ", но он не претендовал на эту вакансию!" << endl;
+                char buffer[256];
+                sprintf(buffer, "Работодатель выбрал %s, но он не претендовал на вакансию \"%s\"!\n", 
+                        getPlayer(chosen_player_id)->get_nick().c_str(),
+                        profession->get_text().c_str());
+                result += buffer;
             }
         }
         
@@ -704,9 +712,11 @@ void Game::assign_professions() {
             if (chosen_player) {
                 chosen_player->addProf(profession);
                 chosen_player->addScore(3);
-                cout << "Вакансия \"" << profession->get_text() 
-                     << "\" достаётся " << chosen_player->get_nick() 
-                     << " (случайный выбор среди претендентов)!" << endl;
+                char buffer[256];
+                sprintf(buffer, "Вакансия \"%s\" достаётся %s (случайный выбор среди претендентов)!\n", 
+                        profession->get_text().c_str(), 
+                        chosen_player->get_nick().c_str());
+                result += buffer;
             }
         }
     }
@@ -714,6 +724,8 @@ void Game::assign_professions() {
     g_employ->clear_claims();
     g_employ->clear_assignments();
     vacancies->clear();
+    
+    return result;
 }
 
 string Game::get_players_list() const {

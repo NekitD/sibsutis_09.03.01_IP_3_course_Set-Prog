@@ -127,7 +127,7 @@ void* player_thread(void* arg)
                 GAME->EmployInfo()->setManual((string)output);
                 strcat(s_msg, "   История:");
                 strcat(s_msg, GAME->EmployInfo()->getManual().c_str());
-                cout << "   История:" << endl;
+                //cout << "   История:" << endl;
                 // cout << "   " << GAME->EmployInfo()->getManual() << endl;
                 strcat(s_msg, GAME->EmployInfo()->print_profs().c_str());
                 //GAME->EmployInfo()->print_profs();
@@ -168,6 +168,7 @@ void* player_thread(void* arg)
                     GAME->GiveEmojiToPlayer(GAME->getPlayer(id));
                     vector<Card*>* p_skills = GAME->getPlayer(id)->getSkills();
                     Card* emo = GAME->getPlayer(id)->getEmoji();
+                    strcat(s_msg, " Ваша очередь на собеседование!\n ");
                     strcat(s_msg, " Эмоция: ");
                     strcat(s_msg, emo->get_text().c_str());
                     strcat(s_msg, "\n");
@@ -193,6 +194,7 @@ void* player_thread(void* arg)
                 bzero(s_msg, BUFF_LEN);
                 sprintf(s_msg, "   Соискатель %s пишет резюме...\n|common|", GAME->get_player_nick(id).c_str());
                 //cout << "   Соискатель " << GAME->get_player_nick(id) << " пишет резюме..." << endl;
+                send_to_all(SUBS, s_msg, BUFF_LEN);
                 continue;
             }
             continue;
@@ -343,7 +345,9 @@ void* player_thread(void* arg)
                         GAME->EmployInfo()->add_assignment(vac_num - 1, player_id); 
                         token = strtok(NULL, ",");
                     }
-                    GAME->assign_professions(); 
+                    strcat(s_msg, "\n");
+                    strcat(s_msg, GAME->assign_professions().c_str());
+                    send_to_all(SUBS, s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
                     send(socket, "||WAITING", BUFF_LEN, 0);
                     GAME->setEmployer(GAME->getEmployer() + 1);
@@ -499,6 +503,7 @@ void* lobby_thread(void* arg)
             GAME->set_scoreb(0);
             //cout << endl;
             //cout << "   Время для выставления оценок!" << endl;
+            send_to_all(SUBS, s_msg, BUFF_LEN);;
             GAME->setStatus(SCORES);
             vector<Player*>* tms = GAME->get_players();
             for(vector<Player*>::iterator pl = tms->begin(); pl != tms->end(); pl++){

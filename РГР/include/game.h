@@ -186,7 +186,7 @@ class Game
         void add_scoreb(int as);
         bool score_over() const;
 
-        void assign_professions();
+        string assign_professions();
 
         void drop_cards();
 
