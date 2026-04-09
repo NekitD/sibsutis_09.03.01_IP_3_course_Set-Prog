@@ -119,6 +119,7 @@ class Player
         Card* getEmoji() const;
 
         string print_skills() const;
+        string print_profs();
 
     private:
         int id;
@@ -143,7 +144,7 @@ class Game
         void print_profs() const;
         void print_skills() const;
         void print_emoji() const;
-        void print_players() const;
+        char* print_players() const;
         int getStatus() const;
         int getPnum() const;
         int getRnum() const;

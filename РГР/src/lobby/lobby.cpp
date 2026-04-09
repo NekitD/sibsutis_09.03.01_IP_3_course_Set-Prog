@@ -472,12 +472,13 @@ void* lobby_thread(void* arg)
                 continue;
             }
             bzero(s_msg, BUFF_LEN);
-            GAME->print_players();
+            //GAME->print_players();
             GAME->drop_cards();
             int emp = GAME->getEmployerId();
-            sprintf(s_msg, "==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...|common|\n",
-                GAME->getEmployer() + 1, GAME->get_player_nick(emp).c_str());
+            sprintf(s_msg, "%s==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...|common|\n",
+                GAME->print_players(), GAME->getEmployer() + 1, GAME->get_player_nick(emp).c_str());
             send_to_all(SUBS, s_msg, BUFF_LEN);
+            bzero(s_msg, BUFF_LEN);
             //cout << "==============================================================" << endl;
             //cout << "       Раунд " << GAME->getEmployer() + 1 << ":" << endl;
             //cout << "==============================================================" << endl;

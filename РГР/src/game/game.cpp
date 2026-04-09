@@ -127,6 +127,19 @@ string Player::print_skills() const{
     return res;
 }
 
+string Player::print_profs() {
+    string result;
+    if(p_profs && !p_profs->empty()){
+        for(auto it = p_profs->begin(); it != p_profs->end(); ++it){
+            if(it != p_profs->begin()){
+                result += ", ";
+            }
+            result += (*it)->get_text();
+        }
+    }
+    return result;
+}
+
 
 vector<Card*>* Player::getSkills() const{
     return p_skills;
@@ -390,17 +403,28 @@ void Game::print_emoji() const{
         }
     }
 }
-void Game::print_players() const{
+char* Game::print_players() const{
+    char res[BUFF_LEN] = "";
     if (g_players == nullptr || g_players->empty()){
-        cout << "   НЕТ ИГРОКОВ" << endl;
+        //cout << "   НЕТ ИГРОКОВ" << endl;
+        strcat(res, "   НЕТ ИГРОКОВ");
+        return res;
     }
     if(g_players){
-        cout << "=========ИГРОКИ=========" << endl;
+        //cout << "=========ИГРОКИ=========" << endl;
+        strcat(res, "=========ИГРОКИ=========\n");
         for(vector<Player*>::const_iterator p = g_players->begin(); p != g_players->end(); p++){
+            char buf[BUFF_LEN];
             cout << "   " << **p << endl;
+            sprintf(buf, "   %s (%s):   %d  %s\n", 
+                (**p).get_nick().c_str(), (**p).print_profs().c_str(), (**p).getScore(), 
+                get_player_status((**p).get_id()) == LEFT ? "(Вышел)" : "");
+            strcat(res, buf);
         }
-        cout << "========================" << endl;
+        strcat(res, "========================");
+        //cout << "========================" << endl;
     }
+    return res;
 }
 
 int Game::getStatus() const{
