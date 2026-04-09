@@ -346,3 +346,26 @@ void StartupDbContext::add_player_score(string login, int score){
 }
 
 
+void StartupDbContext::clear_online(){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    string q = "UPDATE users SET online = $1";
+    work w(*conn);
+    w.exec_params(q, 0);
+    w.commit();
+}
+
+void StartupDbContext::clear_lobbies(){
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        return;
+    }
+    string q = "TRUNCATE TABLE games";
+    work w(*conn);
+    w.exec(q);
+    w.commit();
+}
+
+

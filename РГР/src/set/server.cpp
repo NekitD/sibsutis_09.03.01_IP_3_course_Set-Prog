@@ -232,7 +232,8 @@ int main()
     enableEcho();
 
     CONTEXT = new StartupDbContext(S_ADDRESS, S_PORT, DATABASE, admin, pswrd);
-
+    CONTEXT->clear_online();
+    CONTEXT->clear_lobbies();
     if(listen(ser_socket, MAX_USERS) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ СЕРВЕР!" << endl;
         return -1;
@@ -248,6 +249,8 @@ int main()
         pthread_detach(thread_id);
 
     }
+    CONTEXT->clear_online();
+    CONTEXT->clear_lobbies();
     close(ser_socket);
     return 0;
 }

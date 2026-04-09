@@ -70,6 +70,9 @@ class StartupDbContext {
         void set_lobby_status(int id, bool ready);
         void add_player_score(string login, int score);
 
+        void clear_online();
+        void clear_lobbies();
+
     private:
         string address;
         int port;
