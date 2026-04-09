@@ -76,8 +76,7 @@ int main()
     c_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     c_addr.sin_port = 0;
 
-    if(socket_init(c_sock, &c_addr) < 0 || socket_init(chat_sock, &c_addr) < 0
-    || socket_init(lobby_sock, &c_addr) < 0){
+    if(socket_init(c_sock, &c_addr) < 0){
         return -1;
     }
 
@@ -442,6 +441,10 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             if(ans > 0){
                 cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 if(strncmp(request, "allow", 6) == 0){
+                    if (socket_init(lobby_sock, &c_addr) < 0){
+                        cout << "Не удалось подключится к лобби. (sock error)" << endl;
+                        continue;
+                    }
                     int lobby_port = atoi(output);
                     sockaddr_in lobby_addr;
                     bzero(&lobby_addr, sizeof(struct sockaddr_in));
