@@ -485,6 +485,7 @@ void* lobby_thread(void* arg)
 
     if(listen(sm_socket, lobby_size) < 0){
         cout << "   ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ЛОББИ!" << endl;
+        pthread_mutex_destroy(&gmutex);
         close(sm_socket);
         pthread_exit(0);
     }
