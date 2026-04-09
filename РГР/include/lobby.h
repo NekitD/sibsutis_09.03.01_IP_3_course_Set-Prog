@@ -20,6 +20,7 @@ typedef struct player_args {
     vector<int>* subs;
     int lobby_id;
     StartupDbContext* context;
+    pthread_mutex_t* mutex;
 } player_args;
 
 

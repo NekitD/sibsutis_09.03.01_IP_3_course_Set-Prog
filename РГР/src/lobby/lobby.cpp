@@ -10,6 +10,7 @@ void* player_thread(void* arg)
     vector<int>* SUBS = pargs->subs;
     int lobby_id = pargs->lobby_id;
     StartupDbContext* CONTEXT = pargs->context;
+    pthread_mutex_t* mutex = pargs->mutex;
 
     int id = 0;
     char s_msg[BUFF_LEN] = "";
@@ -23,7 +24,9 @@ void* player_thread(void* arg)
     int g_status = GAME->getStatus();
     if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){;
         strcat(s_msg, "   Неудачная попытка подключения|common|");
+        pthread_mutex_lock(mutex);
         send_to_all(SUBS, s_msg, BUFF_LEN);
+        pthread_mutex_unlock(mutex);
         close(socket);
         pthread_exit(0);
     }
@@ -31,19 +34,25 @@ void* player_thread(void* arg)
     if (strncmp(request, "join", 4) == 0){
         strcat(s_msg, GAME->addPlayer(output, socket).c_str());
         strcat(s_msg, "|common|");
+        pthread_mutex_lock(mutex);
         send_to_all(SUBS, s_msg, BUFF_LEN);
+        pthread_mutex_unlock(mutex);
         bzero(s_msg, BUFF_LEN);
         id = GAME->get_player_id(output);
         if(id < 0){
             strcat(s_msg, "   ОШИБКА ID.|common|");
+            pthread_mutex_lock(mutex);
             send_to_all(SUBS, s_msg, BUFF_LEN);
+            pthread_mutex_unlock(mutex);
             close(socket);
             pthread_exit(0);
         }
+        pthread_mutex_lock(mutex);
         CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
         strcat(s_msg, "||PRE_TO_PLAY");
         send(socket, s_msg, BUFF_LEN, 0);
         GAME->set_player_status(id, PRE_TO_PLAY);
+        pthread_mutex_unlock(mutex);
     }
     for(;;){
         bzero(s_msg, BUFF_LEN);
@@ -54,6 +63,7 @@ void* player_thread(void* arg)
         p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
         if (rec_l == 0){
+            pthread_mutex_lock(mutex);
             strcat(s_msg, GAME->remPlayer(id).c_str());
             strcat(s_msg, "|common|");
             CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
@@ -64,10 +74,12 @@ void* player_thread(void* arg)
                 }
             }
             send_to_all(SUBS, s_msg, BUFF_LEN);
+            pthread_mutex_unlock(mutex);
             break;
         }
         if (rec_l < 0){
             sprintf(s_msg, "   Разрыв соединения с игроком %s из-за ошибки сокета.|common|", GAME->get_player_nick(id).c_str());
+            pthread_mutex_lock(mutex);
             GAME->remPlayer(id);
             for(vector<int>::iterator itd = SUBS->begin(); itd != SUBS->end(); itd++){
                 if(*itd == id){
@@ -75,17 +87,20 @@ void* player_thread(void* arg)
                     break;
                 }
             }
+            pthread_mutex_unlock(mutex);
             break;
         }
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
 
         if(p_status == PRE_TO_PLAY){
             if(strncmp(request, "readytoplay", 12) == 0){
+                pthread_mutex_lock(mutex);
                 SUBS->push_back(socket);
                 GAME->set_player_status(id, READY_TO_PLAY);
                 sprintf(s_msg, "   %s готов играть!\n   Готовы: %d / %d\n|common|", GAME->get_player_nick(id).c_str(), 
                                             GAME->getRnum(), GAME->getMnum());
                 send_to_all(SUBS, s_msg, BUFF_LEN);
+                pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, "||READY_TO_PLAY");
                 send(socket, s_msg, BUFF_LEN, 0);
@@ -95,9 +110,11 @@ void* player_thread(void* arg)
                     strcat(s_msg, "       ИГРА НАЧИНАЕТСЯ!\n");
                     strcat(s_msg, "\n======================================\n");
                     strcat(s_msg, "|common|");
+                    pthread_mutex_lock(mutex);
                     send_to_all(SUBS, s_msg, BUFF_LEN);
                     GAME->setStatus(START);
                     CONTEXT->set_lobby_status(lobby_id, true);
+                    pthread_mutex_unlock(mutex);
                 }
             }
             continue;
@@ -113,7 +130,9 @@ void* player_thread(void* arg)
                 if(strncmp(request, "sendhist", 9) != 0){
                     strcat(s_msg, "        Вы - работодатель!\n");
                     strcat(s_msg, " В Вашей компании открыты следующие вакансии:\n");
+                    pthread_mutex_lock(mutex);
                     GAME->PassCards(GAME->get_profs(), GAME->EmployInfo()->getProfs(), EMPLOYER_PROFS_NUM);
+                    pthread_mutex_unlock(mutex);
                     vector<Card*>* emp_profs = GAME->EmployInfo()->getProfs();
                     for(vector<Card*>::const_iterator pr = emp_profs->begin(); pr != emp_profs->end(); pr++){
                         strcat(s_msg, "     ");
@@ -126,17 +145,23 @@ void* player_thread(void* arg)
                     send(socket, s_msg, BUFF_LEN, 0);
                     continue;
                 }
+                pthread_mutex_lock(mutex);
                 GAME->EmployInfo()->setManual((string)output);
+                pthread_mutex_unlock(mutex);
                 strcat(s_msg, "   История:\n");
                 strcat(s_msg, GAME->EmployInfo()->getManual().c_str());
                 strcat(s_msg, "\n");
                 strcat(s_msg, GAME->EmployInfo()->print_profs().c_str());
                 strcat(s_msg, "|common|");
+                pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
+                pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 send(socket, "||WAITING", BUFF_LEN, 0);
+                pthread_mutex_lock(mutex);
                 GAME->set_player_status(id, WAITING);
                 GAME->setStatus(P_PRE);
+                pthread_mutex_unlock(mutex);
                 sleep(1);
                 continue;
             }
@@ -156,14 +181,18 @@ void* player_thread(void* arg)
                     }
                     sprintf(s_msg, "   Соискатель %s претендует на вакансию %s|common|", 
                         GAME->get_player_nick(id).c_str(), GAME->EmployInfo()->getProfs()->at(vn)->get_text().c_str());
+                    pthread_mutex_lock(mutex);
                     send_to_all(SUBS, s_msg, BUFF_LEN);
                     GAME->EmployInfo()->add_claim(vn, id);
+                    pthread_mutex_unlock(mutex);
                     send(socket, "|claim|ANSWERING", BUFF_LEN, 0);
                     continue;
                 }
                 if(strncmp(request, "readytoanswer", 14) != 0){ 
+                    pthread_mutex_lock(mutex);
                     GAME->PassCards(GAME->get_skills(), GAME->getPlayer(id)->getSkills(), SKILL_NUM);
                     GAME->GiveEmojiToPlayer(GAME->getPlayer(id));
+                    pthread_mutex_unlock(mutex);
                     vector<Card*>* p_skills = GAME->getPlayer(id)->getSkills();
                     Card* emo = GAME->getPlayer(id)->getEmoji();
                     strcat(s_msg, " Эмоция: ");
@@ -180,16 +209,22 @@ void* player_thread(void* arg)
                     send(socket, s_msg, BUFF_LEN, 0);
                     bzero(s_msg, BUFF_LEN);
                     sprintf(s_msg, "   Соискатель %s готовится отвечать...\n|common|", GAME->get_player_nick(id).c_str());
+                    pthread_mutex_lock(mutex);
                     send_to_all(SUBS, s_msg, BUFF_LEN);
+                    pthread_mutex_unlock(mutex);
                     continue;
                 }
+                pthread_mutex_lock(mutex);
                 GAME->setStatus(P_MAKE);
+                pthread_mutex_unlock(mutex);
                 strcat(s_msg, "|giveanswerm");
                 strcat(s_msg, "|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
                 bzero(s_msg, BUFF_LEN);
                 sprintf(s_msg, "   Соискатель %s пишет резюме...\n|common|", GAME->get_player_nick(id).c_str());
+                pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
+                pthread_mutex_unlock(mutex);
                 continue;
             }
             continue;
@@ -204,6 +239,7 @@ void* player_thread(void* arg)
                 strcat(s_msg, "   ");
                 strcat(s_msg, output);
                 strcat(s_msg, "\n\n   Время для вопросов.|common|");
+                pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 GAME->setStatus(QUESTIONS);
                 vector<Player*>* tmq = GAME->get_players();
@@ -212,6 +248,7 @@ void* player_thread(void* arg)
                         (*pl)->setStatus(QUESTIONING);
                     }
                 }
+                pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 send(socket, "||WAITING", BUFF_LEN, 0);
                 sleep(1);
@@ -225,20 +262,26 @@ void* player_thread(void* arg)
             if(GAME->get_player_status(id) == QUESTIONING){
                 if(strncmp(request, "noquest", 8) == 0){
                     sprintf(s_msg, "   %s не имеет больше вопросов.|common|", GAME->get_player_nick(id).c_str());
+                    pthread_mutex_lock(mutex);
                     send_to_all(SUBS, s_msg, BUFF_LEN);
-                    bzero(s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
+                    pthread_mutex_unlock(mutex);
+                    bzero(s_msg, BUFF_LEN);
                     send(socket, "||WAITING", BUFF_LEN, 0);
                     if(GAME->no_questions()){
+                        pthread_mutex_lock(mutex);
                         GAME->set_player_status(GAME->get_answering_id(), WAITING);
                         GAME->setStatus(P_OPEN);
+                        pthread_mutex_unlock(mutex);
                     }
                     continue;
                 }
 
                 strcat(s_msg, GAME->get_player_nick(id).c_str());
                 if(strncmp(request, "quest", 6) == 0){
+                    pthread_mutex_lock(mutex);
                     GAME->add_question((string)output);
+                    pthread_mutex_unlock(mutex);
                     strcat(s_msg, ": |gquest|QUESTIONING");
                 }else{
                     strcat(s_msg, ": ||QUESTIONING");
@@ -249,12 +292,16 @@ void* player_thread(void* arg)
 
             if(strncmp(request, "aquest", 7) == 0){
                 sprintf(s_msg, "   %s: %s\n\n|common|", GAME->get_player_nick(id).c_str(), output);
+                pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
-                bzero(s_msg, BUFF_LEN);
                 GAME->rem_question();
+                pthread_mutex_lock(mutex);
+                bzero(s_msg, BUFF_LEN);
                 if(GAME->no_questions()){
+                    pthread_mutex_lock(mutex);
                     GAME->set_player_status(GAME->get_answering_id(), WAITING);
                     GAME->setStatus(P_OPEN);
+                    pthread_mutex_unlock(mutex);
                     continue;
                 }
             }
@@ -262,7 +309,9 @@ void* player_thread(void* arg)
             if(!(GAME->get_questions()->empty())){
                 string qu = *(GAME->get_questions()->begin());
                 sprintf(s_msg, "   %s\n|common|", qu.c_str());
+                pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
+                pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, "|quest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
@@ -287,24 +336,32 @@ void* player_thread(void* arg)
                         score = 5;
                     }
                     sprintf(s_msg, "   %s поставил оценку.\n|common|", GAME->get_player_nick(id).c_str());
+                    pthread_mutex_lock(mutex);
                     send_to_all(SUBS, s_msg, BUFF_LEN);
+                    pthread_mutex_unlock(mutex);
                     bzero(s_msg, BUFF_LEN);
+                    pthread_mutex_lock(mutex);
                     GAME->add_scoreb(score);
                     GAME->set_player_status(id, WAITING);
+                    pthread_mutex_unlock(mutex);
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
 
                         sprintf(s_msg, "\n   %s получил %d очков!|common|", GAME->get_player_nick(GAME->get_answering_id()).c_str()
                             ,GAME->get_scoreb() );
+                        pthread_mutex_lock(mutex);
                         send_to_all(SUBS, s_msg, BUFF_LEN);
-                        bzero(s_msg, BUFF_LEN);
                         GAME->set_answering_num(GAME->get_answering_num() + 1);
+                        pthread_mutex_unlock(mutex);
+                        bzero(s_msg, BUFF_LEN);
+                        pthread_mutex_lock(mutex);
                         if(GAME->get_answering_id() == GAME->getEmployerId()){
                             GAME->setStatus(JOB_CHOICE);
                             GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
                         }else{
                             GAME->setStatus(P_PRE);
                         }
+                        pthread_mutex_unlock(mutex);
                     }
                     send(socket, "||WAITING", BUFF_LEN, 0);
                     continue;
@@ -322,17 +379,21 @@ void* player_thread(void* arg)
                     while (token != NULL) {
                         int vac_num, player_id;
                         sscanf(token, "%d:%d", &vac_num, &player_id);
+                        pthread_mutex_lock(mutex);
                         GAME->EmployInfo()->add_assignment(vac_num - 1, player_id); 
+                        pthread_mutex_unlock(mutex);
                         token = strtok(NULL, ",");
                     }
                     strcat(s_msg, "\n");
                     strcat(s_msg, GAME->assign_professions().c_str());
                     strcat(s_msg, "|common|");
                     send_to_all(SUBS, s_msg, BUFF_LEN);
+                    pthread_mutex_lock(mutex);
                     GAME->set_player_status(id, WAITING);
-                    send(socket, "||WAITING", BUFF_LEN, 0);
                     GAME->setEmployer(GAME->getEmployer() + 1);
                     GAME->setStatus(START);
+                    pthread_mutex_unlock(mutex);
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     sleep(1);
                     continue;
                 }
@@ -363,7 +424,9 @@ void* player_thread(void* arg)
                 }
                 sprintf(s_msg, "   Работодатель %s выбирает сотрудников...\n|common|", 
                     GAME->get_player_nick(GAME->getEmployerId()).c_str());
+                pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
+                pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, " Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
                 strcat(s_msg, " Пример: 1:2,2:1,3:3");
@@ -410,6 +473,8 @@ void* lobby_thread(void* arg)
     int lobby_size = largs->size;
     StartupDbContext* CONTEXT = largs->context;
     CONTEXT->set_lobby_port(lobby_id, ntohs(s_addr.sin_port));
+    pthread_mutex_t gmutex;
+    pthread_mutex_init(&gmutex, 0);
 
     vector<int>* SUBS = new vector<int>;
     Game* GAME = new Game(lobby_size);
@@ -439,6 +504,7 @@ void* lobby_thread(void* arg)
             pargs.socket = ss_socket;
             pargs.context = CONTEXT;
             pargs.lobby_id = lobby_id;
+            pargs.mutex = &gmutex;
             pthread_create(&thread_id, NULL, player_thread, (void*)&pargs);
             pthread_detach(thread_id);
             sleep(1);
@@ -446,27 +512,36 @@ void* lobby_thread(void* arg)
         }
         if(status == START){
             if((size_t)GAME->getEmployer() >= GAME->get_players()->size()){
+                pthread_mutex_lock(&gmutex);
                 GAME->setStatus(OVER);
+                pthread_mutex_unlock(&gmutex);
                 continue;
             }
             bzero(s_msg, BUFF_LEN);
             //GAME->print_players();
+            pthread_mutex_lock(&gmutex);
             GAME->drop_cards();
+            pthread_mutex_unlock(&gmutex);
             int emp = GAME->getEmployerId();
             sprintf(s_msg, "%s==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...|common|\n",
                 GAME->print_players().c_str(), GAME->getEmployer() + 1, GAME->get_player_nick(emp).c_str());
+            pthread_mutex_lock(&gmutex);
             send_to_all(SUBS, s_msg, BUFF_LEN);
-            bzero(s_msg, BUFF_LEN);
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
             GAME->set_answering_num(1);
+            pthread_mutex_unlock(&gmutex);
+            bzero(s_msg, BUFF_LEN);
         }
         if (status == P_PRE){
+            pthread_mutex_lock(&gmutex);
             GAME->set_player_status(GAME->get_answering_id(), ANSWERING);
+            pthread_mutex_unlock(&gmutex);
             continue;
         }
         if(status == P_OPEN){
             sprintf(s_msg, "\n%s\n\n   Время для выставления оценок!\n|common|", GAME->open_p(GAME->get_answering_id()).c_str());
+            pthread_mutex_lock(&gmutex);
             GAME->set_scoreb(0);
             send_to_all(SUBS, s_msg, BUFF_LEN);;
             GAME->setStatus(SCORES);
@@ -476,18 +551,22 @@ void* lobby_thread(void* arg)
                     (*pl)->setStatus(SCORING);
                 }
             }
+            pthread_mutex_unlock(&gmutex);
             continue;
         }
         if(status == OVER){
             bzero(s_msg, BUFF_LEN);
             strcat(s_msg, GAME->Endgame(CONTEXT).c_str());
             strcat(s_msg, "|over|");
+            pthread_mutex_lock(&gmutex);
             send_to_all(SUBS, s_msg, BUFF_LEN);
             CONTEXT->rm_lobby(lobby_id);
+            pthread_mutex_unlock(&gmutex);
             sleep(1);
             break;
         }
     }
+    pthread_mutex_destroy(&gmutex);
     close(sm_socket);
     pthread_exit(0);
 }
