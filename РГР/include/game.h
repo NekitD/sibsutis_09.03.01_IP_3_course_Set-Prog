@@ -196,8 +196,8 @@ class Game
         string Endgame(StartupDbContext* context);
 
     private:
-        int p_num = 0;
         int p_max;
+        int p_num;
         vector<Card*>* g_profs;
         vector<Card*>* g_skills;
         vector<Card*>* g_emoji;

@@ -52,8 +52,15 @@ ostream& operator<<(ostream& os, const Player& p){
 }
 
 
-Player::Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
-            p_skills(new vector<Card*>), p_emoji(nullptr), id(_id), status(WAIT_ACCEPT){};
+Player::Player(string _name, int _id): 
+    id(_id),
+    name(_name),
+    score(0),
+    p_skills(new vector<Card*>),
+    p_profs(new vector<Card*>),
+    p_emoji(nullptr),
+    status(WAIT_ACCEPT)
+{}
 
 Player::~Player(){
     p_skills->clear();
