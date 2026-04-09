@@ -313,7 +313,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cout << "Неизвестная команда '" << command << "'" << endl;
             continue;
         }
-        //strcat(s_msg, login.c_str());
+        
         //--------------------------------------------------------------------
         // Инструкция
         //--------------------------------------------------------------------
