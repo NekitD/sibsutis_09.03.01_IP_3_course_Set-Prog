@@ -291,7 +291,11 @@ void* player_thread(void* arg)
             }
 
             if(strncmp(request, "aquest", 7) == 0){
-                sprintf(s_msg, "   %s: %s\n\n|common|", GAME->get_player_nick(id).c_str(), output);
+                strcat(s_msg, "    ");
+                strcat(s_msg, GAME->get_player_nick(id).c_str());
+                strcat(s_msg, ":");
+                strcat(s_msg, output);
+                strcat(s_msg, "\n\n|common|");
                 pthread_mutex_lock(mutex);
                 send_to_all(SUBS, s_msg, BUFF_LEN);
                 GAME->rem_question();
