@@ -22,7 +22,7 @@ void* player_thread(void* arg)
     int p_status = WAIT_ACCEPT;
     int rec_l = 0;
     int g_status = GAME->getStatus();
-    if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){;
+    if (recv(socket, a_msg, BUFF_LEN, 0) <= 0){
         strcat(s_msg, "   Неудачная попытка подключения|common|");
         pthread_mutex_lock(mutex);
         send_to_all(SUBS, s_msg, BUFF_LEN);
@@ -49,7 +49,7 @@ void* player_thread(void* arg)
         }
         pthread_mutex_lock(mutex);
         CONTEXT->set_lobby_num(lobby_id, GAME->getPnum());
-        strcat(s_msg, "||PRE_TO_PLAY");
+        strcat(s_msg, "|getready|PRE_TO_PLAY");
         send(socket, s_msg, BUFF_LEN, 0);
         GAME->set_player_status(id, PRE_TO_PLAY);
         pthread_mutex_unlock(mutex);
@@ -121,7 +121,7 @@ void* player_thread(void* arg)
         }
 
         if(p_status == WAITING || p_status == READY_TO_PLAY){
-            send(socket, " ", 1, 0);
+            //send(socket, "EmptyMes", BUFF_LEN, 0);
             continue;
         }
 
@@ -162,7 +162,6 @@ void* player_thread(void* arg)
                 GAME->set_player_status(id, WAITING);
                 GAME->setStatus(P_PRE);
                 pthread_mutex_unlock(mutex);
-                sleep(1);
                 continue;
             }
             continue;
@@ -531,12 +530,13 @@ void* lobby_thread(void* arg)
             sprintf(s_msg, "%s==============================================================\n       Раунд %d:\n==============================================================\n   Работодатель: %s\n   Работодатель придумывает историю своей компании...|common|\n",
                 GAME->print_players().c_str(), GAME->getEmployer() + 1, GAME->get_player_nick(emp).c_str());
             pthread_mutex_lock(&gmutex);
-            send_to_all(SUBS, s_msg, BUFF_LEN);
             GAME->set_player_status(emp, EMPLOYER);
             GAME->setStatus(JOB_MAKE);
             GAME->set_answering_num(1);
+            send_to_all(SUBS, s_msg, BUFF_LEN);
             pthread_mutex_unlock(&gmutex);
             bzero(s_msg, BUFF_LEN);
+            continue;
         }
         if (status == P_PRE){
             pthread_mutex_lock(&gmutex);
@@ -548,7 +548,6 @@ void* lobby_thread(void* arg)
             sprintf(s_msg, "\n%s\n\n   Время для выставления оценок!\n|common|", GAME->open_p(GAME->get_answering_id()).c_str());
             pthread_mutex_lock(&gmutex);
             GAME->set_scoreb(0);
-            send_to_all(SUBS, s_msg, BUFF_LEN);;
             GAME->setStatus(SCORES);
             vector<Player*>* tms = GAME->get_players();
             for(vector<Player*>::iterator pl = tms->begin(); pl != tms->end(); pl++){
@@ -556,6 +555,7 @@ void* lobby_thread(void* arg)
                     (*pl)->setStatus(SCORING);
                 }
             }
+            send_to_all(SUBS, s_msg, BUFF_LEN);;
             pthread_mutex_unlock(&gmutex);
             continue;
         }

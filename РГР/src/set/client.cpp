@@ -584,8 +584,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
         if(strncmp(request, "common", 7) == 0){
             cout << output << endl;
-           // send(lobby_sock, " ", 2, 0);
-           // continue;
+           send(lobby_sock, "EmptyMes", 2, 0);
+           continue;
         }
 
         if(status == WAIT_ACCEPT)
@@ -617,7 +617,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
-            send(lobby_sock, "EmptyMes", BUFF_LEN, 0);
+            //send(lobby_sock, "EmptyMes", BUFF_LEN, 0);
             continue;
         }
         if(status == EMPLOYER){
