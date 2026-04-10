@@ -181,7 +181,7 @@ void* player_thread(void* arg)
                     sprintf(s_msg, "   Соискатель %s претендует на вакансию %s|common|", 
                         GAME->get_player_nick(id).c_str(), GAME->EmployInfo()->getProfs()->at(vn)->get_text().c_str());
                     pthread_mutex_lock(mutex);
-                    send_to_all(SUBS, s_msg, BUFF_LEN);
+                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     GAME->EmployInfo()->add_claim(vn, id);
                     pthread_mutex_unlock(mutex);
                     send(socket, "|claim|ANSWERING", BUFF_LEN, 0);
@@ -209,7 +209,7 @@ void* player_thread(void* arg)
                     bzero(s_msg, BUFF_LEN);
                     sprintf(s_msg, "   Соискатель %s готовится отвечать...\n|common|", GAME->get_player_nick(id).c_str());
                     pthread_mutex_lock(mutex);
-                    send_to_all(SUBS, s_msg, BUFF_LEN);
+                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     pthread_mutex_unlock(mutex);
                     continue;
                 }
@@ -580,6 +580,14 @@ void* lobby_thread(void* arg)
 void send_to_all(vector<int>* s_sockets, char* msg, int mlen){
     for(vector<int>::iterator it = s_sockets->begin(); it != s_sockets->end(); it++){
         send(*it, msg, mlen, 0);
+    }
+}
+
+void send_to_all_exept(vector<int>* s_sockets, int exep, char* msg, int mlen){
+    for(vector<int>::iterator it = s_sockets->begin(); it != s_sockets->end(); it++){
+        if(*it != exep){
+            send(*it, msg, mlen, 0);
+        }
     }
 }
 
