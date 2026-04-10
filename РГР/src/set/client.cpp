@@ -584,8 +584,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
         if(strncmp(request, "common", 7) == 0){
             cout << output << endl;
-            send(lobby_sock, " ", 2, 0);
-            continue;
+           // send(lobby_sock, " ", 2, 0);
+           // continue;
         }
 
         if(status == WAIT_ACCEPT)
@@ -593,28 +593,31 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             //continue;
         }
         if(status == PRE_TO_PLAY){
-            char a;
-            cout << "   Вы успешно присоединились к игре!" << endl;
-            cout << "   Готовы начать игру?" << endl;
-            do{
-                cout << "   Введите Y(Готов)/q(Выйти): ";
-                cin >> a;
-            } while (a != 'y' && a != 'Y' && a != 'q' && a != 'Q');
-            if (a == 'q' || a == 'Q'){
-                close(lobby_sock);
-                socket_init(lobby_sock, &c_addr);
-                return true;
-            }
-            if(send(lobby_sock, "|readytoplay", BUFF_LEN, 0) < 0){
-                cout << "   Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
-            } else {
-                cout << "   Ожидание других игроков..." << endl;
-                cout << endl;
+            if(strncmp(request, "getready", 9) == 0){
+                char a;
+                cout << "   Вы успешно присоединились к игре!" << endl;
+                cout << "   Готовы начать игру?" << endl;
+                do{
+                    cout << "   Введите Y(Готов)/q(Выйти): ";
+                    cin >> a;
+                } while (a != 'y' && a != 'Y' && a != 'q' && a != 'Q');
+                if (a == 'q' || a == 'Q'){
+                    close(lobby_sock);
+                    socket_init(lobby_sock, &c_addr);
+                    return true;
+                }
+                if(send(lobby_sock, "|readytoplay", BUFF_LEN, 0) < 0){
+                    cout << "   Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
+                } else {
+                    cout << "   Ожидание других игроков..." << endl;
+                    cout << endl;
+                }
+                continue;
             }
             continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
-            send(lobby_sock, " ", 1, 0);
+            send(lobby_sock, "EmptyMes", BUFF_LEN, 0);
             continue;
         }
         if(status == EMPLOYER){
