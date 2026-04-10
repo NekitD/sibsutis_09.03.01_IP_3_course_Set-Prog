@@ -609,7 +609,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cout << "   Не удалось отправить сообщение. Попробуйте ещё раз." << endl;
             } else {
                 cout << "   Ожидание других игроков..." << endl;
-                bzero(a_msg, BUFF_LEN);
+                cout << endl;
             }
             continue;
         }

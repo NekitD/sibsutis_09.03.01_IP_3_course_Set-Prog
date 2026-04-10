@@ -107,7 +107,7 @@ void* player_thread(void* arg)
                 if (GAME->isGameReady()){
                     bzero(s_msg, BUFF_LEN);
                     strcat(s_msg, "\n======================================\n");
-                    strcat(s_msg, "       ИГРА НАЧИНАЕТСЯ!\n");
+                    strcat(s_msg, "       ИГРА НАЧИНАЕТСЯ!");
                     strcat(s_msg, "\n======================================\n");
                     strcat(s_msg, "|common|");
                     pthread_mutex_lock(mutex);
