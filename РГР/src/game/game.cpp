@@ -354,7 +354,7 @@ void Game::game_init()
         g_emoji->push_back(new Card("У вас дислексия."));
         g_emoji->push_back(new Card("Вы любите сокращения."));
         g_emoji->push_back(new Card("Вы постоянно напеваете."));
-        g_emoji->push_back(new Card("Вы плохо говориет по-русски."));
+        g_emoji->push_back(new Card("Вы плохо говорите по-русски."));
         g_emoji->push_back(new Card("Вы льете воду."));
         g_emoji->push_back(new Card("Вы презираете других соискателей."));
         g_emoji->push_back(new Card("Вы хотите много денег."));
