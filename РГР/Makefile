@@ -49,35 +49,53 @@ $(shell mkdir -p $(DIRS))
 all: $(GAME_LIB) $(LOBBY_LIB) $(CONTEXT_LIB) $(CLIENT_TARGET) $(SERVER_TARGET)
 
 $(GAME_LIB): $(GAME_OBJ_FILE)
+	@echo "Сборка библиотеки игры..."
 	@ar rcs $@ $^
+	@echo "Сборка библиотеки завершена!"
 
 $(LOBBY_LIB): $(LOBBY_OBJ_FILE)
+	@echo "Сборка библиотеки лобби..."
 	@ar rcs $@ $^
+	@echo "Сборка библиотеки лобби завершена!"
 
 $(CONTEXT_LIB): $(CONTEXT_OBJ_FILE)
+	@echo "Сборка библиотеки контекста..."
 	@ar rcs $@ $^
+	@echo "Сборка библиотеки контекста завершена!"
 
 $(GAME_OBJ_FILE): $(GAME_SRC)
+	@echo "Компиляция функций игры..."
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "Компиляция функций игры завершена!"
 
 $(LOBBY_OBJ_FILE): $(LOBBY_SRC)
+	@echo "Компиляция функций лобби..."
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "Компиляция функций завершена!"
 
 $(CONTEXT_OBJ_FILE): $(CONTEXT_SRC)
+	@echo "Компиляция функций контекста..."
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "Компиляция функций контекста завершена!"
 
 $(CLIENT_OBJ): $(CLIENT_SRC)
+	@echo "Компиляция клиента..."
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "Компиляция клиента завершена!"
 
 $(SERVER_OBJ): $(SERVER_SRC)
+	@echo "Компиляция сервера..."
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "Компиляция сервера завершена!"
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(LOBBY_LIB) $(GAME_LIB) $(CONTEXT_LIB)
+	@echo "Сборка сервера..."
 	@mkdir -p $(BIN)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 	@echo "Сервер готов к запуску!"
 
 $(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB) $(CONTEXT_LIB)
+	@echo "Сборка клиента..."
 	@mkdir -p $(BIN)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 	@echo "Клиент готов к запуску!"
@@ -96,4 +114,6 @@ run-cli:
 -include $(GAME_DEPS) $(LOBBY_DEPS) $(CLIENT_DEPS) $(SERVER_DEPS) $(CONTEXT_DEPS)
 
 clean:
+	@echo "Очистка..."
 	@rm -rf $(OBJ)/$(GAME_DIR)/* $(OBJ)/$(LOBBY_DIR)/* $(OBJ)/$(CONTEXT_DIR)/* $(OBJ)/$(SET_DIR)/* $(CLIENT_TARGET) $(SERVER_TARGET)
+	@echo "Очистка завершена!"
