@@ -148,7 +148,7 @@ void* player_thread(void* arg)
                 pthread_mutex_lock(mutex);
                 GAME->EmployInfo()->setManual((string)output);
                 pthread_mutex_unlock(mutex);
-                strcat(s_msg, "   История:\n");
+                strcat(s_msg, "\n   История:\n");
                 strcat(s_msg, GAME->EmployInfo()->getManual().c_str());
                 strcat(s_msg, "\n");
                 strcat(s_msg, GAME->EmployInfo()->print_profs().c_str());

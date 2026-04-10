@@ -615,7 +615,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         }
         if(status == WAITING || status == READY_TO_PLAY){
             send(lobby_sock, " ", 1, 0);
-            sleep(1);
             continue;
         }
         if(status == EMPLOYER){
