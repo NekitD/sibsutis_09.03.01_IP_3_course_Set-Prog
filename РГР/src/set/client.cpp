@@ -584,6 +584,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
         if(strncmp(request, "common", 7) == 0){
             cout << output << endl;
+            send(lobby_sock, " ", 2, 0);
             continue;
         }
 
