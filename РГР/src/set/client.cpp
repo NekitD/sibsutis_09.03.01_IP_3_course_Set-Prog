@@ -310,6 +310,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         cin >> command;
         if(!commandexists(command)){
             cout << "Неизвестная команда '" << command << "'" << endl;
+            cout << "ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
             continue;
         }
         
@@ -320,7 +321,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cout << endl;
             cout << "'ps' - показать список игроков онлайн." << endl;
             cout << "'psa' - показать список всех игроков." << endl;
-            cout << "'rate' - показать рейтинг." << endl;
+            cout << "'rt' - показать рейтинг." << endl;
             cout << "'ls' - показать список лобби." << endl;
             cout << "'mkl' - создать лобби." << endl;
             cout << "'join' - присоединиться к лобби." << endl;
@@ -362,7 +363,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         //--------------------------------------------------------------------
         // Запрос рейтинга
         //--------------------------------------------------------------------
-        if(strncmp(command.c_str(), "rate", 5) == 0){
+        if(strncmp(command.c_str(), "rt", 3) == 0){
             strcat(s_msg, "|rate");
             send(c_sock, s_msg, BUFF_LEN, 0);
             ans = -1;
@@ -803,6 +804,6 @@ void cli_input(string& text){
 }
 
 bool commandexists(string command){
-    return command == "ps" || command == "psa" || command == "rate" || command == "exit" || command == "ls"
+    return command == "ps" || command == "psa" || command == "rt" || command == "exit" || command == "ls"
             || command == "mkl" || command == "join" || command == "chat" || command == "chats" || command == "help";
 }
