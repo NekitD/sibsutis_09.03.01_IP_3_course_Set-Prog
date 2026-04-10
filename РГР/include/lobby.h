@@ -33,5 +33,6 @@ typedef struct lobby_args {
 
 void ser_decode_msg(char* msg, int mlen, char* output, char* request);
 void send_to_all(vector<int>*, char*, int);
+void send_to_all_exept(vector<int>*, int, char*, int);
 void* player_thread(void* arg);
 void* lobby_thread(void* arg);
