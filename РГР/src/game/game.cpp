@@ -800,27 +800,21 @@ string Game::Endgame(StartupDbContext* context){
     result += "       ИГРА ОКОНЧЕНА!\n";
     result += "======================================\n";
     
-    string players_info;
-    for(auto pl : *g_players){
-        char buffer[256];
-        sprintf(buffer, "%s (очки: %d)\n", 
-                pl->get_nick().c_str(), 
-                pl->getScore());
-        players_info += buffer;
-    }
-    result += players_info;
-    
     for(auto pl : *g_players){
         if(pl->getStatus() != LEFT && pl->getScore() > max){
             max = pl->getScore();
         }
     }
     
-    vector<Player*> winners;
+    int winnum = 0;
     for(auto pl : *g_players){
         if(pl->getStatus() != LEFT && pl->getScore() == max){
-            winners.push_back(pl);
+            winnum++;
         }
+    }
+
+    if(winnum == 0){
+        winnum = 1;
     }
     
     result += "\n";
@@ -835,29 +829,18 @@ string Game::Endgame(StartupDbContext* context){
                     pl->get_nick().c_str(), reward);
         }
         else if(pl->getScore() == max){
-            reward = (REWARD_K * getPnum()) / winners.size();
+            reward = (REWARD_K * getPnum()) / winnum;
             sprintf(buffer, "%s - ПОБЕДИТЕЛЬ! Очки: %d, изменение рейтинга: +%d\n", 
                     pl->get_nick().c_str(), pl->getScore(), reward);
         }
         else {
-            reward = -REWARD_K / (getPnum() - winners.size());
+            reward = -REWARD_K / (getPnum() - winnum);
             sprintf(buffer, "%s - очки: %d, изменение рейтинга: %d\n", 
                     pl->get_nick().c_str(), pl->getScore(), reward);
         }
         
         result += buffer;
         context->add_player_score(pl->get_nick(), reward);
-    }
-    
-    result += "\n";
-    if(winners.size() > 1){
-        result += "       ПОБЕДИТЕЛИ:\n";
-    } else {
-        result += "       ПОБЕДИТЕЛЬ:\n";
-    }
-    
-    for(auto pl : winners){
-        result += "      " + pl->get_nick() + "\n";
     }
     
     result += "======================================\n";
