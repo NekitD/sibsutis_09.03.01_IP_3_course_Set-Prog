@@ -413,35 +413,40 @@ void* player_thread(void* arg)
                 bzero(s_msg, BUFF_LEN);
                 vector<Card*>* vacancies = GAME->EmployInfo()->getProfs();
         
+                sprintf(s_msg, "   Работодатель %s выбирает сотрудников...\n", 
+                    GAME->get_player_nick(GAME->getEmployerId()).c_str());
+
+                char claims_out[BUFF_LEN];
                 for (size_t i = 0; i < vacancies->size(); i++) {
                     char buffer[256];
                     sprintf(buffer, "   Вакансия %ld: %s\n", i+1, vacancies->at(i)->get_text().c_str());
-                    strcat(s_msg, buffer);
+                    strcat(claims_out, buffer);
             
                     vector<int>* claimants = GAME->EmployInfo()->get_claims_for_vacancy(i);
-                    strcat(s_msg, " Претенденты: ");
+                    strcat(claims_out, " Претенденты: ");
                     if (claimants && !claimants->empty()) {
                         for (size_t j = 0; j < claimants->size(); j++) {
                             char id_str[10];
                             sprintf(id_str, "%d", claimants->at(j));
-                            strcat(s_msg, id_str);
-                            strcat(s_msg, ") ");
-                            strcat(s_msg, GAME->get_player_nick(claimants->at(j)).c_str());
-                            if (j < claimants->size() - 1) strcat(s_msg, ", ");
+                            strcat(claims_out, id_str);
+                            strcat(claims_out, ") ");
+                            strcat(claims_out, GAME->get_player_nick(claimants->at(j)).c_str());
+                            if (j < claimants->size() - 1) strcat(claims_out, ", ");
                         }
                     } else {
-                        strcat(s_msg, "нет");
+                        strcat(claims_out, "нет");
                     }
-                    strcat(s_msg, "\n\n");
+                    strcat(claims_out, "\n\n");
                 }
-                sprintf(s_msg, "   Работодатель %s выбирает сотрудников...\n|common|", 
-                    GAME->get_player_nick(GAME->getEmployerId()).c_str());
+                strcat(s_msg, claims_out);
+                strcat(s_msg, "|common|");
                 pthread_mutex_lock(mutex);
                 send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, " Введите Ваш выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
                 strcat(s_msg, " Пример: 1:2,2:1,3:3");
+                strcat(s_msg, claims_out);
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
                 sleep(1);
