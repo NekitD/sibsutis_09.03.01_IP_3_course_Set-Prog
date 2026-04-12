@@ -721,6 +721,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
             if(h == 'N' || h == 'n'){
                 send(lobby_sock, "|noquest", BUFF_LEN, 0);
+                cout << "Ожидайте заверешния секции с вопросами..." << endl;
                 continue;
             }
             string question;

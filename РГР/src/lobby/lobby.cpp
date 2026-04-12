@@ -260,19 +260,14 @@ void* player_thread(void* arg)
         if(g_status == QUESTIONS){
             if(GAME->get_player_status(id) == QUESTIONING){
                 if(strncmp(request, "noquest", 8) == 0){
-                    //sprintf(s_msg, "   %s не имеет больше вопросов.|common|", GAME->get_player_nick(id).c_str());
                     pthread_mutex_lock(mutex);
-                    //send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
-                    pthread_mutex_unlock(mutex);
-                    bzero(s_msg, BUFF_LEN);
-                    send(socket, "||WAITING", BUFF_LEN, 0);
                     if(GAME->no_questions()){
-                        pthread_mutex_lock(mutex);
                         GAME->set_player_status(GAME->get_answering_id(), WAITING);
                         GAME->setStatus(P_OPEN);
-                        pthread_mutex_unlock(mutex);
                     }
+                    pthread_mutex_unlock(mutex);
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     continue;
                 }
 
@@ -298,15 +293,12 @@ void* player_thread(void* arg)
                 pthread_mutex_lock(mutex);
                 send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 GAME->rem_question();
-                pthread_mutex_lock(mutex);
-                bzero(s_msg, BUFF_LEN);
                 if(GAME->no_questions()){
-                    pthread_mutex_lock(mutex);
                     GAME->set_player_status(GAME->get_answering_id(), WAITING);
                     GAME->setStatus(P_OPEN);
-                    pthread_mutex_unlock(mutex);
-                    continue;
                 }
+                pthread_mutex_unlock(mutex);
+                continue;
             }
             
             if(!(GAME->get_questions()->empty())){
