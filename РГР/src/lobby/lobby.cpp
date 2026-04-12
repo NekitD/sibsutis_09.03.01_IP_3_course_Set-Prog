@@ -319,14 +319,11 @@ void* player_thread(void* arg)
                 sprintf(s_msg, "   %s\n", qu.c_str());
                 strcat(s_msg, "|quest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
-                sleep(1);
-                continue;
             }else{
                 strcat(s_msg, "|equest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
-                sleep(1);
-                continue;
             }
+            sleep(1);
             continue;
         }
 
@@ -362,9 +359,6 @@ void* player_thread(void* arg)
                             ,GAME->get_scoreb() );
                         pthread_mutex_lock(mutex);
                         GAME->set_answering_num(GAME->get_answering_num() + 1);
-                        pthread_mutex_unlock(mutex);
-                        bzero(s_msg, BUFF_LEN);
-                        pthread_mutex_lock(mutex);
                         if(GAME->get_answering_id() == GAME->getEmployerId()){
                             GAME->setStatus(JOB_CHOICE);
                             GAME->set_player_status(GAME->getEmployerId(), EMPLOYER);
@@ -378,9 +372,9 @@ void* player_thread(void* arg)
                     continue;
                 }
                 send(socket, "|score|SCORING", BUFF_LEN, 0);
-                sleep(1);
-                continue;
             }
+            sleep(1);
+            continue;
         }
 
         if(g_status == JOB_CHOICE){
@@ -398,14 +392,13 @@ void* player_thread(void* arg)
                     }
                     strcat(s_msg, "\n");
                     strcat(s_msg, GAME->assign_professions().c_str());
-                    strcat(s_msg, "|common|");
-                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
+                    strcat(s_msg, "|common|WAITING");
                     pthread_mutex_lock(mutex);
                     GAME->set_player_status(id, WAITING);
                     GAME->setEmployer(GAME->getEmployer() + 1);
                     GAME->setStatus(START);
                     pthread_mutex_unlock(mutex);
-                    send(socket, "||WAITING", BUFF_LEN, 0);
+                    send_to_all(SUBS, s_msg, BUFF_LEN);
                     sleep(1);
                     continue;
                 }
@@ -449,9 +442,9 @@ void* player_thread(void* arg)
                 strcat(s_msg, claims_out);
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
-                sleep(1);
-                continue;
             }
+            sleep(1);
+            continue;
         }
     }
     close(socket);
@@ -529,14 +522,13 @@ void* lobby_thread(void* arg)
             continue;
         }
         if(status == START){
+            sleep(1);
             if((size_t)GAME->getEmployer() >= GAME->get_players()->size()){
                 pthread_mutex_lock(&gmutex);
                 GAME->setStatus(OVER);
                 pthread_mutex_unlock(&gmutex);
                 continue;
             }
-            bzero(s_msg, BUFF_LEN);
-            //GAME->print_players();
             pthread_mutex_lock(&gmutex);
             GAME->drop_cards();
             pthread_mutex_unlock(&gmutex);
@@ -549,7 +541,6 @@ void* lobby_thread(void* arg)
             GAME->set_answering_num(1);
             send_to_all(SUBS, s_msg, BUFF_LEN);
             pthread_mutex_unlock(&gmutex);
-            bzero(s_msg, BUFF_LEN);
             continue;
         }
         if (status == P_PRE){
