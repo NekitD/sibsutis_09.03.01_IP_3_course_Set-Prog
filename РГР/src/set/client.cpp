@@ -634,6 +634,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 strcat(s_msg, manual.c_str());
                 strcat(s_msg, "|sendhist");
                 send(lobby_sock, s_msg, BUFF_LEN, 0);
+                cout << endl;
                 continue;
             }
             if(strncmp(request, "givejchoice", 11) == 0){
@@ -691,8 +692,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
             if(strncmp(request, "quest", 6) == 0){
                 string answ;
-                //cout << "   Вопрос." << endl;
-                //cout << "   " << output << endl;
+                cout << output << endl;
                 cout << endl;
                 cout << "   Введите ваш ответ." << endl;
                 cli_input(answ);
@@ -701,6 +701,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 send(lobby_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
+
+            cout << output << endl;
             continue;
         }
 
@@ -784,7 +786,6 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
 }
 
 void cli_input(string& text){
-    text += " ";
     cout << "   (для завершения введите пустую строку или 'END'):\n" << endl;
     //cin.ignore();
     long unsigned int max_len = OUT_LEN;
@@ -799,7 +800,7 @@ void cli_input(string& text){
         if (line.empty() || line == "END") {
             break;
         }
-        text += line + "\n";
+        text += "   " + line + "\n";
     }
         
     if (!text.empty() && text.back() == '\n') {
