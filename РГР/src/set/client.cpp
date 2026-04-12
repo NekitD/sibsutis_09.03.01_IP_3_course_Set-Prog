@@ -105,187 +105,194 @@ int main()
     cout << "               Добро пожаловать в СТАРТАП!                   " << endl;
     cout << "=============================================================" << endl;
     
-    //============================================================
-    // 1. ПОИСК СЕРВЕРА
-    //============================================================
-    for(;;)
-    {
-        bzero(s_msg, BUFF_LEN);
-        bzero(a_msg, BUFF_LEN);
-        bzero(output, BUFF_LEN);
-        bzero(request, BUFF_LEN);
-        cout << "\n   ВВЕДИТЕ АДРЕС СЕРВЕРА (или exit, чтобы выйти): ";
-        cin >> g_host;
-        if(strncmp(g_host, "exit", 5) == 0){
-            char conf = ' ';
-            cout << "=======================Выход из игры!=======================" << endl;
-            do{
-                cout << "       Вы уверены, что хотите выйти? (y/N): ";
-                cin >> conf;
-            } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
-            if(conf == 'y' || conf == 'Y'){
-                cout << "=======================Игра закрывается!=======================" << endl;
-                return 0;
-            } else {
-                continue;
-            }
-        }
-        cout << "   ВВЕДИТЕ ПОРТ СЕРВЕРА: ";
-        cin >> g_port;
-        cout << endl;
-
-        hp = gethostbyname(g_host);
-
-        bzero((char*)&s_addr, (sizeof(struct sockaddr_in)));
-        s_addr.sin_family = AF_INET;
-        bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length);
-        s_addr.sin_port = htons(g_port);
-
-        if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
-            cout << "   СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!" << endl;
-            cout << endl;
-            continue;
-        }
-        char lr = ' ';
-        do{
+    for(;;){ // ОСНОВНОЙ ЦИКЛ ЖИЗНИ КЛИЕНТА
+        //============================================================
+        // 1. ПОИСК СЕРВЕРА
+        //============================================================
+        for(;;)
+        {
             bzero(s_msg, BUFF_LEN);
             bzero(a_msg, BUFF_LEN);
             bzero(output, BUFF_LEN);
             bzero(request, BUFF_LEN);
-            cout << "       Логин(L)/Регистрация(R)/Выйти(E): ";
-            cin >> lr;
+            cout << "\n   ВВЕДИТЕ АДРЕС СЕРВЕРА (или exit, чтобы выйти): ";
+            cin >> g_host;
+            if(strncmp(g_host, "exit", 5) == 0){
+                char conf = ' ';
+                cout << "=======================Выход из игры!=======================" << endl;
+                do{
+                    cout << "       Вы уверены, что хотите выйти? (y/N): ";
+                    cin >> conf;
+                } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
+                if(conf == 'y' || conf == 'Y'){
+                    cout << "=======================Игра закрывается!=======================" << endl;
+                    return 0;
+                } else {
+                    continue;
+                }
+            }
+            cout << "   ВВЕДИТЕ ПОРТ СЕРВЕРА: ";
+            cin >> g_port;
+            cout << endl;
+
+            hp = gethostbyname(g_host);
+
+            bzero((char*)&s_addr, (sizeof(struct sockaddr_in)));
+            s_addr.sin_family = AF_INET;
+            bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length);
+            s_addr.sin_port = htons(g_port);
+
+            if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
+                cout << "   СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!" << endl;
+                cout << endl;
+                continue;
+            }
+            char lr = ' ';
+            do{
+                bzero(s_msg, BUFF_LEN);
+                bzero(a_msg, BUFF_LEN);
+                bzero(output, BUFF_LEN);
+                bzero(request, BUFF_LEN);
+                cout << "       Логин(L)/Регистрация(R)/Выйти(E): ";
+                cin >> lr;
         
 
-            if(lr == 'E' || lr == 'e'){
-                return 0;
-            }
-            int ans = -1;
+                if(lr == 'E' || lr == 'e'){
+                    return 0;
+                }
+                int ans = -1;
 
-            if(lr == 'R' || lr == 'r'){
-                do{
+                if(lr == 'R' || lr == 'r'){
                     do{
-                        cout << "       Придумайте логин: ";
-                        cin >> login;
-                    } while(login.size() <= 0);
-                    string r_pas = "fagshdgfkldafdjvixopmklfeakjsgbiodsfkagksjbfjizdpos;clfmaklgnbfxijpozks;lfmklbf";
-                    disableEcho();
-                    do{
-                        cout << "       Придумайте пароль: ";
-                        cin >> password;
-                        cout << endl;
-                        cout << "       Повторите пароль: ";
-                        cin >> r_pas;
-                        cout << endl;
-                        if(password != r_pas){
-                            cout << "Пароли не совпадают!" << endl;
-                        } else {
+                        do{
+                            cout << "       Придумайте логин: ";
+                            cin >> login;
+                        } while(login.size() <= 0);
+                        string r_pas = "fagshdgfkldafdjvixopmklfeakjsgbiodsfkagksjbfjizdpos;clfmaklgnbfxijpozks;lfmklbf";
+                        disableEcho();
+                        do{
+                            cout << "       Придумайте пароль: ";
+                            cin >> password;
+                            cout << endl;
+                            cout << "       Повторите пароль: ";
+                            cin >> r_pas;
+                            cout << endl;
+                            if(password != r_pas){
+                                cout << "Пароли не совпадают!" << endl;
+                            } else {
+                                break;
+                            }
+                        }while(true);
+                        enableEcho();
+                        strcat(s_msg, login.c_str());
+                        strcat(s_msg, ":");
+                        strcat(s_msg, password.c_str());
+                        strcat(s_msg, "|register");
+                        send(c_sock, s_msg, BUFF_LEN, 0);
+                        ans = -1;
+                        ans = recv(c_sock, a_msg, BUFF_LEN, 0);
+                        status = LOGGING;
+                        if(ans > 0){
+                            cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
+                        }else{
+                            status = NO_ANSWER;
                             break;
                         }
-                    }while(true);
-                    enableEcho();
-                    strcat(s_msg, login.c_str());
-                    strcat(s_msg, ":");
-                    strcat(s_msg, password.c_str());
-                    strcat(s_msg, "|register");
-                    send(c_sock, s_msg, BUFF_LEN, 0);
-                    ans = -1;
-                    ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-                    status = LOGGING;
-                    if(ans > 0){
-                        cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
-                    }else{
-                        status = NO_ANSWER;
-                        break;
-                    }
 
-                    if(strncmp(request, "logbusy", 8) == 0){
-                        cout << "       Логин уже занят, придумайте другой..." << endl;
-                        continue;
-                    }
-                    if(strncmp(request, "success", 8) == 0){
-                        cout << "       Регистрация пройдена!" << endl;
+                        if(strncmp(request, "logbusy", 8) == 0){
+                            cout << "       Логин уже занят, придумайте другой..." << endl;
+                            continue;
+                        }
+                        if(strncmp(request, "success", 8) == 0){
+                            cout << "       Регистрация пройдена!" << endl;
+                            break;
+                        }
+                        if(strncmp(request, "rfail", 6) == 0){
+                            cout << "       Не удалось пройти регистрацию..." << endl;
+                            break;
+                        }
+                    } while(true);
+                    if(status == NO_ANSWER){
+                        cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
                         break;
                     }
-                    if(strncmp(request, "rfail", 6) == 0){
-                        cout << "       Не удалось пройти регистрацию..." << endl;
-                        break;
-                    }
-                } while(true);
-                if(status == NO_ANSWER){
+                    lr = ' ';
+                    cout << endl;
+                    continue;
+                }
+
+                cout << endl;
+                cout << "       Логин: ";
+                cin >> login;
+                cout << "       Пароль: ";
+                disableEcho();
+                cin >> password;
+                cout << endl;
+                enableEcho();
+                strcat(s_msg, login.c_str());
+                strcat(s_msg, ":");
+                strcat(s_msg, password.c_str());
+                strcat(s_msg, "|login");
+                send(c_sock, s_msg, BUFF_LEN, 0);
+                ans = -1;
+                ans = recv(c_sock, a_msg, BUFF_LEN, 0);
+                status = LOGGING;
+
+                if(ans > 0){
+                    cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
+                }else{
                     cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
+                    cout << endl;
+                    status = NO_ANSWER;
                     break;
                 }
-                lr = ' ';
-                cout << endl;
-                continue;
-            }
 
-            cout << endl;
-            cout << "       Логин: ";
-            cin >> login;
-            cout << "       Пароль: ";
-            disableEcho();
-            cin >> password;
-            cout << endl;
-            enableEcho();
-            strcat(s_msg, login.c_str());
-            strcat(s_msg, ":");
-            strcat(s_msg, password.c_str());
-            strcat(s_msg, "|login");
-            send(c_sock, s_msg, BUFF_LEN, 0);
-            ans = -1;
-            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            status = LOGGING;
+                if(strncmp(request, "success", 8) == 0){
+                    cout << endl;
+                    status = SUCCESS;
+                    break;
+                }
 
-            if(ans > 0){
-                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
-            }else{
-                cout << "\n       СЕРВЕР НЕ ОТВЕЧАЕТ(" << endl;
-                cout << endl;
-                status = NO_ANSWER;
-                break;
-            }
+                if(strncmp(request, "wrong", 6) == 0){
+                    cout << "   Неверный логин или пароль!" << endl;
+                    lr = ' ';
+                    cout << endl;
+                    continue;
+                }
 
-            if(strncmp(request, "success", 8) == 0){
-                cout << endl;
-                status = SUCCESS;
-                break;
-            }
-
-            if(strncmp(request, "wrong", 6) == 0){
-                cout << "   Неверный логин или пароль!" << endl;
-                lr = ' ';
-                cout << endl;
-                continue;
-            }
-
-            if(strncmp(request, "online", 7) == 0){
-                cout << "   Пользователь уже онлайн!" << endl;
-                lr = ' ';
-                cout << endl;
-                continue;
-            }
+                if(strncmp(request, "online", 7) == 0){
+                    cout << "   Пользователь уже онлайн!" << endl;
+                    lr = ' ';
+                    cout << endl;
+                    continue;
+                }
         
-        }while(lr != 'L' && lr != 'l' && lr != 'R' && lr != 'r' && lr != 'E' && lr != 'e');
+            }while(lr != 'L' && lr != 'l' && lr != 'R' && lr != 'r' && lr != 'E' && lr != 'e');
 
-        if(status == SUCCESS){
-            break;
-        } else {
-            close(c_sock);
-            if(socket_init(c_sock, &c_addr) < 0){
-                cout << "   Не удалось реинициализировать клиента." << endl;
-                return -1;
+            if(status == SUCCESS){
+                break;
+            } else {
+                close(c_sock);
+                if(socket_init(c_sock, &c_addr) < 0){
+                    cout << "   Не удалось реинициализировать клиента." << endl;
+                    return -1;
+                }
+                continue;
             }
-            continue;
+        }
+
+        cout << "           Вы успешно вошли на сервер!" << endl;
+        cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
+    
+        while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, 
+            s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr)); // ЦИКЛ СЕССИИ НА СЕРВЕРЕ
+
+        close(c_sock);
+        if(socket_init(c_sock, &c_addr) < 0){
+            cout << "   Не удалось реинициализировать клиента." << endl;
+            return -1;
         }
     }
-
-    cout << "           Вы успешно вошли на сервер!" << endl;
-    cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
-    
-    while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, 
-        s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr)); // ОСНОВНОЙ ЦИКЛ СЕССИИ
-
     close(c_sock);
     return 0;
 }
@@ -521,7 +528,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cin >> conf;
             } while (conf != 'y' && conf != 'Y' && conf != 'n' && conf != 'N');
             if(conf == 'y' || conf == 'Y'){
-                cout << "=======================Игра закрывается!=======================" << endl;
+                cout << "=======================Выход с сервера!=======================" << endl;
                 strcat(s_msg, "|exit");
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 return false;
