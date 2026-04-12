@@ -744,6 +744,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             sprintf(s_msg, "%d", score);
             strcat(s_msg, "|score");
             send(lobby_sock, s_msg, BUFF_LEN, 0);
+            cout << "Оценка отправлена!" << endl;
             continue;
         }
     }

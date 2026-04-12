@@ -337,7 +337,7 @@ void* player_thread(void* arg)
                     }
                     sprintf(s_msg, "   %s поставил оценку.\n|common|", GAME->get_player_nick(id).c_str());
                     pthread_mutex_lock(mutex);
-                    send_to_all(SUBS, s_msg, BUFF_LEN);
+                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     pthread_mutex_unlock(mutex);
                     bzero(s_msg, BUFF_LEN);
                     pthread_mutex_lock(mutex);
