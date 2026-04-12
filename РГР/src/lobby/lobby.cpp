@@ -350,6 +350,7 @@ void* player_thread(void* arg)
                     send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     pthread_mutex_unlock(mutex);
                     bzero(s_msg, BUFF_LEN);
+                    send(socket, "||WAITING", BUFF_LEN, 0);
                     pthread_mutex_lock(mutex);
                     GAME->add_scoreb(score);
                     GAME->set_player_status(id, WAITING);
@@ -373,7 +374,6 @@ void* player_thread(void* arg)
                         send_to_all(SUBS, s_msg, BUFF_LEN);
                         pthread_mutex_unlock(mutex);
                     }
-                    send(socket, "||WAITING", BUFF_LEN, 0);
                     sleep(1);
                     continue;
                 }
