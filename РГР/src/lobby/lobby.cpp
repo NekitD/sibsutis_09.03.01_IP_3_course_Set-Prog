@@ -339,7 +339,7 @@ void* player_thread(void* arg)
                     }else if(strncmp(output, "5", 1) == 0){
                         score = 5;
                     }
-                    sprintf(s_msg, "   %s поставил оценку.\n|common|", GAME->get_player_nick(id).c_str());
+                    sprintf(s_msg, "   %s поставил оценку.\n|print|", GAME->get_player_nick(id).c_str());
                     pthread_mutex_lock(mutex);
                     send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     pthread_mutex_unlock(mutex);
@@ -351,7 +351,7 @@ void* player_thread(void* arg)
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
 
-                        sprintf(s_msg, "\n   %s получил %d очков!|common|", GAME->get_player_nick(GAME->get_answering_id()).c_str()
+                        sprintf(s_msg, "\n   %s получил %d очков!|print|", GAME->get_player_nick(GAME->get_answering_id()).c_str()
                             ,GAME->get_scoreb() );
                         pthread_mutex_lock(mutex);
                         send_to_all(SUBS, s_msg, BUFF_LEN);
@@ -548,6 +548,7 @@ void* lobby_thread(void* arg)
         if(status == P_OPEN){
             sprintf(s_msg, "\n%s\n\n   Время для выставления оценок!\n|common|", GAME->open_p(GAME->get_answering_id()).c_str());
             pthread_mutex_lock(&gmutex);
+            send_to_all(SUBS, s_msg, BUFF_LEN);
             GAME->set_scoreb(0);
             GAME->setStatus(SCORES);
             vector<Player*>* tms = GAME->get_players();
@@ -556,7 +557,6 @@ void* lobby_thread(void* arg)
                     (*pl)->setStatus(SCORING);
                 }
             }
-            send_to_all(SUBS, s_msg, BUFF_LEN);;
             pthread_mutex_unlock(&gmutex);
             continue;
         }
