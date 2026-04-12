@@ -251,7 +251,7 @@ void* player_thread(void* arg)
                 }
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
-                send(socket, "\n\n   Время для вопросов.||WAITING", BUFF_LEN, 0);
+                send(socket, "\n\n   Время для вопросов.||", BUFF_LEN, 0);
                 sleep(1);
                 continue;
             }
@@ -315,9 +315,10 @@ void* player_thread(void* arg)
                 string qu = *(GAME->get_questions()->begin());
                 sprintf(s_msg, "   %s\n|common|", qu.c_str());
                 pthread_mutex_lock(mutex);
-                send_to_all(SUBS, s_msg, BUFF_LEN);
+                send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
+                sprintf(s_msg, "   %s\n", qu.c_str());
                 strcat(s_msg, "|quest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
