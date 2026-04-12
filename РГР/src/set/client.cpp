@@ -585,6 +585,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
         if(strncmp(request, "over", 5) == 0){
             cout << output << endl;
+            sleep(3);
             close(lobby_sock);
             return true; // возвращение в командную строку
         }

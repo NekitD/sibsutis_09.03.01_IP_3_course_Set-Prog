@@ -400,8 +400,8 @@ void* player_thread(void* arg)
                     GAME->set_player_status(id, WAITING);
                     GAME->setEmployer(GAME->getEmployer() + 1);
                     GAME->setStatus(START);
-                    pthread_mutex_unlock(mutex);
                     send_to_all(SUBS, s_msg, BUFF_LEN);
+                    pthread_mutex_unlock(mutex);
                     sleep(1);
                     continue;
                 }
@@ -450,6 +450,7 @@ void* player_thread(void* arg)
             continue;
         }
     }
+    sleep(3);
     close(socket);
     pthread_exit(0);
 }
@@ -579,7 +580,7 @@ void* lobby_thread(void* arg)
             break;
         }
     }
-    sleep(3);
+    sleep(5);
     pthread_mutex_destroy(&gmutex);
     close(sm_socket);
     pthread_exit(0);
