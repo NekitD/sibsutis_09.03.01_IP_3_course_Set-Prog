@@ -154,7 +154,7 @@ void* player_thread(void* arg)
                 strcat(s_msg, GAME->EmployInfo()->print_profs().c_str());
                 strcat(s_msg, "|common|");
                 pthread_mutex_lock(mutex);
-                send_to_all(SUBS, s_msg, BUFF_LEN);
+                send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 send(socket, "||WAITING", BUFF_LEN, 0);
@@ -222,7 +222,7 @@ void* player_thread(void* arg)
                 bzero(s_msg, BUFF_LEN);
                 sprintf(s_msg, "   Соискатель %s пишет резюме...\n|common|", GAME->get_player_nick(id).c_str());
                 pthread_mutex_lock(mutex);
-                send_to_all(SUBS, s_msg, BUFF_LEN);
+                send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 pthread_mutex_unlock(mutex);
                 continue;
             }
@@ -239,7 +239,9 @@ void* player_thread(void* arg)
                 strcat(s_msg, output);
                 strcat(s_msg, "\n\n   Время для вопросов.|common|");
                 pthread_mutex_lock(mutex);
-                send_to_all(SUBS, s_msg, BUFF_LEN);
+                send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
+                pthread_mutex_unlock(mutex);
+                pthread_mutex_lock(mutex);
                 GAME->setStatus(QUESTIONS);
                 vector<Player*>* tmq = GAME->get_players();
                 for(vector<Player*>::iterator pl = tmq->begin(); pl != tmq->end(); pl++){
@@ -249,7 +251,7 @@ void* player_thread(void* arg)
                 }
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
-                send(socket, "||WAITING", BUFF_LEN, 0);
+                send(socket, "\n\n   Время для вопросов.||WAITING", BUFF_LEN, 0);
                 sleep(1);
                 continue;
             }
@@ -262,7 +264,7 @@ void* player_thread(void* arg)
                 if(strncmp(request, "noquest", 8) == 0){
                     sprintf(s_msg, "   %s не имеет больше вопросов.|common|", GAME->get_player_nick(id).c_str());
                     pthread_mutex_lock(mutex);
-                    send_to_all(SUBS, s_msg, BUFF_LEN);
+                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
                     pthread_mutex_unlock(mutex);
                     bzero(s_msg, BUFF_LEN);
@@ -296,7 +298,7 @@ void* player_thread(void* arg)
                 strcat(s_msg, output);
                 strcat(s_msg, "\n\n|common|");
                 pthread_mutex_lock(mutex);
-                send_to_all(SUBS, s_msg, BUFF_LEN);
+                send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 GAME->rem_question();
                 pthread_mutex_lock(mutex);
                 bzero(s_msg, BUFF_LEN);
