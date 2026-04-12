@@ -59,6 +59,9 @@ void* player_thread(void* arg)
         bzero(a_msg, BUFF_LEN);
         bzero(output, BUFF_LEN);
         bzero(request, BUFF_LEN);
+        if(GAME->getStatus() == OVER){
+            break;
+        }
         rec_l = recv(socket, a_msg, BUFF_LEN, 0);
         p_status = GAME->get_player_status(id);
         g_status = GAME->getStatus();
@@ -438,7 +441,7 @@ void* player_thread(void* arg)
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
                 strcat(s_msg, " Введите Ваш выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
-                strcat(s_msg, " Пример: 1:2,2:1,3:3");
+                strcat(s_msg, " Пример: 1:2,2:1,3:3\n");
                 strcat(s_msg, claims_out);
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);
@@ -576,6 +579,7 @@ void* lobby_thread(void* arg)
             break;
         }
     }
+    sleep(3);
     pthread_mutex_destroy(&gmutex);
     close(sm_socket);
     pthread_exit(0);
