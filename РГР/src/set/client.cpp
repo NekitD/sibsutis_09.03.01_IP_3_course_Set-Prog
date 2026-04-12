@@ -748,6 +748,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             int score = 0;
             if(strncmp(request, "print", 6) == 0){
                 cout << output << endl;
+                continue;
             }
             do{
                 cout << "\n Поставьте выступившему оценку от 1 до 5: ";
