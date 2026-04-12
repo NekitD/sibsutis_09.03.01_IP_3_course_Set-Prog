@@ -399,7 +399,7 @@ void* player_thread(void* arg)
                     strcat(s_msg, "\n");
                     strcat(s_msg, GAME->assign_professions().c_str());
                     strcat(s_msg, "|common|");
-                    send_to_all(SUBS, s_msg, BUFF_LEN);
+                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     pthread_mutex_lock(mutex);
                     GAME->set_player_status(id, WAITING);
                     GAME->setEmployer(GAME->getEmployer() + 1);
