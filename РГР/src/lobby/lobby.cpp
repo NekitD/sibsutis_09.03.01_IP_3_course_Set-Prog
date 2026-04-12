@@ -293,11 +293,15 @@ void* player_thread(void* arg)
                 pthread_mutex_lock(mutex);
                 send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 GAME->rem_question();
+                pthread_mutex_unlock(mutex);
                 if(GAME->no_questions()){
+                    pthread_mutex_lock(mutex);
                     GAME->set_player_status(GAME->get_answering_id(), WAITING);
                     GAME->setStatus(P_OPEN);
+                    pthread_mutex_unlock(mutex);
+                    continue;
                 }
-                pthread_mutex_unlock(mutex);
+                send(socket, " ", 2, 0);
                 continue;
             }
             
@@ -425,10 +429,10 @@ void* player_thread(void* arg)
                 sprintf(s_msg, "   Работодатель %s выбирает сотрудников...\n|common|", 
                     GAME->get_player_nick(GAME->getEmployerId()).c_str());
                 pthread_mutex_lock(mutex);
-                send_to_all(SUBS, s_msg, BUFF_LEN);
+                send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
-                strcat(s_msg, " Введите выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
+                strcat(s_msg, " Введите Ваш выбор в формате: номер_вакансии:номер_игрока (через запятую)\n");
                 strcat(s_msg, " Пример: 1:2,2:1,3:3");
                 strcat(s_msg, "|givejchoice|EMPLOYER");
                 send(socket, s_msg, BUFF_LEN, 0);

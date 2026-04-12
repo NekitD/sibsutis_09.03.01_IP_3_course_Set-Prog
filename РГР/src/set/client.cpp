@@ -572,13 +572,13 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         { 
             cout << "СОЕДИНЕНИЕ ПРЕРВАНО!" << endl;
             close(lobby_sock);
-            return true;
+            return false;
         }
         if (rec < 0)
         { 
             cout << " ОШИБКА СЕРВЕРА! (Invalid server socket)" << endl;
             close(lobby_sock);
-            return true;
+            return false;
         }
         cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
 
@@ -720,6 +720,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         if(status == QUESTIONING){
             if(strncmp(request, "gquest", 7) == 0){
                 cout << "\n Ваш вопрос отправлен и дойдёт до адресата в порядке очереди." << endl;
+                send(lobby_sock, " ", 2, 0);
+                continue;
             }
             char h = ' ';
             do{
@@ -728,7 +730,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             } while(h != 'Y' && h != 'y' && h != 'N' && h != 'n');
             if(h == 'N' || h == 'n'){
                 send(lobby_sock, "|noquest", BUFF_LEN, 0);
-                cout << "Ожидайте заверешния секции с вопросами..." << endl;
+                cout << "   Ожидайте заверешния секции с вопросами..." << endl;
                 continue;
             }
             string question;
