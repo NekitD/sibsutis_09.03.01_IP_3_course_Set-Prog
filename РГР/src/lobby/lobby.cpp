@@ -268,6 +268,7 @@ void* player_thread(void* arg)
                     }
                     pthread_mutex_unlock(mutex);
                     send(socket, "||WAITING", BUFF_LEN, 0);
+                    sleep(1);
                     continue;
                 }
 
@@ -281,6 +282,7 @@ void* player_thread(void* arg)
                     strcat(s_msg, ": ||QUESTIONING");
                 }
                 send(socket, s_msg, BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }
 
@@ -299,9 +301,11 @@ void* player_thread(void* arg)
                     GAME->set_player_status(GAME->get_answering_id(), WAITING);
                     GAME->setStatus(P_OPEN);
                     pthread_mutex_unlock(mutex);
+                    sleep(1);
                     continue;
                 }
                 send(socket, " ", 2, 0);
+                sleep(1);
                 continue;
             }
             
@@ -315,10 +319,12 @@ void* player_thread(void* arg)
                 sprintf(s_msg, "   %s\n", qu.c_str());
                 strcat(s_msg, "|quest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }else{
                 strcat(s_msg, "|equest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }
             continue;
@@ -351,10 +357,9 @@ void* player_thread(void* arg)
                     if(GAME->score_over()){
                         GAME->getPlayer(GAME->get_answering_id())->addScore(GAME->get_scoreb());
 
-                        sprintf(s_msg, "\n   %s получил %d очков!|print|", GAME->get_player_nick(GAME->get_answering_id()).c_str()
+                        sprintf(s_msg, "\n   %s получил %d очков!|common|", GAME->get_player_nick(GAME->get_answering_id()).c_str()
                             ,GAME->get_scoreb() );
                         pthread_mutex_lock(mutex);
-                        send_to_all(SUBS, s_msg, BUFF_LEN);
                         GAME->set_answering_num(GAME->get_answering_num() + 1);
                         pthread_mutex_unlock(mutex);
                         bzero(s_msg, BUFF_LEN);
@@ -365,12 +370,15 @@ void* player_thread(void* arg)
                         }else{
                             GAME->setStatus(P_PRE);
                         }
+                        send_to_all(SUBS, s_msg, BUFF_LEN);
                         pthread_mutex_unlock(mutex);
                     }
                     send(socket, "||WAITING", BUFF_LEN, 0);
+                    sleep(1);
                     continue;
                 }
-                send(socket, "||SCORING", BUFF_LEN, 0);
+                send(socket, "|score|SCORING", BUFF_LEN, 0);
+                sleep(1);
                 continue;
             }
         }

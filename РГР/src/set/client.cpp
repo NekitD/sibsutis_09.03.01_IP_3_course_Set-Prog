@@ -748,16 +748,21 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             int score = 0;
             if(strncmp(request, "print", 6) == 0){
                 cout << output << endl;
+                send(lobby_sock, " ", 2, 0);
                 continue;
             }
-            do{
-                cout << "\n Поставьте выступившему оценку от 1 до 5: ";
-                cin >> score;
-            } while(score < 1 || score > 5);
-            sprintf(s_msg, "%d", score);
-            strcat(s_msg, "|score");
-            send(lobby_sock, s_msg, BUFF_LEN, 0);
-            cout << "Оценка отправлена!" << endl;
+            if(strncmp(request, "score", 6) == 0){
+                do{
+                    cout << "\n Поставьте выступившему оценку от 1 до 5: ";
+                    cin >> score;
+                } while(score < 1 || score > 5);
+                sprintf(s_msg, "%d", score);
+                strcat(s_msg, "|score");
+                send(lobby_sock, s_msg, BUFF_LEN, 0);
+                cout << "   Оценка отправлена!" << endl;
+                continue;
+            } 
+            send(lobby_sock, " ", 2, 0);
             continue;
         }
     }
