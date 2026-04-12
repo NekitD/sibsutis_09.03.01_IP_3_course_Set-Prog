@@ -617,7 +617,9 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             continue;
         }
         if(status == WAITING || status == READY_TO_PLAY){
-            //send(lobby_sock, "EmptyMes", BUFF_LEN, 0);
+            if(output[0] != ' ' && output[0] != '\0'){
+                cout << output << endl;
+            }
             continue;
         }
         if(status == EMPLOYER){
