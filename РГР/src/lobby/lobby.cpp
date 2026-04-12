@@ -240,8 +240,6 @@ void* player_thread(void* arg)
                 strcat(s_msg, "\n\n   Время для вопросов.|common|");
                 pthread_mutex_lock(mutex);
                 send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
-                pthread_mutex_unlock(mutex);
-                pthread_mutex_lock(mutex);
                 GAME->setStatus(QUESTIONS);
                 vector<Player*>* tmq = GAME->get_players();
                 for(vector<Player*>::iterator pl = tmq->begin(); pl != tmq->end(); pl++){
@@ -251,7 +249,7 @@ void* player_thread(void* arg)
                 }
                 pthread_mutex_unlock(mutex);
                 bzero(s_msg, BUFF_LEN);
-                send(socket, "\n\n   Время для вопросов.||", BUFF_LEN, 0);
+                send(socket, "\n\n   Время для вопросов.|print|", BUFF_LEN, 0);
                 sleep(1);
                 continue;
             }
@@ -262,9 +260,9 @@ void* player_thread(void* arg)
         if(g_status == QUESTIONS){
             if(GAME->get_player_status(id) == QUESTIONING){
                 if(strncmp(request, "noquest", 8) == 0){
-                    sprintf(s_msg, "   %s не имеет больше вопросов.|common|", GAME->get_player_nick(id).c_str());
+                    //sprintf(s_msg, "   %s не имеет больше вопросов.|common|", GAME->get_player_nick(id).c_str());
                     pthread_mutex_lock(mutex);
-                    send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
+                    //send_to_all_exept(SUBS, socket, s_msg, BUFF_LEN);
                     GAME->set_player_status(id, WAITING);
                     pthread_mutex_unlock(mutex);
                     bzero(s_msg, BUFF_LEN);
@@ -322,8 +320,12 @@ void* player_thread(void* arg)
                 strcat(s_msg, "|quest|ANSWERING");
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
+            }else{
+                strcat(s_msg, "|equest|ANSWERING");
+                send(socket, s_msg, BUFF_LEN, 0);
+                continue;
             }
-            send(socket, "||WAITING", BUFF_LEN, 0);
+            continue;
         }
 
         if(g_status == SCORES){

@@ -657,7 +657,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
         if(status == ANSWERING){
             if(strncmp(request, "areanswerm", 11) == 0){
-                cout << "Ваша очередь на собеседование!" << endl;
+                cout << "   Ваша очередь на собеседование!" << endl;
                 cout << output << endl;
                 int v = 0;
                 do{
@@ -667,6 +667,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 sprintf(s_msg, "%d", v);
                 strcat(s_msg, "|claim");
                 send(lobby_sock, s_msg, BUFF_LEN, 0);
+                continue;
             }
 
             if(strncmp(request, "claim", 6) == 0){
@@ -701,8 +702,11 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 send(lobby_sock, s_msg, BUFF_LEN, 0);
                 continue;
             }
-
-            cout << output << endl;
+            if(strncmp(request, "print", 6) == 0){
+                cout << output << endl;
+            }
+            strcat(s_msg, "|hquest");
+            send(lobby_sock, s_msg, BUFF_LEN, 0);
             continue;
         }
 
@@ -727,6 +731,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             strcat(s_msg, question.c_str());
             strcat(s_msg, "|quest");
             send(lobby_sock, s_msg, BUFF_LEN, 0);
+            continue;
         }
 
         if(status == SCORING){
@@ -788,6 +793,7 @@ void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& statu
 void cli_input(string& text){
     cout << "   (для завершения введите пустую строку или 'END'):\n" << endl;
     //cin.ignore();
+    text = " ";
     long unsigned int max_len = OUT_LEN;
     string line;
     while (true) {
