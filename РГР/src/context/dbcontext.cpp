@@ -51,7 +51,7 @@ bool StartupDbContext::isConnected(){
     return (conn != nullptr);
 }
 
-int StartupDbContext::auth(string login, string password){
+int StartupDbContext::auth(string login, string password, string addr, int port){
     pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
@@ -81,8 +81,8 @@ int StartupDbContext::auth(string login, string password){
         return L_ONLINE;
     }
 
-    string update_q = "UPDATE users SET online = $1 WHERE login = $2";
-    w.exec_params(update_q, 1, login);
+    string update_q = "UPDATE users SET online = $1, address = $2, port = $3 WHERE login = $4";
+    w.exec_params(update_q, 1, addr, port, login);
     w.commit();
     pthread_mutex_unlock(&db_mutex);
     return L_SUCCESS;
@@ -133,7 +133,7 @@ int StartupDbContext::logout(string login){
     }
     
     work w(*conn);
-    string q = "UPDATE users SET online = $1 WHERE login = $2";
+    string q = "UPDATE users SET online = $1, address = null, port = null WHERE login = $2";
     w.exec_params(q, 0, login);
     w.commit();
     pthread_mutex_unlock(&db_mutex);
