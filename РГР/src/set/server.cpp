@@ -63,9 +63,9 @@ void* user_thread(void* arg)
             char password[BUFF_LEN] = "";
             char ip[BUFF_LEN] = "";
             int port = 0;
-            sscanf(output, "%[^:]:%[^:]:%[^:]:%d", login, password, ip, &port);
+            sscanf(output, "%[^:]:%[^:]:%[^:]", login, password, ip);
     
-            int lstat = CONTEXT->auth(string(login), string(password), string(ip), port);
+            int lstat = CONTEXT->auth(string(login), string(password), string(ip));
     
             if(lstat == L_WRONG){
                 send(socket, "|wrong|", BUFF_LEN, 0);
@@ -188,6 +188,18 @@ void* user_thread(void* arg)
             }
             sprintf(s_msg, "%s:%d|found", ip.c_str(), port);
             send(socket, s_msg, BUFF_LEN, 0);
+            continue;
+        }
+
+        if(strncmp(request, "setchatport", 12) == 0){
+            string login;
+            int port;
+            sscanf(output, "%[^:]:%d", login, port);
+            if(CONTEXT->setuport(login, port)){
+                send(socket, "success", BUFF_LEN, 0);
+            }else{
+                send(socket, "fail", BUFF_LEN, 0);
+            }
             continue;
         }
 

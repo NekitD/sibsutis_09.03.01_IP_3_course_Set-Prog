@@ -260,8 +260,8 @@ int main()
                 cout << endl;
                 enableEcho();
 
-                sprintf(s_msg, "%s:%s:%s:%d|login",
-                login.c_str(), password.c_str(), client_ip, client_port);
+                sprintf(s_msg, "%s:%s:%s|login",
+                login.c_str(), password.c_str(), client_ip);
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 ans = -1;
                 ans = recv(c_sock, a_msg, BUFF_LEN, 0);
@@ -336,7 +336,7 @@ int main()
                 int chat_port = ntohs(chat_addr.sin_port);
             
                 bzero(s_msg, BUFF_LEN);
-                sprintf(s_msg, "%d|setchatport", chat_port);
+                sprintf(s_msg, "%s:%d|setchatport", login.c_str(), chat_port);
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 if(recv(c_sock, a_msg, BUFF_LEN, 0) < 0 || strncmp(request, "success", 8) != 0){
                     cout << "Не удалось обеспечить приём сообщений (server error)" << endl;

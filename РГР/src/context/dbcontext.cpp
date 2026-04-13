@@ -51,7 +51,7 @@ bool StartupDbContext::isConnected(){
     return (conn != nullptr);
 }
 
-int StartupDbContext::auth(string login, string password, string addr, int port){
+int StartupDbContext::auth(string login, string password, string addr){
     pthread_mutex_lock(&db_mutex);
     if(!isConnected()){
         cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
@@ -81,8 +81,8 @@ int StartupDbContext::auth(string login, string password, string addr, int port)
         return L_ONLINE;
     }
 
-    string update_q = "UPDATE users SET online = $1, address = $2, port = $3 WHERE login = $4";
-    w.exec_params(update_q, 1, addr, port, login);
+    string update_q = "UPDATE users SET online = $1, address = $2 WHERE login = $3";
+    w.exec_params(update_q, 1, addr, login);
     w.commit();
     pthread_mutex_unlock(&db_mutex);
     return L_SUCCESS;
@@ -438,6 +438,27 @@ bool StartupDbContext::finduser(string nick, string& ip, int& port, bool& online
         online = false;
     }else{
         online = true;
+    }
+    return true;
+}
+
+bool StartupDbContext::setuport(string login, int port){
+    pthread_mutex_lock(&db_mutex);
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
+        return false;
+    }
+    string q = "UPDATE users SET port = $1 WHERE login = $2";
+    work w(*conn);
+    w.exec_params(q, port, login);
+    w.commit();
+    string q2 = "SELECT * FROM users WHERE login = $1 AND port = $2";
+    result res = w.exec_params(q2, login, port);
+    w.commit();
+    pthread_mutex_unlock(&db_mutex);
+    if(res.empty()){
+        return false;
     }
     return true;
 }

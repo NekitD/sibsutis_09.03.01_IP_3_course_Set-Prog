@@ -53,7 +53,7 @@ class StartupDbContext {
         connection* getConnection();
         bool isConnected();
 
-        int auth(string login, string password, string addr, int port);
+        int auth(string login, string password, string addr);
         int reg(string login, string password);
         int logout(string login);
         string get_lobbies();
@@ -61,6 +61,7 @@ class StartupDbContext {
         string get_players_all();
         string get_rating();
         bool finduser(string nick, string& ip, int& port, bool& online);
+        bool setuport(string login, int port);
 
         void set_lobby_num(int id, int nv);
         int add_lobby(string creator, string name, int num);
