@@ -316,41 +316,36 @@ int main()
         //============================================================================
         // ОТКРЫВАЕМ ПРОСЛУШКУ ПОЛЬЗОВАТЕЛЮ
         //============================================================================
-        int chat_server_sock = socket(AF_INET, SOCK_STREAM, 0);
-        if (socket_init(chat_server_sock, &c_addr) < 0) {
+        int chat_server_sock;
+        struct sockaddr_in chat_addr;
+        bzero(&chat_addr, sizeof(chat_addr));
+        chat_addr.sin_family = AF_INET;
+        chat_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        chat_addr.sin_port = 0;
+        if (socket_init(chat_server_sock, &chat_addr) < 0) {
             cout << "Не удалось создать сокет для приёма сообщений" << endl;
         } else {
-            struct sockaddr_in chat_addr;
-            bzero(&chat_addr, sizeof(chat_addr));
-            chat_addr.sin_family = AF_INET;
-            chat_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-            chat_addr.sin_port = 0;
-        
-            if (bind(chat_server_sock, (sockaddr*)&chat_addr, sizeof(chat_addr)) < 0) {
-                cout << "Не удалось обеспечить приём сообщений (binding error)" << endl;
-            } else {
-                socklen_t addr_len = sizeof(chat_addr);
-                getsockname(chat_server_sock, (sockaddr*)&chat_addr, &addr_len);
-                int chat_port = ntohs(chat_addr.sin_port);
+            socklen_t addr_len = sizeof(chat_addr);
+            getsockname(chat_server_sock, (sockaddr*)&chat_addr, &addr_len);
+            int chat_port = ntohs(chat_addr.sin_port);
             
-                bzero(s_msg, BUFF_LEN);
-                sprintf(s_msg, "%s:%d|setchatport", login.c_str(), chat_port);
-                send(c_sock, s_msg, BUFF_LEN, 0);
-                if(recv(c_sock, a_msg, BUFF_LEN, 0) < 0 || strncmp(request, "success", 8) != 0){
-                    cout << "Не удалось обеспечить приём сообщений (server error)" << endl;
-                }else{
-                    listen(chat_server_sock, MAX_CHATS);
+            bzero(s_msg, BUFF_LEN);
+            sprintf(s_msg, "%s:%d|setchatport", login.c_str(), chat_port);
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            if(recv(c_sock, a_msg, BUFF_LEN, 0) < 0 || strncmp(request, "success", 8) != 0){
+                cout << "Не удалось обеспечить приём сообщений (server error)" << endl;
+            }else{
+                listen(chat_server_sock, MAX_CHATS);
             
-                    chat_args* cargs = new chat_args();
-                    cargs->socket = chat_server_sock;
-                    cargs->login = login;
+                chat_args* cargs = new chat_args();
+                cargs->socket = chat_server_sock;
+                cargs->login = login;
             
-                    pthread_t accept_tid;
-                    pthread_create(&accept_tid, NULL, msg_accept_thread, (void*)cargs);
-                    pthread_detach(accept_tid);
+                pthread_t accept_tid;
+                pthread_create(&accept_tid, NULL, msg_accept_thread, (void*)cargs);
+                pthread_detach(accept_tid);
             
-                    cout << "Приём сообщений запущен на порту " << chat_port << endl;
-                }
+                cout << "Приём сообщений запущен на порту " << chat_port << endl;
             }
         }
         //============================================================================
