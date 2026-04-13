@@ -16,19 +16,24 @@ CONTEXT_DIR = context
 LOBBY_DIR = lobby
 GAME_DIR = game
 SET_DIR = set
+CHAT_DIR = chat
 
+
+CHAT_SRC = $(SRC)/$(CHAT_DIR)/chat.cpp
 CONTEXT_SRC = $(SRC)/$(CONTEXT_DIR)/dbcontext.cpp
 LOBBY_SRC = $(SRC)/$(LOBBY_DIR)/lobby.cpp
 GAME_SRC = $(SRC)/$(GAME_DIR)/game.cpp
 CLIENT_SRC = $(SRC)/$(SET_DIR)/client.cpp
 SERVER_SRC = $(SRC)/$(SET_DIR)/server.cpp
 
+CHAT_OBJ_FILE = $(OBJ)/$(CHAT_DIR)/chat.o
 CONTEXT_OBJ_FILE = $(OBJ)/$(CONTEXT_DIR)/dbcontext.o
 LOBBY_OBJ_FILE = $(OBJ)/$(LOBBY_DIR)/lobby.o
 GAME_OBJ_FILE = $(OBJ)/$(GAME_DIR)/game.o
 CLIENT_OBJ = $(OBJ)/$(SET_DIR)/client.o
 SERVER_OBJ = $(OBJ)/$(SET_DIR)/server.o
 
+CHAT_DEPS = $(OBJ)/$(CHAT_DIR)/chat.d
 CONTEXT_DEPS = $(OBJ)/$(CONTEXT_DIR)/dbcontext.d
 LOBBY_DEPS = $(OBJ)/$(LOBBY_DIR)/lobby.d
 GAME_DEPS = $(OBJ)/$(GAME_DIR)/game.d
@@ -40,18 +45,26 @@ SERVER_TARGET = $(BIN)/server
 GAME_LIB = $(OBJ)/$(GAME_DIR)/libgame.a
 LOBBY_LIB = $(OBJ)/$(LOBBY_DIR)/liblobby.a
 CONTEXT_LIB = $(OBJ)/$(CONTEXT_DIR)/libcontext.a
+CHAT_LIB = $(OBJ)/$(CHAT_DIR)/libchat.a
 
-DIRS = $(OBJ)/$(GAME_DIR) $(OBJ)/$(SET_DIR) $(OBJ)/$(LOBBY_DIR) $(OBJ)/$(CONTEXT_DIR)
+DIRS = $(OBJ)/$(GAME_DIR) $(OBJ)/$(SET_DIR) $(OBJ)/$(LOBBY_DIR) $(OBJ)/$(CONTEXT_DIR) $(OBJ)/$(CHAT_DIR)
 $(shell mkdir -p $(DIRS))
 
 .PHONY: all clean game player server client
 
-all: $(GAME_LIB) $(LOBBY_LIB) $(CONTEXT_LIB) $(CLIENT_TARGET) $(SERVER_TARGET)
+all: $(GAME_LIB) $(LOBBY_LIB) $(CONTEXT_LIB) $(CHAT_LIB) $(CLIENT_TARGET) $(SERVER_TARGET)
+
+
+$(CHAT_LIB): $(CHAT_OBJ_FILE)
+	@echo "Сборка библиотеки чата..."
+	@ar rcs $@ $^
+	@echo "Сборка библиотеки чата завершена!"
+
 
 $(GAME_LIB): $(GAME_OBJ_FILE)
 	@echo "Сборка библиотеки игры..."
 	@ar rcs $@ $^
-	@echo "Сборка библиотеки завершена!"
+	@echo "Сборка библиотеки игры завершена!"
 
 $(LOBBY_LIB): $(LOBBY_OBJ_FILE)
 	@echo "Сборка библиотеки лобби..."
@@ -62,6 +75,12 @@ $(CONTEXT_LIB): $(CONTEXT_OBJ_FILE)
 	@echo "Сборка библиотеки контекста..."
 	@ar rcs $@ $^
 	@echo "Сборка библиотеки контекста завершена!"
+
+
+$(CHAT_OBJ_FILE): $(CHAT_SRC)
+	@echo "Компиляция функций чата..."
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "Компиляция функций чата завершена!"
 
 $(GAME_OBJ_FILE): $(GAME_SRC)
 	@echo "Компиляция функций игры..."
@@ -94,7 +113,7 @@ $(SERVER_TARGET): $(SERVER_OBJ) $(LOBBY_LIB) $(GAME_LIB) $(CONTEXT_LIB)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 	@echo "Сервер готов к запуску!"
 
-$(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB) $(CONTEXT_LIB)
+$(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB) $(CONTEXT_LIB) $(CHAT_LIB)
 	@echo "Сборка клиента..."
 	@mkdir -p $(BIN)
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
@@ -111,9 +130,9 @@ run-ser:
 run-cli:
 	@./$(CLIENT_TARGET)
 
--include $(GAME_DEPS) $(LOBBY_DEPS) $(CLIENT_DEPS) $(SERVER_DEPS) $(CONTEXT_DEPS)
+-include $(GAME_DEPS) $(LOBBY_DEPS) $(CLIENT_DEPS) $(SERVER_DEPS) $(CONTEXT_DEPS) $(CHAT_DEPS)
 
 clean:
 	@echo "Очистка..."
-	@rm -rf $(OBJ)/$(GAME_DIR)/* $(OBJ)/$(LOBBY_DIR)/* $(OBJ)/$(CONTEXT_DIR)/* $(OBJ)/$(SET_DIR)/* $(CLIENT_TARGET) $(SERVER_TARGET)
+	@rm -rf $(OBJ)/$(GAME_DIR)/* $(OBJ)/$(LOBBY_DIR)/* $(OBJ)/$(CONTEXT_DIR)/* $(OBJ)/$(CHAT_DIR)/* $(OBJ)/$(SET_DIR)/* $(CLIENT_TARGET) $(SERVER_TARGET)
 	@echo "Очистка завершена!"
