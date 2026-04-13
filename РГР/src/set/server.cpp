@@ -59,17 +59,19 @@ void* user_thread(void* arg)
         ser_decode_msg(a_msg, BUFF_LEN, output, request);
         
         if(strncmp(request, "login", 6) == 0){
-            string login_pass = output;
-            size_t separator = login_pass.find(':');
-
-            string login = login_pass.substr(0, separator);
-            string password = login_pass.substr(separator + 1);
-            int lstat = CONTEXT->auth(login, password);
+            char login[BUFF_LEN] = "";
+            char password[BUFF_LEN] = "";
+            char ip[BUFF_LEN] = "";
+            int port = 0;
+            sscanf(output, "%[^:]:%[^:]:%[^:]:%d", login, password, ip, &port);
+    
+            int lstat = CONTEXT->auth(string(login), string(password), string(ip), port);
+    
             if(lstat == L_WRONG){
                 send(socket, "|wrong|", BUFF_LEN, 0);
-            }else if (lstat == L_ONLINE){
+            } else if (lstat == L_ONLINE){
                 send(socket, "|online|", BUFF_LEN, 0);
-            }else if (lstat == L_SUCCESS){
+            } else if (lstat == L_SUCCESS){
                 p_login = login;
                 send(socket, "|success|", BUFF_LEN, 0);
             }
@@ -184,7 +186,7 @@ void* user_thread(void* arg)
                 send(socket, s_msg, BUFF_LEN, 0);
                 continue;
             }
-            sprintf(s_msg, "%s:%d|found", ip, port);
+            sprintf(s_msg, "%s:%d|found", ip.c_str(), port);
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }

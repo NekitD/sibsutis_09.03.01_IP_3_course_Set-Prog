@@ -53,7 +53,7 @@ class StartupDbContext {
         connection* getConnection();
         bool isConnected();
 
-        int auth(string login, string password);
+        int auth(string login, string password, string addr, int port);
         int reg(string login, string password);
         int logout(string login);
         string get_lobbies();
