@@ -679,6 +679,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 char ts[BUFF_LEN];
                 string mes;
                 cout << "Введите ваше сообщение:" << endl;
+                cin.ignore();
                 cli_input(mes);
                 strcat(ts, login.c_str());
                 strcat(ts, ": ");
@@ -688,6 +689,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 strcat(s_msg, "|sent");
                 send(chat_sock, s_msg, BUFF_LEN, 0);
                 recv(chat_sock, a_msg, BUFF_LEN, 0);
+                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
                 if(strncmp(request, "received", 9) == 0){
                     cout << "Сообщение отправлено!" << endl;
                     FILE* f_chat = fopen(chatname.c_str(), "a");
