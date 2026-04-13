@@ -19,6 +19,11 @@
 
 #define MAX_DELAY 10
 
+FILE* f_manual = fopen("info/manual.txt", "rb");
+const int m_size = sizeof(*f_manual) / sizeof(char);
+char s_manual[m_size];
+char mc;
+
 static struct termios original_t;
 void disableEcho() {
     struct termios t;
@@ -38,7 +43,7 @@ using namespace std;
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
 bool client_loop(int&, int&, int&, string&, int&, char*, char*, char*, char*, 
-        int&, struct timeval&, struct sockaddr_in&, sockaddr_in&);
+        int&, struct timeval&, struct sockaddr_in&, sockaddr_in&, char*);
 bool commandexists(string command);
 
 
@@ -62,6 +67,19 @@ int socket_init(int& sock, struct sockaddr_in* addr){
 
 int main()
 {
+
+    FILE* f_manual = fopen("info/manual.txt", "rb");
+    char* s_manual;
+    if (f_manual != NULL) {
+        fseek(f_manual, 0, SEEK_END);
+        long m_size = ftell(f_manual);
+        fseek(f_manual, 0, SEEK_SET);
+        s_manual = (char*)malloc(m_size + 1);
+        size_t bytes_read = fread(s_manual, 1, m_size, f_manual);
+        s_manual[bytes_read] = '\0';
+        fclose(f_manual);
+    }
+
     struct hostent *hp;
 
     int c_sock;
@@ -285,7 +303,7 @@ int main()
         cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
     
         while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, 
-            s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr)); // ЦИКЛ СЕССИИ НА СЕРВЕРЕ
+            s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr, s_manual)); // ЦИКЛ СЕССИИ НА СЕРВЕРЕ
 
         close(c_sock);
         if(socket_init(c_sock, &c_addr) < 0){
@@ -293,13 +311,14 @@ int main()
             return -1;
         }
     }
+    free(s_manual);
     close(c_sock);
     return 0;
 }
 
 bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, int& rec, 
     char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv,
-    struct sockaddr_in& s_addr, struct sockaddr_in& c_addr)
+    struct sockaddr_in& s_addr, struct sockaddr_in& c_addr, char* manual)
 {
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
@@ -336,6 +355,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cout << "'chat' - открыть чат с игроком (если нет, создаётся)." << endl;
             //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl; --- В ДОЛГИЙ ЯЩИК
             //cout << "'report [id игрока]' - отправить жалобу на игрока." << endl; --- В ДОЛГИЙ ЯЩИК
+            cout << "'about' - об игре." << endl;
             cout << "'exit' - выйти." << endl;
             continue;
         }
@@ -512,6 +532,15 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 status = CHATTING;
                 break;
             }
+            continue;
+        }
+
+
+        //--------------------------------------------------------------------
+        //Об игре
+        //--------------------------------------------------------------------
+        if(strncmp(command.c_str(), "about", 6) == 0){
+            cout << manual << endl;
             continue;
         }
 
@@ -837,5 +866,6 @@ void cli_input(string& text){
 
 bool commandexists(string command){
     return command == "ps" || command == "psa" || command == "rt" || command == "exit" || command == "ls"
-            || command == "mkl" || command == "join" || command == "chat" || command == "chats" || command == "help";
+            || command == "mkl" || command == "join" || command == "chat" || command == "chats" || command == "help"
+            || command == "about";
 }
