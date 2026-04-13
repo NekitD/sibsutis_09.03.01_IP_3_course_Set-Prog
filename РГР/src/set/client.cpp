@@ -585,6 +585,73 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             continue;
         }
 
+        if(strncmp(command.c_str(), "mes", 4) == 0){
+            string t_nick;
+            cout << "Введите ник игрока: ";
+            cin >> t_nick;
+            string chatname = chats_path + t_nick + ".txt";
+            FILE* f_chat = fopen(chatname.c_str(), "a");
+            if(f_chat == NULL){
+                cout << "Чат не найден..." << endl;
+                continue;
+            }
+            strcat(s_msg, t_nick.c_str());
+            strcat(s_msg, "|finduser");
+            send(c_sock, s_msg, BUFF_LEN, 0);
+            ans = -1;
+            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
+            cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
+            if(ans > 0){
+                if(strncmp(request, "off", 4) == 0){
+                    cout << "Игрок " << t_nick << " не в сети." << endl;
+                    fclose(f_chat);
+                    continue;
+                }  
+
+                close(chat_sock);
+                if(socket_init(chat_sock, &c_addr) < 0){
+                    cout << "Не удалось инициализировать отправку сообщения." << endl;
+                    fclose(f_chat);
+                    continue;
+                }   
+
+                char ip_char[BUFF_LEN] = "";
+                int port = 0;
+                
+                // Сервер вернёт в output IP-адрес и порт
+
+                struct sockaddr_in t_addr;
+                t_addr.sin_family = AF_INET;
+                inet_aton(ip_char, &t_addr.sin_addr);
+                t_addr.sin_port = htons(port);  
+
+                if(connect(chat_sock, (sockaddr*)&t_addr, sizeof(sockaddr_in)) < 0){
+                    cout << "Не удалось установить соединение с " << t_nick << "." << endl;
+                    fclose(f_chat);
+                    continue;
+                }
+                bzero(s_msg, BUFF_LEN);
+                char ts[BUFF_LEN];
+                string mes;
+                cout << "Введите ваше сообщение:" << endl;
+                cli_input(mes);
+                strcat(ts, login.c_str());
+                strcat(ts, ": ");
+                strcat(ts, mes.c_str());
+                strcat(ts, "\n");
+                strcat(s_msg, ts);
+                strcat(s_msg, "|sent");
+                send(chat_sock, s_msg, BUFF_LEN, 0);
+                recv(chat_sock, a_msg, BUFF_LEN, 0);
+                if(strncmp(request, "received", 9) == 0){
+                    fprintf(f_chat, "%s", ts);
+                    cout << "Сообщение отправлено!" << endl;
+                }
+            }
+            fclose(f_chat);
+            continue;
+        }
+
         //--------------------------------------------------------------------
         //Об игре
         //--------------------------------------------------------------------
