@@ -546,7 +546,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cout << "Введите ник игрока: ";
             cin >> nick;
             string chatname = chats_path + nick + ".txt";
-            FILE* f_chat = fopen(chatname.c_str(), "");
+            FILE* f_chat = fopen(chatname.c_str(), "r");
             char* s_chat;
             if(f_chat == NULL){
                 cout << "Чат не найден..." << endl;
@@ -565,6 +565,23 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 continue;
             }
             cout << s_chat << endl;
+            continue;
+        }
+
+        //--------------------------------------------------------------------
+        // Запрос очистки чата с игроком
+        //--------------------------------------------------------------------
+        if(strncmp(command.c_str(), "clchat", 7) == 0){
+            string nick;
+            cout << "Введите ник игрока: ";
+            cin >> nick;
+            string chatname = chats_path + nick + ".txt";
+            FILE* f_chat = fopen(chatname.c_str(), "w");
+            if(f_chat == NULL){
+                cout << "Чат не найден..." << endl;
+                continue;
+            }
+            cout << "Чат очищен с игроком " << nick << " очищен..." << endl;
             continue;
         }
 
