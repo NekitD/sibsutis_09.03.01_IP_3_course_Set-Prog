@@ -10,7 +10,7 @@
 #include <unistd.h> 
 #include "game.h"
 #include <termios.h>
-#include <signal.h>
+#include <filesystem>
 
 #define LOGGING 100
 #define SUCCESS 200
@@ -43,7 +43,7 @@ using namespace std;
 void cli_decode_msg(char* msg, int mlen, char* output, char* request, int& status);
 void cli_input(string& text);
 bool client_loop(int&, int&, int&, string&, int&, char*, char*, char*, char*, 
-        int&, struct timeval&, struct sockaddr_in&, sockaddr_in&, char*);
+        int&, struct timeval&, struct sockaddr_in&, sockaddr_in&, char*, string);
 bool commandexists(string command);
 
 
@@ -299,11 +299,14 @@ int main()
             }
         }
 
+        string chats_path = "info/chats/" + login + "/";
+
         cout << "           Вы успешно вошли на сервер!" << endl;
         cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
     
         while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, 
-            s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr, s_manual)); // ЦИКЛ СЕССИИ НА СЕРВЕРЕ
+            s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr, s_manual,
+            chats_path)); // ЦИКЛ СЕССИИ НА СЕРВЕРЕ
 
         close(c_sock);
         if(socket_init(c_sock, &c_addr) < 0){
@@ -318,7 +321,7 @@ int main()
 
 bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, int& rec, 
     char* s_msg, char* a_msg, char* output, char* request, int& status, struct timeval& old_tv,
-    struct sockaddr_in& s_addr, struct sockaddr_in& c_addr, char* manual)
+    struct sockaddr_in& s_addr, struct sockaddr_in& c_addr, char* manual, string chats_path)
 {
     //============================================================
     // 2. Командная строка клиента для взаимодействия с сервером
@@ -352,11 +355,14 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cout << "'mkl' - создать лобби." << endl;
             cout << "'join' - присоединиться к лобби." << endl;
             cout << "'chats' - показать чаты." << endl;
-            cout << "'chat' - открыть чат с игроком (если нет, создаётся)." << endl;
-            //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl; --- В ДОЛГИЙ ЯЩИК
-            //cout << "'report [id игрока]' - отправить жалобу на игрока." << endl; --- В ДОЛГИЙ ЯЩИК
+            cout << "'chat' - показать чат с игроком." << endl;
+            cout << "'mes' - написать сообщение игроку." << endl;
+            cout << "'clchat' - очистить чат с игроком." << endl;
             cout << "'about' - об игре." << endl;
             cout << "'exit' - выйти." << endl;
+
+            //cout << "'rm chat [id игрока]' - удалить чат с игроком" << endl; --- В ДОЛГИЙ ЯЩИК
+            //cout << "'report [id игрока]' - отправить жалобу на игрока." << endl; --- В ДОЛГИЙ ЯЩИК
             continue;
         }
 
@@ -501,13 +507,28 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         // Запрос списка чатов
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "chats", 6) == 0){
-            strcat(s_msg, "|getchats");
-            send(c_sock, s_msg, BUFF_LEN, 0);
-            ans = -1;
-            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            if(ans > 0){
-                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
-                cout << output << endl;
+            string chats_path = "chats/";
+    
+            if(!exists(chats_path) || !is_directory(chats_path)){
+                cout << "Папка с чатами не найдена" << endl;
+                continue;
+            }
+    
+            vector<string> chats;
+            for(const auto& entry : directory_iterator(chats_path)){
+            if(entry.is_regular_file() && entry.path().extension() == ".txt"){
+                    string chat_name = entry.path().stem().string();
+                    chats.push_back(chat_name);
+                }
+            }
+    
+            if(chats.empty()){
+                cout << "Нет активных чатов" << endl;
+            } else {
+                cout << "Активные чаты:" << endl;
+                for(size_t i = 0; i < chats.size(); i++){
+                    cout << "   " << i+1 << ") " << chats[i] << endl;
+                }
             }
             continue;
         }
@@ -516,25 +537,31 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         // Запрос чата с игроком
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "chat", 5) == 0){
-            string target_id;
-            cout << "   Введите id игрока для чата: ";
-            cin >> target_id;
-    
-            bzero(s_msg, BUFF_LEN);
-            strcat(s_msg, target_id.c_str());
-            strcat(s_msg, "|chatrequest");
-            send(c_sock, s_msg, BUFF_LEN, 0);
-            ans = -1;
-            ans = recv(c_sock, a_msg, BUFF_LEN, 0);
-            if(ans > 0){
-                cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
-                cout << output << endl;
-                status = CHATTING;
-                break;
+            string nick;
+            cout << "Введите ник игрока: ";
+            cin >> nick;
+            string chatname = chats_path + nick + ".txt";
+            FILE* f_chat = fopen(chatname.c_str(), "");
+            char* s_chat;
+            if(f_chat == NULL){
+                cout << "Чат не найден..." << endl;
+                continue;
             }
+            fseek(f_chat, 0, SEEK_END);
+            long m_size = ftell(f_chat);
+            fseek(f_chat, 0, SEEK_SET);
+            s_chat = (char*)malloc(m_size + 1);
+            size_t bytes_read = fread(s_chat, 1, m_size, f_chat);
+            s_chat[bytes_read] = '\0';
+            fclose(f_chat);
+            cout << "Чат с " << nick << ":" << endl;
+            if(m_size <= 0){
+                cout << "Чат пуст..." << endl;
+                continue;
+            }
+            cout << s_chat << endl;
             continue;
         }
-
 
         //--------------------------------------------------------------------
         //Об игре
@@ -578,13 +605,13 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
     // 3. Чат с другим игроком
     //============================================================
 
-    if(status == CHATTING)
-    {
-        for(;;)
-        {
-            // retutn true; (будет где-то, чтобы продолжить цикл сессии)
-        }
-    }
+    // if(status == CHATTING)
+    // {
+    //     for(;;)
+    //     {
+    //         // retutn true; (будет где-то, чтобы продолжить цикл сессии)
+    //     }
+    // }
     
     
     //============================================================
