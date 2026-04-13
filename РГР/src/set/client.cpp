@@ -247,10 +247,8 @@ int main()
                 cin >> password;
                 cout << endl;
                 enableEcho();
-                strcat(s_msg, login.c_str());
-                strcat(s_msg, ":");
-                strcat(s_msg, password.c_str());
-                strcat(s_msg, "|login");
+                sprintf(s_msg, "%s:%s:%s:%d|login",
+                login.c_str(), password.c_str(), inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 ans = -1;
                 ans = recv(c_sock, a_msg, BUFF_LEN, 0);
