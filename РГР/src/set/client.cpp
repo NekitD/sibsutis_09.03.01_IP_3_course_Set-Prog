@@ -165,6 +165,18 @@ int main()
                 cout << endl;
                 continue;
             }
+
+
+            struct sockaddr_in local_addr;
+            char client_ip[INET_ADDRSTRLEN];
+            int client_port;
+            socklen_t len = sizeof(local_addr);
+            if (getsockname(c_sock, (struct sockaddr*)&local_addr, &len) == 0) {
+                inet_ntop(AF_INET, &local_addr.sin_addr, client_ip, sizeof(client_ip));
+                client_port = ntohs(local_addr.sin_port);
+            }   
+
+
             char lr = ' ';
             do{
                 bzero(s_msg, BUFF_LEN);
@@ -247,8 +259,9 @@ int main()
                 cin >> password;
                 cout << endl;
                 enableEcho();
+
                 sprintf(s_msg, "%s:%s:%s:%d|login",
-                login.c_str(), password.c_str(), inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
+                login.c_str(), password.c_str(), client_ip, client_port);
                 send(c_sock, s_msg, BUFF_LEN, 0);
                 ans = -1;
                 ans = recv(c_sock, a_msg, BUFF_LEN, 0);
