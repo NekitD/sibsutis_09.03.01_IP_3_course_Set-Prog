@@ -12,6 +12,7 @@
 #include <termios.h>
 #include <dirent.h>
 #include "chat.h"
+#include <sys/stat.h>
 
 #define LOGGING 100
 #define SUCCESS 200
@@ -309,6 +310,7 @@ int main()
         }
 
         string chats_path = "info/chats/" + login + "/";
+        mkdir(chats_path.c_str(), 0777);
 
         cout << "           Вы успешно вошли на сервер!" << endl;
         cout << "  ПОДСКАЗКА: для просмотра доступных команд введите help" << endl;
@@ -636,11 +638,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cout << "Введите ник игрока: ";
             cin >> t_nick;
             string chatname = chats_path + t_nick + ".txt";
-            FILE* f_chat = fopen(chatname.c_str(), "a");
-            if(f_chat == NULL){
-                cout << "Чат не найден..." << endl;
-                continue;
-            }
             strcat(s_msg, t_nick.c_str());
             strcat(s_msg, "|finduser");
             send(c_sock, s_msg, BUFF_LEN, 0);
@@ -650,19 +647,16 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             if(ans > 0){
                 if(strncmp(request, "nop", 4) == 0){
                     cout << "Игрок " << t_nick << " не найден." << endl;
-                    fclose(f_chat);
                     continue;
                 }  
                 if(strncmp(request, "off", 4) == 0){
                     cout << "Игрок " << t_nick << " не в сети." << endl;
-                    fclose(f_chat);
                     continue;
                 }  
 
                 close(chat_sock);
                 if(socket_init(chat_sock, &c_addr) < 0){
                     cout << "Не удалось инициализировать отправку сообщения." << endl;
-                    fclose(f_chat);
                     continue;
                 }   
 
@@ -679,7 +673,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
 
                 if(connect(chat_sock, (sockaddr*)&t_addr, sizeof(sockaddr_in)) < 0){
                     cout << "Не удалось установить соединение с " << t_nick << "." << endl;
-                    fclose(f_chat);
                     continue;
                 }
                 bzero(s_msg, BUFF_LEN);
@@ -696,15 +689,20 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 send(chat_sock, s_msg, BUFF_LEN, 0);
                 recv(chat_sock, a_msg, BUFF_LEN, 0);
                 if(strncmp(request, "received", 9) == 0){
-                    fprintf(f_chat, "%s", ts);
                     cout << "Сообщение отправлено!" << endl;
-                    fprintf(f_chat, ts);
+                    FILE* f_chat = fopen(chatname.c_str(), "a");
+                    if(f_chat == NULL){
+                        cout << "Чат не найден..." << endl;
+                        bzero(ts, BUFF_LEN);
+                        continue;
+                    }
+                    fprintf(f_chat, "%s", ts);
+                    fclose(f_chat);
                 }else{
                     cout << "Не удалось доставить сообщение! Попробуйте ещё раз." << endl;
                 }
                 bzero(ts, BUFF_LEN);
             }
-            fclose(f_chat);
             continue;
         }
 
