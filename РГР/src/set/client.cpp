@@ -602,6 +602,11 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             ans = recv(c_sock, a_msg, BUFF_LEN, 0);
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
+                if(strncmp(request, "nop", 4) == 0){
+                    cout << "Игрок " << t_nick << " не найден." << endl;
+                    fclose(f_chat);
+                    continue;
+                }  
                 if(strncmp(request, "off", 4) == 0){
                     cout << "Игрок " << t_nick << " не в сети." << endl;
                     fclose(f_chat);
@@ -618,9 +623,10 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 char ip_char[BUFF_LEN] = "";
                 int port = 0;
                 
-                // Сервер вернёт в output IP-адрес и порт
+                sscanf(output, "%[^:]:%d", ip_char, &port);
 
                 struct sockaddr_in t_addr;
+                bzero(&t_addr, sizeof(struct sockaddr_in));
                 t_addr.sin_family = AF_INET;
                 inet_aton(ip_char, &t_addr.sin_addr);
                 t_addr.sin_port = htons(port);  
@@ -646,7 +652,10 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 if(strncmp(request, "received", 9) == 0){
                     fprintf(f_chat, "%s", ts);
                     cout << "Сообщение отправлено!" << endl;
+                }else{
+                    cout << "Не удалось доставить сообщение! Попробуйте ещё раз." << endl;
                 }
+                bzero(ts, BUFF_LEN);
             }
             fclose(f_chat);
             continue;

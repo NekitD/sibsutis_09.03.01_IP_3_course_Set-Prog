@@ -162,16 +162,29 @@ void* user_thread(void* arg)
             continue;
         }
 
-        if(strncmp(request, "getchats", 9) == 0){
-            strcat(s_msg, CONTEXT->get_chats().c_str());
+        if(strncmp(request, "getlobby", 9) == 0){
+            strcat(s_msg, CONTEXT->get_lobbies().c_str());
             strcat(s_msg, "|");
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
 
-        if(strncmp(request, "getlobby", 9) == 0){
-            strcat(s_msg, CONTEXT->get_lobbies().c_str());
-            strcat(s_msg, "|");
+        if(strncmp(request, "finduser", 9) == 0){
+            string nick = (string)output;
+            string ip;
+            bool online;
+            int port;
+            if(!CONTEXT->finduser(nick, ip, port, online)){
+                strcat(s_msg, "|nop");
+                send(socket, s_msg, BUFF_LEN, 0);
+                continue;
+            }
+            if(!online){
+                strcat(s_msg, "|off");
+                send(socket, s_msg, BUFF_LEN, 0);
+                continue;
+            }
+            sprintf(s_msg, "%s:%d|found", ip, port);
             send(socket, s_msg, BUFF_LEN, 0);
             continue;
         }
