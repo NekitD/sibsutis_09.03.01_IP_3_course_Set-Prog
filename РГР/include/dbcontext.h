@@ -60,7 +60,7 @@ class StartupDbContext {
         string get_players_on();
         string get_players_all();
         string get_rating();
-        string get_chats();
+        bool finduser(string nick, string& ip, int& port, bool& online);
 
         void set_lobby_num(int id, int nv);
         int add_lobby(string creator, string name, int num);

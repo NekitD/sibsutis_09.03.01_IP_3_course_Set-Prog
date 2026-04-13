@@ -21,7 +21,9 @@ address(_address), port(_port), database(_database), user(_user), password(_pass
                         (string)"login varchar(256)," +
 	                    "password varchar(256)," +
 	                    "online int," +
-                        "score int);" +
+                        "score int" +
+                        "address varchar(255)," +
+                        "port int);" +
                         "CREATE TABLE IF NOT EXISTS GAMES (" +
 	                    "ID Serial Primary Key," +
 	                    "name varchar(256)," +
@@ -266,9 +268,6 @@ string StartupDbContext::get_rating(){
     return answer;
 
 }
-string StartupDbContext::get_chats(){
-    return " ";
-}
 
 int StartupDbContext::add_lobby(string creator, string name, int num){
     pthread_mutex_lock(&db_mutex);
@@ -415,6 +414,32 @@ void StartupDbContext::clear_lobbies(){
     w.exec(q);
     w.commit();
     pthread_mutex_unlock(&db_mutex);
+}
+
+
+bool StartupDbContext::finduser(string nick, string& ip, int& port, bool& online){
+    pthread_mutex_lock(&db_mutex);
+    if(!isConnected()){
+        cout << "ОШИБКА: НЕТ СОЕДИНЕНИЯ С БАЗОЙ!" << endl;
+        pthread_mutex_unlock(&db_mutex);
+        return false;
+    }
+    string q = "SELECT * FROM users WHERE login = $1";
+    work w(*conn);
+    result res = w.exec_params(q, nick);
+    w.commit();
+    pthread_mutex_unlock(&db_mutex);
+    if(res.empty()){
+        return false;
+    }
+    ip = res[0]["address"].as<string>();
+    port = res[0]["port"].as<int>();
+    if(res[0]["online"].as<int>() == 0){
+        online = false;
+    }else{
+        online = true;
+    }
+    return true;
 }
 
 
