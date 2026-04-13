@@ -319,7 +319,7 @@ int main()
         // ОТКРЫВАЕМ ПРОСЛУШКУ ПОЛЬЗОВАТЕЛЮ
         //============================================================================
         int chat_server_sock = socket(AF_INET, SOCK_STREAM, 0);
-        if (chat_server_sock < 0) {
+        if (socket_init(chat_server_sock, &c_addr) < 0) {
             cout << "Не удалось создать сокет для приёма сообщений" << endl;
         } else {
             struct sockaddr_in chat_addr;
@@ -360,7 +360,7 @@ int main()
         while(client_loop(c_sock, chat_sock, lobby_sock, login, rec, 
             s_msg, a_msg, output, request, status, old_tv, s_addr, c_addr, s_manual,
             chats_path)); // ЦИКЛ СЕССИИ НА СЕРВЕРЕ
-
+        close(chat_server_sock);
         close(c_sock);
         if(socket_init(c_sock, &c_addr) < 0){
             cout << "   Не удалось реинициализировать клиента." << endl;
