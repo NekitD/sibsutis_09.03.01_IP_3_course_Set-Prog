@@ -169,11 +169,9 @@ int main()
 
             struct sockaddr_in local_addr;
             char client_ip[INET_ADDRSTRLEN];
-            int client_port;
             socklen_t len = sizeof(local_addr);
             if (getsockname(c_sock, (struct sockaddr*)&local_addr, &len) == 0) {
                 inet_ntop(AF_INET, &local_addr.sin_addr, client_ip, sizeof(client_ip));
-                client_port = ntohs(local_addr.sin_port);
             }   
 
 

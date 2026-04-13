@@ -16,13 +16,12 @@
 #define BUFF_LEN 4096
 #define CHATS_DIR "info/chats/"
 
+using namespace std;
+
 typedef struct chat_args{
     int socket;
     string login;
 }chat_args;
-
-
-using namespace std;
 
 
 void* msg_thread(void* args);
