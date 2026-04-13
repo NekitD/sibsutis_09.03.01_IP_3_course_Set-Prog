@@ -10,7 +10,7 @@
 #include <unistd.h> 
 #include "game.h"
 #include <termios.h>
-#include <filesystem>
+#include <dirent.h>
 
 #define LOGGING 100
 #define SUCCESS 200
@@ -507,20 +507,25 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         // Запрос списка чатов
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "chats", 6) == 0){
-            string chats_path = "chats/";
+            string chats_path = "chats/"; // или твоя переменная
     
-            if(!exists(chats_path) || !is_directory(chats_path)){
-                cout << "Папка с чатами не найдена" << endl;
+            DIR* dir = opendir(chats_path.c_str());
+            if(dir == NULL){
+                cout << "Папка с чатами не найдена: " << chats_path << endl;
                 continue;
             }
     
             vector<string> chats;
-            for(const auto& entry : directory_iterator(chats_path)){
-            if(entry.is_regular_file() && entry.path().extension() == ".txt"){
-                    string chat_name = entry.path().stem().string();
+            struct dirent* entry;
+    
+            while((entry = readdir(dir)) != NULL){
+                string filename = entry->d_name;
+                if(filename.length() > 4 && filename.substr(filename.length() - 4) == ".txt"){
+                    string chat_name = filename.substr(0, filename.length() - 4);
                     chats.push_back(chat_name);
                 }
             }
+            closedir(dir);
     
             if(chats.empty()){
                 cout << "Нет активных чатов" << endl;
