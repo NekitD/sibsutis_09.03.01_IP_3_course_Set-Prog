@@ -1026,5 +1026,5 @@ void cli_input(string& text){
 bool commandexists(string command){
     return command == "ps" || command == "psa" || command == "rt" || command == "exit" || command == "ls"
             || command == "mkl" || command == "join" || command == "chat" || command == "chats" || command == "help"
-            || command == "about";
+            || command == "about" || command == "clchat" || command == "mes";
 }
