@@ -13,7 +13,6 @@
 #include <dirent.h>
 #include "chat.h"
 #include <sys/stat.h>
-#include <netinet/tcp.h>
 
 #define LOGGING 100
 #define SUCCESS 200
@@ -61,8 +60,6 @@ int socket_init(int& sock, struct sockaddr_in* addr){
         cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
-    int flag = 1;
-    setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
     return sock;
 }
 
@@ -350,7 +347,7 @@ int main()
                 pthread_create(&accept_tid, NULL, msg_accept_thread, (void*)cargs);
                 pthread_detach(accept_tid);
             
-                //cout << "Приём сообщений запущен на порту " << chat_port << endl;
+                cout << "Приём сообщений запущен на порту " << chat_port << endl;
             }
         }
         //============================================================================
