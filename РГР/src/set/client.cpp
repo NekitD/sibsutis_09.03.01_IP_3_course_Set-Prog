@@ -425,8 +425,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
+                continue;
             }
-            continue;
         }
 
         if(strncmp(command.c_str(), "ps", 2) == 0){
@@ -437,8 +437,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
+                continue;
             }
-            continue;
         }
 
         //--------------------------------------------------------------------
@@ -452,8 +452,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
+                continue;
             }
-            continue;
         }
 
         //--------------------------------------------------------------------
@@ -467,8 +467,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
             cli_decode_msg(a_msg, BUFF_LEN, output, request, status);
             if(ans > 0){
                 cout << output << endl;
+                continue;
             }
-            continue;
         }
 
         //--------------------------------------------------------------------
@@ -502,8 +502,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 }else{
                     cout << "Не удалось создать лобби." << endl;
                 }
+                continue;
             }
-            continue;
         }
 
         //--------------------------------------------------------------------
@@ -546,8 +546,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                     cout << "Не удалось найти указанное лобби." << endl;
                     continue;
                 }
+                continue;
             }
-            continue;
         }
 
 
@@ -629,7 +629,7 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                 cout << "Чат не найден..." << endl;
                 continue;
             }
-            cout << "Чат очищен с игроком " << nick << " очищен..." << endl;
+            cout << "Чат с игроком " << nick << " очищен..." << endl;
             continue;
         }
 
@@ -704,8 +704,8 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
                     cout << "Не удалось доставить сообщение! Попробуйте ещё раз." << endl;
                 }
                 bzero(ts, BUFF_LEN);
+                continue;
             }
-            continue;
         }
 
         //--------------------------------------------------------------------
