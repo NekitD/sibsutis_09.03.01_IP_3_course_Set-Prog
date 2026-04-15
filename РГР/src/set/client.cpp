@@ -347,7 +347,7 @@ int main()
                 pthread_create(&accept_tid, NULL, msg_accept_thread, (void*)cargs);
                 pthread_detach(accept_tid);
             
-                cout << "Приём сообщений запущен на порту " << chat_port << endl;
+               // cout << "Приём сообщений запущен на порту " << chat_port << endl;
             }
         }
         //============================================================================
