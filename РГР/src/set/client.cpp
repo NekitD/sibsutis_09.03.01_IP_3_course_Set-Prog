@@ -555,8 +555,6 @@ bool client_loop(int& c_sock, int& chat_sock, int& lobby_sock, string& login, in
         // Запрос списка чатов
         //--------------------------------------------------------------------
         if(strncmp(command.c_str(), "chats", 6) == 0){
-            string chats_path = "chats/"; // или твоя переменная
-    
             DIR* dir = opendir(chats_path.c_str());
             if(dir == NULL){
                 cout << "Папка с чатами не найдена: " << chats_path << endl;
