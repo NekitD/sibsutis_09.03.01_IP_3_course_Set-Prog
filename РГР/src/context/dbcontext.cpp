@@ -432,12 +432,12 @@ bool StartupDbContext::finduser(string nick, string& ip, int& port, bool& online
     if(res.empty()){
         return false;
     }
-    ip = res[0]["address"].as<string>();
-    port = res[0]["port"].as<int>();
     if(res[0]["online"].as<int>() == 0){
         online = false;
     }else{
         online = true;
+        ip = res[0]["address"].as<string>();
+        port = res[0]["port"].as<int>();
     }
     return true;
 }
