@@ -395,7 +395,7 @@ void StartupDbContext::clear_online(){
         pthread_mutex_unlock(&db_mutex);
         return;
     }
-    string q = "UPDATE users SET online = $1";
+    string q = "UPDATE users SET online = $1, address = null, port = null";
     work w(*conn);
     w.exec_params(q, 0);
     w.commit();
